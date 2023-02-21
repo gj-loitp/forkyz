@@ -288,7 +288,6 @@ public class IPuzIO implements PuzzleParser {
             return builder.getPuzzle();
         } catch (IPuzFormatException | JSONException e) {
             LOG.severe("Could not read IPuz file: " + e);
-            e.printStackTrace();
             return null;
         }
     }
@@ -362,7 +361,7 @@ public class IPuzIO implements PuzzleParser {
      *
      * I put day/month the wrong way around in initial version :/
      *
-     * @return null if no date
+     * @return null if no date or date doesn't match known format
      */
     private static LocalDate parseDate(JSONObject puzJson)
             throws IPuzFormatException {
@@ -379,7 +378,7 @@ public class IPuzIO implements PuzzleParser {
             try {
                 return LocalDate.parse(date, DATE_FORMATTER_SINGLES);
             } catch (DateTimeParseException e2) {
-                throw new IPuzFormatException("Unrecognised date " + date);
+                return null;
             }
         }
     }
@@ -499,6 +498,8 @@ public class IPuzIO implements PuzzleParser {
                 cellObj = empty;
 
             Box box = getBoxFromObj(cellObj, block, empty);
+            if (box == null)
+                return box;
 
             String initVal = optStringNull(json, FIELD_VALUE);
             if (initVal != null) {
@@ -519,11 +520,9 @@ public class IPuzIO implements PuzzleParser {
                 if (SHAPE_BG_CIRCLE.equals(style.optString(FIELD_SHAPE_BG))) {
                     box.setCircled(true);
                 }
-                String color = style.optString(FIELD_COLOR);
-                // not supporting numbered "unique" colors for now
-                if (color != null && color.length() == HEX_CODE_LEN) {
-                    box.setColor(hexToColor(color));
-                }
+                Integer color = hexToColor(style.optString(FIELD_COLOR));
+                if (color != null)
+                    box.setColor(color);
 
                 getBarredFromStyleObj(style, box);
                 getMarksFromStyleObj(style, box);
@@ -2236,10 +2235,23 @@ public class IPuzIO implements PuzzleParser {
     }
 
     /**
-     * Convert dddddd to 0x00dddddd
+     * Convert (#?)dddddd to 0x00dddddd
+     *
+     * Returns null if cannot
      */
-    private static int hexToColor(String hex) {
-        return Integer.valueOf(hex, 16);
+    private static Integer hexToColor(String hex) {
+        if (hex == null || hex.isEmpty())
+            return null;
+
+        // not technically IPuz, but let's be nice
+        if (hex.charAt(0) == '#')
+            hex = hex.substring(1);
+
+        try {
+            return Integer.valueOf(hex, 16);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /**
