@@ -93,6 +93,7 @@ public class IPuzIO implements PuzzleParser {
     private static final String FIELD_SOLUTION = "solution";
     private static final String FIELD_SHOW_ENUMERATIONS = "showenumerations";
     private static final String FIELD_CLUES = "clues";
+    private static final String FIELD_NAMED_STYLES = "styles";
 
     private static final String FIELD_CELL = "cell";
     private static final String FIELD_VALUE = "value";
@@ -448,6 +449,7 @@ public class IPuzIO implements PuzzleParser {
 
         String block = getBlockString(puzJson);
         String empty = getEmptyCellString(puzJson);
+        JSONObject namedStyles = puzJson.optJSONObject(FIELD_NAMED_STYLES);
 
         for (int row = 0; row < boxes.length; row++) {
             JSONArray rowCells = cells.getJSONArray(row);
@@ -460,7 +462,9 @@ public class IPuzIO implements PuzzleParser {
 
             for (int col = 0; col < boxes[row].length; col++) {
                 boxes[row][col]
-                    = getBoxFromObj(rowCells.get(col), block, empty);
+                    = getBoxFromObj(
+                        rowCells.get(col), block, empty, namedStyles
+                    );
             }
         }
     }
@@ -483,8 +487,12 @@ public class IPuzIO implements PuzzleParser {
      * number, string, or JSON object
      * @param block the string for a block
      * @param empty the string for an empty cell
+     * @param namedStyles the JSON object containing named style specs
+     * used as shortcuts (the "styles" field of the IPuz)
      */
-    private static Box getBoxFromObj(Object cell, String block, String empty)
+    private static Box getBoxFromObj(
+        Object cell, String block, String empty, JSONObject namedStyles
+    )
             throws IPuzFormatException {
         if (cell == null || JSONObject.NULL.equals(cell)) {
             return null;
@@ -497,7 +505,7 @@ public class IPuzIO implements PuzzleParser {
             if (cellObj == null)
                 cellObj = empty;
 
-            Box box = getBoxFromObj(cellObj, block, empty);
+            Box box = getBoxFromObj(cellObj, block, empty, namedStyles);
             if (box == null)
                 return box;
 
@@ -515,6 +523,11 @@ public class IPuzIO implements PuzzleParser {
             }
 
             JSONObject style = json.optJSONObject(FIELD_STYLE);
+            if (style == null) {
+                String styleName = json.optString(FIELD_STYLE);
+                if (styleName != null)
+                    style = namedStyles.optJSONObject(styleName);
+            }
 
             if (style != null) {
                 if (SHAPE_BG_CIRCLE.equals(style.optString(FIELD_SHAPE_BG))) {

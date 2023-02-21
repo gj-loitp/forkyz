@@ -163,6 +163,8 @@ public class IPuzIOTest {
         int grey = Integer.valueOf("DCDCDC", 16);
         assertEquals(boxes[6][0].getColor(), grey);
         assertEquals(boxes[10][6].getColor(), grey);
+        assertEquals(boxes[0][2].getColor(), Integer.valueOf("EFEFEF", 16));
+        assertEquals(boxes[0][3].getColor(), Integer.valueOf("EAEAEA", 16));
 
         Set<String> clueLists = puz.getClueListNames();
         assertEquals(clueLists.size(), 3);

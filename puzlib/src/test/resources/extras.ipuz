@@ -13,6 +13,10 @@
   "date": "03/15/2022",
   "intro": "Weird features: unnumbered words, clues in non-standards lists, colors",
   "copyright": "Test",
+  "styles": {
+    "testStyle1": { color: "EFEFEF" },
+    "testStyle2": { color: "EAEAEA" }
+  },
   "puzzle": [
     [
       {
@@ -24,11 +28,11 @@
         "cell": 2
       },
       {
-        "style": {},
+        "style": "testStyle1",
         "cell": ":"
       },
       {
-        "style": {},
+        "style": "testStyle2",
         "cell": 3
       },
       {
