@@ -450,9 +450,9 @@ public class KeesingXMLIO implements PuzzleParser {
             if (zone != null && !zone.isEmpty()) {
                 Box start
                     = puz.checkedGetBox(zone.getPosition(0));
-                if (start == null) {
+                if (Box.isBlock(start)) {
                     throw new KeesingXMLParserException(
-                        "Clue starts at null box " + zone.getPosition(0)
+                        "Clue starts at block box " + zone.getPosition(0)
                     );
                 }
                 clue.setClueNumber(start.getClueNumber());

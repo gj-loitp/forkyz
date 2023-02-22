@@ -15,7 +15,7 @@ import app.crossword.yourealwaysbe.puz.Puzzle;
 import app.crossword.yourealwaysbe.puz.Zone;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PrzekrojIOTest {
 
@@ -29,9 +29,9 @@ public class PrzekrojIOTest {
 
         Box[][] boxes = puz.getBoxes();
 
-        assertNull(boxes[0][0]);
+        assertTrue(Box.isBlock(boxes[0][0]));
         assertEquals(boxes[0][5].getClueNumber(), "1");
-        assertEquals(boxes[1][6], null);
+        assertTrue(Box.isBlock(boxes[1][6]));
         assertEquals(boxes[6][12].getClueNumber(), "17");
 
         assertEquals(boxes[0][5].getSolution(), "A");

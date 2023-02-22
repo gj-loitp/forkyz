@@ -11,6 +11,7 @@ import app.crossword.yourealwaysbe.puz.ClueList;
 import app.crossword.yourealwaysbe.puz.Puzzle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class KingFeaturesPlaintextIOTest {
 
@@ -34,7 +35,7 @@ public class KingFeaturesPlaintextIOTest {
         assertEquals(boxes[5][14].getSolution(), "E");
         assertEquals(boxes[14][14].getSolution(), "E");
         assertEquals(boxes[14][5].getSolution(), "R");
-        assertEquals(boxes[1][7], null);
+        assertTrue(Box.isBlock(boxes[1][7]));
 
         ClueList acrossClues = puz.getClues("Across");
         ClueList downClues = puz.getClues("Down");

@@ -11,6 +11,8 @@ public class Box implements Serializable {
     public static final String BLANK = " ";
     private static final int NOCOLOR = -1;
 
+    // use if block has styles (such as colour)
+    private boolean block = false;
     private String responder;
     private boolean cheated;
     private boolean circled;
@@ -59,6 +61,10 @@ public class Box implements Serializable {
         }
 
         if (isCircled() != other.isCircled()) {
+            return false;
+        }
+
+        if (isBlock() != other.isBlock()) {
             return false;
         }
 
@@ -125,6 +131,7 @@ public class Box implements Serializable {
         result = (prime * result) + Objects.hash(getResponse());
         result = (prime * result) + Objects.hash(getSolution());
         result = (prime * result) + getColor();
+        result = (prime * result) + (isBlock() ? 1231 : 1237);
         // ignore marks, too awkward and probably empty
 
         return result;
@@ -152,6 +159,32 @@ public class Box implements Serializable {
     public boolean isStartOf(ClueID clueID) {
         Integer position = cluePositions.get(clueID);
         return position != null && position == 0;
+    }
+
+    /**
+     * True if this box is a block (variant of null)
+     *
+     * Block boxes are useful if the block contains e.g. a colour or
+     * shape
+     */
+    public boolean isBlock() {
+        return block;
+    }
+
+    /**
+     * Convenience method for checking block
+     *
+     * Could be a null box or isBlock true
+     *
+     * Block boxes cannot have solutions or responses or be part of a
+     * clue or be cheated. But may have styles like colours and shapes.
+     */
+    public static boolean isBlock(Box box) {
+        return box == null || box.isBlock();
+    }
+
+    public void setBlock(boolean block) {
+        this.block = block;
     }
 
     /**

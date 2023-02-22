@@ -321,7 +321,7 @@ public class Puzzle implements Serializable{
         StringBuilder ans = new StringBuilder();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if (boxes[y][x] != null) {
+                if (!Box.isBlock(boxes[y][x])) {
                     ans.append(boxes[y][x].getSolution());
                 }
             }
@@ -333,7 +333,7 @@ public class Puzzle implements Serializable{
         int i = 0;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                if (boxes[y][x] != null) {
+                if (!Box.isBlock(boxes[y][x])) {
                     boxes[y][x].setSolution((char) solution[i++]);
                 }
             }
@@ -395,7 +395,7 @@ public class Puzzle implements Serializable{
 
         for (int x = 0; x < boxes.length; x++) {
             for (int y = 0; y < boxes[x].length; y++) {
-                if (boxes[x][y] != null) {
+                if (!Box.isBlock(boxes[x][y])) {
                     total++;
 
                     if (Objects.equals(
@@ -418,7 +418,7 @@ public class Puzzle implements Serializable{
 
         for (int x = 0; x < boxes.length; x++) {
             for (int y = 0; y < boxes[x].length; y++) {
-                if (boxes[x][y] != null) {
+                if (!Box.isBlock(boxes[x][y])) {
                     total++;
 
                     if (!boxes[x][y].isBlank()) {
@@ -589,7 +589,7 @@ public class Puzzle implements Serializable{
         for (int row = 0; row < boxes.length; row++) {
             for (int col = 0; col < boxes[row].length; col++) {
                 Box box = boxes[row][col];
-                if (box != null && box.hasSolution())
+                if (!Box.isBlock(box) && box.hasSolution())
                     return true;
             }
         }
@@ -607,7 +607,7 @@ public class Puzzle implements Serializable{
         for (int row = 0; row < boxes.length; row++) {
             for (int col = 0; col < boxes[row].length; col++) {
                 Box box = boxes[row][col];
-                if (box != null && box.isCheated())
+                if (!Box.isBlock(box) && box.isCheated())
                     return true;
             }
         }
@@ -625,7 +625,7 @@ public class Puzzle implements Serializable{
         for (int row = 0; row < boxes.length; row++) {
             for (int col = 0; col < boxes[row].length; col++) {
                 Box box = boxes[row][col];
-                if (box != null && box.getResponder() != null)
+                if (!Box.isBlock(box) && box.getResponder() != null)
                     return true;
             }
         }
@@ -929,10 +929,10 @@ public class Puzzle implements Serializable{
         for (int offset = 0; offset < zone.size(); offset++) {
             Position pos = zone.getPosition(offset);
             Box box = checkedGetBox(pos);
-            if (box == null) {
+            if (Box.isBlock(box)) {
                 throw new IllegalArgumentException(
                     "Clue " + number + " " + clue.getClueID().getListName()
-                    + " zone has a null box at position " + pos
+                    + " zone has a block box at position " + pos
                 );
             }
             box.setCluePosition(clue.getClueID(), offset);

@@ -137,7 +137,6 @@ public class BrainsOnlyIO implements PuzzleParser {
             .setTitle(puzTitle)
             .setAuthor(author)
             .setNotes(notes);
-        System.out.println("Set notes " + notes);
 
         readLineAtOffset(reader, 0);
         ArrayList<String> acrossClues = new ArrayList<String>();
@@ -155,7 +154,7 @@ public class BrainsOnlyIO implements PuzzleParser {
             for(int w = 0; w < width; w++){
                 Box box = builder.getBox(h, w);
                 if (
-                    box != null
+                    !Box.isBlock(box)
                     && box.hasClueNumber()
                     && builder.isStartClue(h, w, true)
                 ){
@@ -174,7 +173,7 @@ public class BrainsOnlyIO implements PuzzleParser {
             for(int w = 0; w < width; w++){
                 Box box = builder.getBox(h, w);
                 if(
-                    box != null
+                    !Box.isBlock(box)
                     && box.hasClueNumber()
                     && builder.isStartClue(h, w, false)
                 ){

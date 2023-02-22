@@ -22,7 +22,7 @@ public class IOVersion3 extends IOVersion2 {
         super.applyMeta(puz, meta);
         puz.setPosition(meta.position);
         Box box = puz.checkedGetBox(meta.position);
-        if (box != null) {
+        if (!Box.isBlock(box)) {
             String desiredList = meta.across
                 ? PuzzleUtils.getAcrossListName(puz)
                 : PuzzleUtils.getDownListName(puz);

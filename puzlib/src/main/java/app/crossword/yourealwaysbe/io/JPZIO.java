@@ -805,10 +805,10 @@ public class JPZIO implements PuzzleParser {
                     }
 
                     Box box = allBoxes[row][col];
-                    if (box == null) {
+                    if (Box.isBlock(box)) {
                         throw new JPZIOException(
                             "Clue contains position "
-                            + pos + " which is not a box"
+                            + pos + " which is a block"
                         );
                     }
 

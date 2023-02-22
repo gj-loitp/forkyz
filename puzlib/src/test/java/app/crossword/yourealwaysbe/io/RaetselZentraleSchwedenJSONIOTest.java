@@ -13,7 +13,6 @@ import app.crossword.yourealwaysbe.puz.Puzzle;
 import app.crossword.yourealwaysbe.puz.Zone;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RaetselZentraleSchwedenJSONIOTest {
@@ -30,7 +29,7 @@ public class RaetselZentraleSchwedenJSONIOTest {
 
         Box[][] boxes = puz.getBoxes();
 
-        assertNull(boxes[0][0]);
+        assertTrue(Box.isBlock(boxes[0][0]));
         assertEquals(boxes[0][4].getClueNumber(), "1");
         assertEquals(boxes[0][7].getClueNumber(), "2");
         assertEquals(boxes[4][13].getClueNumber(), "19");

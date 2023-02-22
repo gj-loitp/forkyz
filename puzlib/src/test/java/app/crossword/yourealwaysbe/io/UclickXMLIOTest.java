@@ -11,6 +11,7 @@ import app.crossword.yourealwaysbe.puz.ClueList;
 import app.crossword.yourealwaysbe.puz.Puzzle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UclickXMLIOTest {
     private static final String TITLE = "12/15/09 LET'S BE HONEST";
@@ -36,7 +37,7 @@ public class UclickXMLIOTest {
         assertEquals(false, boxes[0][3].isStartOf(new ClueID("Across", 1)));
 
         assertEquals(boxes[0][0].getSolution(), "G");
-        assertEquals(boxes[5][14], null);
+        assertTrue(Box.isBlock(boxes[5][14]));
         assertEquals(boxes[14][14].getSolution(), "S");
         assertEquals(boxes[14][5].getSolution(), "L");
         assertEquals(boxes[3][6].getSolution(), "N");

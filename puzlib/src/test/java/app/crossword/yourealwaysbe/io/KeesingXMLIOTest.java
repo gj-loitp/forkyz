@@ -14,7 +14,6 @@ import app.crossword.yourealwaysbe.puz.Puzzle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class KeesingXMLIOTest {
@@ -43,8 +42,8 @@ public class KeesingXMLIOTest {
         assertEquals(boxes[2][7].getSolution(), "Y");
         assertEquals(boxes[9][9].getSolution(), "S");
         assertEquals(boxes[3][6].getSolution(), "N");
-        assertNull(boxes[0][5]);
-        assertNull(boxes[4][2]);
+        assertTrue(Box.isBlock(boxes[0][5]));
+        assertTrue(Box.isBlock(boxes[4][2]));
 
         ClueList acrossClues = puz.getClues(ACROSS_CLUES);
         ClueList downClues = puz.getClues(DOWN_CLUES);

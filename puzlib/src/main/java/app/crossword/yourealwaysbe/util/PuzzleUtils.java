@@ -14,7 +14,7 @@ public class PuzzleUtils {
         Box boxCur = puzzle.checkedGetBox(row, col);
         Box boxAbove = puzzle.checkedGetBox(row - 1, col);
 
-        if (boxAbove == null || boxCur == null)
+        if (Box.isBlock(boxAbove) || Box.isBlock(boxCur))
             return false;
 
         return !(boxCur.isBarredTop() || boxAbove.isBarredBottom());
@@ -24,7 +24,7 @@ public class PuzzleUtils {
         Box boxCur = puzzle.checkedGetBox(row, col);
         Box boxBelow = puzzle.checkedGetBox(row + 1, col);
 
-        if (boxBelow == null || boxCur == null)
+        if (Box.isBlock(boxBelow) || Box.isBlock(boxCur))
             return false;
 
         return !(boxCur.isBarredBottom() || boxBelow.isBarredTop());
@@ -34,7 +34,7 @@ public class PuzzleUtils {
         Box boxCur = puzzle.checkedGetBox(row, col);
         Box boxLeft = puzzle.checkedGetBox(row, col - 1);
 
-        if (boxLeft == null || boxCur == null)
+        if (Box.isBlock(boxLeft) || Box.isBlock(boxCur))
             return false;
 
         return !(boxCur.isBarredLeft() || boxLeft.isBarredRight());
@@ -44,7 +44,7 @@ public class PuzzleUtils {
         Box boxCur = puzzle.checkedGetBox(row, col);
         Box boxRight = puzzle.checkedGetBox(row, col + 1);
 
-        if (boxRight == null || boxCur == null)
+        if (Box.isBlock(boxRight) || Box.isBlock(boxCur))
             return false;
 
         return !(boxCur.isBarredRight() || boxRight.isBarredLeft());
@@ -91,7 +91,7 @@ public class PuzzleUtils {
             Position start = zone.getPosition(0);
             Box box = puz.checkedGetBox(start);
 
-            if (box == null)
+            if (Box.isBlock(box))
                 return false;
             if (!box.hasClueNumber())
                 return false;
@@ -108,7 +108,7 @@ public class PuzzleUtils {
                     return false;
 
                 box = puz.checkedGetBox(cur);
-                if (box == null)
+                if (Box.isBlock(box))
                     return false;
 
                 boolean joined = PuzzleUtils.joinedRight(
@@ -164,7 +164,7 @@ public class PuzzleUtils {
             Position start = zone.getPosition(0);
             Box box = puz.checkedGetBox(start);
 
-            if (box == null)
+            if (Box.isBlock(box))
                 return false;
             if (!box.hasClueNumber())
                 return false;
@@ -181,7 +181,7 @@ public class PuzzleUtils {
                     return false;
 
                 box = puz.checkedGetBox(cur);
-                if (box == null)
+                if (Box.isBlock(box))
                     return false;
 
                 boolean joined = PuzzleUtils.joinedBottom(

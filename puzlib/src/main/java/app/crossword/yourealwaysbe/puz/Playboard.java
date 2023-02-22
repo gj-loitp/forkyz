@@ -209,7 +209,7 @@ public class Playboard implements Serializable {
         for (int i = 0; i < length; i++) {
             Position pos = zone.getPosition(i);
             Box box = puzzle.checkedGetBox(pos);
-            if (box != null)
+            if (!Box.isBlock(box))
                 box.setResponse(response[i].getResponse());
             flagChange(pos);
         }
@@ -230,7 +230,7 @@ public class Playboard implements Serializable {
             toggleSelection();
         } else {
             Box box = puzzle.checkedGetBox(highlightLetter);
-            if (box != null) {
+            if (!Box.isBlock(box)) {
                 flagChange(currentHighlight, highlightLetter);
 
                 puzzle.setPosition(highlightLetter);
@@ -267,7 +267,7 @@ public class Playboard implements Serializable {
         Word w = getCurrentWord();
 
         Box box = puzzle.checkedGetBox(highlightLetter);
-        if (box == null)
+        if (Box.isBlock(box))
             return w;
 
         Position curHighlightLetter = getHighlightLetter();
@@ -300,7 +300,7 @@ public class Playboard implements Serializable {
      * Words may be single cells that are not part of any clue
      */
     public boolean isInWord(Position p) {
-        return puzzle.checkedGetBox(p) != null;
+        return !Box.isBlock(puzzle.checkedGetBox(p));
     }
 
     public Position getHighlightLetter() {
@@ -519,7 +519,7 @@ public class Playboard implements Serializable {
                 : null;
 
             Box boxBefore = puzzle.checkedGetBox(posBefore);
-            if (boxBefore != null && !boxBefore.isBlank())
+            if (!Box.isBlock(boxBefore) && !boxBefore.isBlank())
                 return true;
 
             Position posAfter = (curPos < zone.size() - 1)
@@ -527,7 +527,7 @@ public class Playboard implements Serializable {
                 : null;
 
             Box boxAfter = puzzle.checkedGetBox(posAfter);
-            if (boxAfter != null && !boxAfter.isBlank())
+            if (!Box.isBlock(boxAfter) && !boxAfter.isBlank())
                 return true;
         }
 
@@ -724,7 +724,7 @@ public class Playboard implements Serializable {
 
         Box value = puzzle.checkedGetBox(next);
 
-        if ((value == null) || skipBox(value, skipCompleted)) {
+        if (Box.isBlock(value) || skipBox(value, skipCompleted)) {
             next = findNextDelta(next, skipCompleted, drow, dcol);
         }
 
@@ -831,7 +831,7 @@ public class Playboard implements Serializable {
         } else {
             Position next = zone.getPosition(nextIdx);
             Box box = puzzle.checkedGetBox(next);
-            if ((box == null) || skipBox(box, skipCompleted)) {
+            if (Box.isBlock(box) || skipBox(box, skipCompleted)) {
                 nextIdx = findZoneDelta(nextIdx, skipCompleted, delta);
             }
             return nextIdx;
@@ -904,7 +904,7 @@ public class Playboard implements Serializable {
                 break;
 
             Box b = puzzle.checkedGetBox(pos);
-            if (b == null)
+            if (Box.isBlock(b))
                 break;
 
             if (
@@ -963,7 +963,7 @@ public class Playboard implements Serializable {
         Position pos = getHighlightLetter();
         Box b = puzzle.checkedGetBox(pos);
 
-        if (b == null) {
+        if (Box.isBlock(b)) {
             return null;
         }
 
@@ -991,7 +991,7 @@ public class Playboard implements Serializable {
     public void playScratchLetter(char letter) {
         Position highlightPos = getHighlightLetter();
         Box box = puzzle.checkedGetBox(highlightPos);
-        if (box == null)
+        if (Box.isBlock(box))
             return;
 
         pushNotificationDisabled();
@@ -1050,7 +1050,7 @@ public class Playboard implements Serializable {
         Position highlightLetter = getHighlightLetter();
         Box b = puzzle.checkedGetBox(highlightLetter);
 
-        if (b != null) {
+        if (!Box.isBlock(b)) {
             boolean correctResponse
                 = Objects.equals(b.getSolution(), b.getResponse());
             if (!correctResponse) {
@@ -1080,7 +1080,7 @@ public class Playboard implements Serializable {
         for (int row = 0; row < puzzle.getHeight(); row++) {
             for (int col = 0; col < puzzle.getWidth(); col++) {
                 Box b = boxes[row][col];
-                if (b != null) {
+                if (!Box.isBlock(b)) {
                     boolean correctResponse
                         = Objects.equals(b.getSolution(), b.getResponse());
                     if (b.isCheated() || (!b.isBlank() && !correctResponse)) {
@@ -1106,7 +1106,7 @@ public class Playboard implements Serializable {
         for (int row = 0; row < puzzle.getHeight(); row++) {
             for (int col = 0; col < puzzle.getWidth(); col++) {
                 Box b = boxes[row][col];
-                if (b != null) {
+                if (!Box.isBlock(b)) {
                     boolean correctResponse
                         = Objects.equals(b.getSolution(), b.getResponse());
                     if (!correctResponse) {
@@ -1157,7 +1157,7 @@ public class Playboard implements Serializable {
 
     public boolean skipPosition(Position p, boolean skipCompleted) {
         Box box = puzzle.checkedGetBox(p);
-        return (box == null) ? false : skipBox(box, skipCompleted);
+        return Box.isBlock(box) ? false : skipBox(box, skipCompleted);
     }
 
     public boolean skipBox(Box b, boolean skipCompleted) {
@@ -1173,7 +1173,7 @@ public class Playboard implements Serializable {
         Word w = this.getCurrentWord();
 
         Box box = puzzle.checkedGetBox(getHighlightLetter());
-        if (box == null)
+        if (Box.isBlock(box))
             return w;
 
         boolean changed = false;
@@ -1342,7 +1342,7 @@ public class Playboard implements Serializable {
         int height = puzzle.getHeight();
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                if (puzzle.checkedGetBox(row, col) != null) {
+                if (!Box.isBlock(puzzle.checkedGetBox(row, col))) {
                     puzzle.setPosition(new Position(row, col));
                     return;
                 }
@@ -1448,7 +1448,7 @@ public class Playboard implements Serializable {
             Position highlight = getHighlightLetter();
             Puzzle puz = getPuzzle();
             Box box = puz.checkedGetBox(highlight);
-            if (box != null && !box.isPartOfClues()) {
+            if (!Box.isBlock(box) && !box.isPartOfClues()) {
                 return getDetachedCellsZone();
             } else {
                 Zone zone = new Zone();
@@ -1484,7 +1484,7 @@ public class Playboard implements Serializable {
         for (int row = 0; row < puz.getHeight(); row++) {
             for (int col = 0; col < puz.getWidth(); col++) {
                 Box box = puz.checkedGetBox(row, col);
-                if (box != null && !box.isPartOfClues()) {
+                if (!Box.isBlock(box) && !box.isPartOfClues()) {
                     Position pos = new Position(row, col);
                     if (oldPositions.contains(pos))
                         continue;
@@ -1524,7 +1524,7 @@ public class Playboard implements Serializable {
                 Box zoneBox = puz.checkedGetBox(zonePos);
 
                 // if isn't detached, abort
-                if (zoneBox == null || zoneBox.isPartOfClues())
+                if (Box.isBlock(zoneBox) || zoneBox.isPartOfClues())
                     return;
 
                 if (!oldPositions.contains(zonePos)) {

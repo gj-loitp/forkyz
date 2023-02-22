@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import app.crossword.yourealwaysbe.forkyz.R;
+import app.crossword.yourealwaysbe.puz.Box;
 import app.crossword.yourealwaysbe.puz.Clue;
 import app.crossword.yourealwaysbe.puz.ClueID;
 import app.crossword.yourealwaysbe.puz.Playboard.Word;
@@ -261,7 +262,7 @@ public class ClueListActivity extends PuzzleActivity
             int col = p.getCol();
 
             if (!board.getCurrentWord().equals(w)
-                    || (board.getBoxes()[row][col] == null)) {
+                    || Box.isBlock(board.getBoxes()[row][col])) {
                 board.setHighlightLetter(last);
             }
 
@@ -552,7 +553,7 @@ public class ClueListActivity extends PuzzleActivity
         int col = curr.getCol();
 
         if (!board.getCurrentWord().equals(w)
-                || (board.getBoxes()[row][col] == null)) {
+                || Box.isBlock(board.getBoxes()[row][col])) {
             board.setHighlightLetter(last);
         }
     }

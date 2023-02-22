@@ -763,7 +763,7 @@ public class PlayboardRenderer {
 
         Rect r = new Rect(x + 1, y + 1, (x + boxSize) - 1, (y + boxSize) - 1);
 
-        if (box == null) {
+        if (Box.isBlock(box)) {
             canvas.drawRect(r, this.blackBox);
         } else {
             if (highlightError(box, isHighlighted))

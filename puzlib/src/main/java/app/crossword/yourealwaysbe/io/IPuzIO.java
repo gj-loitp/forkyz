@@ -1157,7 +1157,7 @@ public class IPuzIO implements PuzzleParser {
 
             for (int col = 0; col < numCols; col++) {
                 Box box = builder.getBox(row, col);
-                if (box != null) {
+                if (!Box.isBlock(box)) {
                     JSONObject boxJson = rowJson.getJSONObject(col);
 
                     if (boxJson.has(FIELD_BOX_CHEATED)) {
@@ -1211,7 +1211,7 @@ public class IPuzIO implements PuzzleParser {
                     : OLD_DOWN_LIST_NAME;
                 Box box = builder.getBox(pos);
                 ClueID cid
-                    = (box == null) ? null : box.getIsPartOfClue(list);
+                    = Box.isBlock(box) ? null : box.getIsPartOfClue(list);
                 builder.setCurrentClueID(cid);
             } else if (positionJson.has(FIELD_POSITION_CLUEID)) {
                 JSONObject cidJson
@@ -1498,7 +1498,7 @@ public class IPuzIO implements PuzzleParser {
         for (int row = 0; row < puz.getHeight(); row++) {
             for (int col = 0; col < puz.getWidth(); col++) {
                 Box box = puz.checkedGetBox(row, col);
-                if (box != null) {
+                if (!Box.isBlock(box)) {
                     Position pos = new Position(row, col);
                     if (cluedPositions.contains(pos))
                         boardZone.addPosition(pos);
@@ -1635,21 +1635,23 @@ public class IPuzIO implements PuzzleParser {
                 if (box == null) {
                     writer.value(DEFAULT_BLOCK);
                 } else {
-                    String clueNumber = box.getClueNumber();
+                    String cellContents = Box.isBlock(box)
+                        ? DEFAULT_BLOCK
+                        : box.getClueNumber();
                     if (isCellWithStyle(box)) {
                         writer.object()
                             .key(FIELD_STYLE);
 
                         writeCellStyleObj(box, writer);
 
-                        if (clueNumber != null)
-                            writer.key(FIELD_CELL).value(clueNumber);
+                        if (cellContents != null)
+                            writer.key(FIELD_CELL).value(cellContents);
                         else
                             writer.key(FIELD_CELL).value(DEFAULT_EMPTY_WRITE);
 
                         writer.endObject();
-                    } else if (clueNumber != null) {
-                        writer.value(clueNumber);
+                    } else if (cellContents != null) {
+                        writer.value(cellContents);
                     } else {
                         writer.value(DEFAULT_EMPTY_WRITE);
                     }
@@ -1753,7 +1755,7 @@ public class IPuzIO implements PuzzleParser {
             for (int col = 0; col < boxes[row].length; col++) {
                 Box box = boxes[row][col];
 
-                if (box == null)
+                if (Box.isBlock(box))
                     writer.value(DEFAULT_BLOCK);
                 else if (box.isBlank())
                     writer.value(DEFAULT_EMPTY_WRITE);
@@ -1790,7 +1792,7 @@ public class IPuzIO implements PuzzleParser {
             for (int col = 0; col < boxes[row].length; col++) {
                 Box box = boxes[row][col];
 
-                if (box == null) {
+                if (Box.isBlock(box)) {
                     writer.value(DEFAULT_BLOCK);
                 } else if (box.hasSolution()) {
                     writer.value(String.valueOf(box.getSolution()));
@@ -2201,7 +2203,7 @@ public class IPuzIO implements PuzzleParser {
                 writer.object();
 
                 Box box = boxes[row][col];
-                if (box != null) {
+                if (!Box.isBlock(box)) {
                     if (box.isCheated())
                         writer.key(FIELD_BOX_CHEATED).value(true);
                     String responder = box.getResponder();

@@ -23,7 +23,7 @@ public class IOVersion1 implements IOVersion {
         Box[][] boxes = puz.getBoxes();
         for(Box[] row : boxes ){
             for(Box b : row){
-                if(b == null){
+                if(Box.isBlock(b)) {
                     continue;
                 }
                 b.setCheated(dis.readBoolean());
@@ -63,7 +63,7 @@ public class IOVersion1 implements IOVersion {
         Box[][] boxes = puz.getBoxes();
         for(Box[] row : boxes ){
             for(Box b : row){
-                if(b == null){
+                if(Box.isBlock(b)) {
                     continue;
                 }
                 dos.writeBoolean(b.isCheated());

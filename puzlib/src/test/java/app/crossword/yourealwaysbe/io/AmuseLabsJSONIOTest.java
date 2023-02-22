@@ -34,9 +34,9 @@ public class AmuseLabsJSONIOTest {
 
         assertEquals(boxes[0][0].getClueNumber(), "1");
         assertEquals(boxes[0][1].getClueNumber(), "2");
-        assertEquals(boxes[0][4], null);
+        assertTrue(Box.isBlock(boxes[0][4]));
         assertEquals(boxes[5][5].getClueNumber(), "28");
-        assertEquals(boxes[5][7], null);
+        assertTrue(Box.isBlock(boxes[5][7]));
 
         assertEquals(boxes[0][0].getSolution(), "A");
         assertEquals(boxes[5][3].getSolution(), "B");

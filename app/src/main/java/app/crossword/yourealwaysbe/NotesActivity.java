@@ -368,7 +368,7 @@ public class NotesActivity extends PuzzleActivity {
                 int col = p.getCol();
 
                 if (!board.getCurrentWord().equals(w)
-                        || (board.getBoxes()[row][col] == null)) {
+                        || Box.isBlock(board.getBoxes()[row][col])) {
                     getBoard().setHighlightLetter(last);
                 }
             }

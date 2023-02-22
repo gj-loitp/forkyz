@@ -83,7 +83,7 @@ public class PuzzleFinishedDialog extends DialogFragment {
         int totalBoxes = 0;
         int cheatedBoxes = 0;
         for(Box b : puz.getBoxesList()){
-            if(b == null){
+            if(Box.isBlock(b)) {
                 continue;
             }
             if(b.isCheated()){

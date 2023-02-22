@@ -74,7 +74,7 @@ public class IPuzIOTest {
         assertEquals(boxes[0][0].getClueNumber(), "1");
         assertEquals(boxes[0][1].getClueNumber(), "2");
         assertFalse(boxes[0][1].isCircled());
-        assertEquals(boxes[0][2], null);
+        assertTrue(Box.isBlock(boxes[0][2]));
         assertEquals(boxes[1][0].getClueNumber(), "3");
         assertEquals(boxes[1][0].getResponse(), "A");
         assertTrue(boxes[1][0].isCircled());

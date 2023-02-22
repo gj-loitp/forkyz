@@ -34,7 +34,7 @@ public class GuardianJSONIOTest {
 
         assertEquals(boxes[0][0].getClueNumber(), "1");
         assertEquals(boxes[0][2].getClueNumber(), "2");
-        assertEquals(boxes[0][7], null);
+        assertTrue(Box.isBlock(boxes[0][7]));
         assertEquals(boxes[0][8].getClueNumber(), "5");
 
         assertEquals(boxes[0][0].getSolution(), "A");

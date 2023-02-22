@@ -179,7 +179,7 @@ public class IO implements PuzzleParser {
                     continue;
                 } else if (answer == '-') {
                     boxes[x][y].setBlank();
-                } else if (boxes[x][y] != null) {
+                } else if (!Box.isBlock(boxes[x][y])) {
                     boxes[x][y].setResponse(answer);
                 } else {
                     System.out.println("Unexpected answer: " + x + "," + y
@@ -201,7 +201,7 @@ public class IO implements PuzzleParser {
             for (int y = 0; y < builder.getWidth(); y++) {
                 Box box = builder.getBox(x, y);
 
-                if (box == null) {
+                if (Box.isBlock(box)) {
                     continue;
                 }
 
@@ -320,7 +320,7 @@ public class IO implements PuzzleParser {
 
                 if ((gextInfo & GEXT_SQUARE_CIRCLED) != 0) {
                     Box box = builder.getBox(x, y);
-                    if (box != null)
+                    if (!Box.isBlock(box))
                         box.setCircled(true);
                 }
             }
@@ -434,7 +434,7 @@ public class IO implements PuzzleParser {
 
         for (int x = 0; x < boxes.length; x++) {
             for (int y = 0; y < boxes[x].length; y++) {
-                if (boxes[x][y] == null) {
+                if (Box.isBlock(boxes[x][y])) {
                     tmpDos.writeByte('.');
                 } else {
                     String sSol = boxes[x][y].getSolution();
@@ -448,7 +448,7 @@ public class IO implements PuzzleParser {
 
         for (int x = 0; x < boxes.length; x++) {
             for (int y = 0; y < boxes[x].length; y++) {
-                if (boxes[x][y] == null) {
+                if (Box.isBlock(boxes[x][y])) {
                     tmpDos.writeByte('.');
                 } else {
                     String sRes = boxes[x][y].getResponse();
@@ -552,7 +552,7 @@ public class IO implements PuzzleParser {
             int s = 0;
             for (int i = 0; i < p.getBoxesList().length; i++) {
                 Box b = p.getBoxesList()[i];
-                if (b != null) {
+                if (!Box.isBlock(b)) {
                     b.setSolution((char) solution[s++]);
                 }
             }
@@ -884,7 +884,7 @@ public class IO implements PuzzleParser {
             for (int col = 0; col < width; col++) {
                 Box box = builder.getBox(row, col);
                 int index = rebusBoard[row][col];
-                if (index > 0 && box != null) {
+                if (index > 0 && !Box.isBlock(box)) {
                     int truei = (byte) (index - 1);
                     if (solRebusTable != null && solRebusTable[truei] != null)
                         box.setSolution(solRebusTable[truei]);
@@ -910,7 +910,10 @@ public class IO implements PuzzleParser {
 
         for (int row = 0; row < boxes.length; row++) {
             for (int col = 0; col < boxes[row].length; col++) {
-                if (boxes[row][col] != null && boxes[row][col].isCircled()) {
+                Box box = boxes[row][col];
+                boolean supportedCircle
+                    = !Box.isBlock(box) && box.isCircled();
+                if (supportedCircle) {
                     gextSection[(width * row) + col] = GEXT_SQUARE_CIRCLED;
                 }
             }
@@ -979,7 +982,7 @@ public class IO implements PuzzleParser {
     }
 
     private static boolean isRebusBox(Box box) {
-        if (box == null)
+        if (Box.isBlock(box))
             return false;
 
         String solution = box.getSolution();

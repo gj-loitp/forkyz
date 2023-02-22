@@ -167,9 +167,9 @@ public class RCIJeuxMFJIO implements PuzzleParser {
                 if (posClueInfos != null) {
                     for (ClueInfo clueInfo : posClueInfos) {
                         Box box = builder.getBox(curPos);
-                        if (box == null) {
+                        if (Box.isBlock(box)) {
                             throw new MFJFormatException(
-                                "Clue has position on a null square "
+                                "Clue has position on a block square "
                                 + curPos
                             );
                         }

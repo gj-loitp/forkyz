@@ -55,7 +55,7 @@ public class IOTest {
         assertEquals(false, boxes[0][3].isStartOf(new ClueID("Across", 1)));
 
         assertEquals(boxes[0][0].getSolution(), "R");
-        assertEquals(boxes[5][14], null);
+        assertTrue(Box.isBlock(boxes[5][14]));
         assertEquals(boxes[14][14].getSolution(), "S");
         assertEquals(boxes[14][5].getSolution(), "T");
         assertEquals(boxes[3][6].getSolution(), "E");
@@ -225,8 +225,8 @@ public class IOTest {
         ) {
             Puzzle puz = IO.loadNative(is);
             for(Box b :  puz.getBoxesList()){
-                if(b != null)
-                System.out.print(b.getSolution()+" ");
+                if(!Box.isBlock(b))
+                    System.out.print(b.getSolution()+" ");
             }
             System.out.println();
             try{
@@ -234,8 +234,8 @@ public class IOTest {
                     puz, 2465, puz.initializeUnscrambleData())
                 );
                 for(Box b :  puz.getBoxesList()){
-                    if(b != null)
-                    System.out.print(b.getSolution()+" ");
+                    if(!Box.isBlock(b))
+                        System.out.print(b.getSolution()+" ");
                 }
                 System.out.println();
 

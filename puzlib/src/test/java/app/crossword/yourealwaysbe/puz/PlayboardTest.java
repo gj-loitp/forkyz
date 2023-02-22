@@ -392,7 +392,7 @@ public class PlayboardTest {
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 Box box = boxes[row][col];
-                if (box != null) {
+                if (!Box.isBlock(box)) {
                     if (
                         checkPos == null
                         && row > CHECK_OFFSET && col > CHECK_OFFSET

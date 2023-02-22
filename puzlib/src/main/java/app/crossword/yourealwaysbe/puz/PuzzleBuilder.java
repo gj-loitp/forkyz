@@ -70,7 +70,7 @@ public class PuzzleBuilder {
 
     public PuzzleBuilder setBoxClueNumber(int row, int col, String number) {
         Box box = puzzle.checkedGetBox(row, col);
-        if (box != null) {
+        if (!Box.isBlock(box)) {
             box.setClueNumber(number);
             invalidateNumberPosition();
         }
@@ -215,7 +215,7 @@ public class PuzzleBuilder {
             for (int col = 0; col < puzzle.getWidth(); col++) {
                 Box box = puzzle.checkedGetBox(row, col);
 
-                if (box == null) {
+                if (Box.isBlock(box)) {
                     continue;
                 }
 
@@ -384,7 +384,7 @@ public class PuzzleBuilder {
             for (int row = 0; row < puzzle.getHeight(); row++) {
                 for (int col = 0; col < puzzle.getWidth(); col++) {
                     Box box = boxes[row][col];
-                    if (box != null && box.hasClueNumber()) {
+                    if (!Box.isBlock(box) && box.hasClueNumber()) {
                         numberPositions.put(
                             box.getClueNumber(), new Position(row, col)
                         );

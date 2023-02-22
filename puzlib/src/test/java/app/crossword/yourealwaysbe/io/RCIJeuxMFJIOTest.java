@@ -13,7 +13,7 @@ import app.crossword.yourealwaysbe.puz.Puzzle;
 import app.crossword.yourealwaysbe.puz.Zone;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RCIJeuxMFJIOTest {
 
@@ -29,8 +29,8 @@ public class RCIJeuxMFJIOTest {
 
         Box[][] boxes = puz.getBoxes();
 
-        assertNull(boxes[0][0]);
-        assertNull(boxes[6][10]);
+        assertTrue(Box.isBlock(boxes[0][0]));
+        assertTrue(Box.isBlock(boxes[6][10]));
         assertEquals(boxes[0][1].getSolution(), "A");
         assertEquals(boxes[2][4].getSolution(), "B");
         assertEquals(boxes[4][12].getSolution(), "C");
