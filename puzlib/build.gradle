@@ -17,7 +17,9 @@ buildscript {
 test { useJUnitPlatform() }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+    def junitVersion = '5.9.1'
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
 
     implementation 'org.jsoup:jsoup:1.13.1'
     implementation 'org.apache.commons:commons-text:1.9'

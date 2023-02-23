@@ -3,8 +3,13 @@ package app.crossword.yourealwaysbe.puz;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import app.crossword.yourealwaysbe.io.IO;
 import app.crossword.yourealwaysbe.io.IOTest;
@@ -15,9 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlayboardTest {
 
-    @Test
-    public void testMoveUp() throws Exception {
-         Puzzle puz = loadTestPuz();
+    @Target({ ElementType.METHOD })
+    @Retention(RetentionPolicy.RUNTIME)
+    @ParameterizedTest(name = "blockobjects = {0}")
+    @ValueSource(booleans = {false, true})
+    private @interface TestWithAndWithoutBlockObjects { }
+
+    @TestWithAndWithoutBlockObjects
+    public void testMoveUp(boolean blockObjects) throws Exception {
+         Puzzle puz = loadTestPuz(blockObjects);
 
          Playboard board = new Playboard(puz);
          moveToPosition(board, 5, 5);
@@ -59,9 +70,9 @@ public class PlayboardTest {
          board.moveUp(false);
     }
 
-    @Test
-    public void testDeleteLetter() throws Exception {
-         Puzzle puz = loadTestPuz();
+    @TestWithAndWithoutBlockObjects
+    public void testDeleteLetter(boolean blockObjects) throws Exception {
+         Puzzle puz = loadTestPuz(blockObjects);
 
          Playboard board = new Playboard(puz);
          board.setDontDeleteCrossing(false);
@@ -100,9 +111,9 @@ public class PlayboardTest {
          assertBoxLetter(puz, 2, 3, "A");
     }
 
-    @Test
-    public void testDeleteLetterCrossing() throws Exception {
-         Puzzle puz = loadTestPuz();
+    @TestWithAndWithoutBlockObjects
+    public void testDeleteLetterCrossing(boolean blockObjects) throws Exception {
+         Puzzle puz = loadTestPuz(blockObjects);
 
          Playboard board = new Playboard(puz);
          board.setDontDeleteCrossing(true);
@@ -139,9 +150,9 @@ public class PlayboardTest {
          assertBoxBlank(puz, 1, 4);
     }
 
-    @Test
-    public void testMoveNextOnAxis() throws Exception {
-        Puzzle puz = loadTestPuz();
+    @TestWithAndWithoutBlockObjects
+    public void testMoveNextOnAxis(boolean blockObjects) throws Exception {
+        Puzzle puz = loadTestPuz(blockObjects);
         Playboard board = new Playboard(puz);
         board.setMovementStrategy(MovementStrategy.MOVE_NEXT_ON_AXIS);
 
@@ -186,9 +197,9 @@ public class PlayboardTest {
         assertPosition(board, 0, 0);
     }
 
-    @Test
-    public void testMoveStopEnd() throws Exception {
-        Puzzle puz = loadTestPuz();
+    @TestWithAndWithoutBlockObjects
+    public void testMoveStopEnd(boolean blockObjects) throws Exception {
+        Puzzle puz = loadTestPuz(blockObjects);
         Playboard board = new Playboard(puz);
         board.setMovementStrategy(MovementStrategy.STOP_ON_END);
 
@@ -222,9 +233,9 @@ public class PlayboardTest {
         assertPosition(board, 0, 6);
     }
 
-    @Test
-    public void testMoveNextClue() throws Exception {
-        Puzzle puz = loadTestPuz();
+    @TestWithAndWithoutBlockObjects
+    public void testMoveNextClue(boolean blockObjects) throws Exception {
+        Puzzle puz = loadTestPuz(blockObjects);
         Playboard board = new Playboard(puz);
         board.setMovementStrategy(MovementStrategy.MOVE_NEXT_CLUE);
 
@@ -281,9 +292,9 @@ public class PlayboardTest {
         assertPosition(board, 0, 0);
     }
 
-    @Test
-    public void testMoveParallel() throws Exception {
-        Puzzle puz = loadTestPuz();
+    @TestWithAndWithoutBlockObjects
+    public void testMoveParallel(boolean blockObjects) throws Exception {
+        Puzzle puz = loadTestPuz(blockObjects);
         Playboard board = new Playboard(puz);
         board.setMovementStrategy(MovementStrategy.MOVE_PARALLEL_WORD);
 
@@ -329,29 +340,29 @@ public class PlayboardTest {
         assertPosition(board, 0, 0);
     }
 
-    @Test
-    public void testPlayFullMoveAxis() throws Exception {
-        checkNoMoveFullGrid(MovementStrategy.MOVE_NEXT_ON_AXIS);
+    @TestWithAndWithoutBlockObjects
+    public void testPlayFullMoveAxis(boolean blockObjects) throws Exception {
+        checkNoMoveFullGrid(blockObjects, MovementStrategy.MOVE_NEXT_ON_AXIS);
     }
 
-    @Test
-    public void testPlayFullMoveStopEnd() throws Exception {
-        checkNoMoveFullGrid(MovementStrategy.STOP_ON_END);
+    @TestWithAndWithoutBlockObjects
+    public void testPlayFullMoveStopEnd(boolean blockObjects) throws Exception {
+        checkNoMoveFullGrid(blockObjects, MovementStrategy.STOP_ON_END);
     }
 
-    @Test
-    public void testPlayFullMoveNextClue() throws Exception {
-        checkNoMoveFullGrid(MovementStrategy.MOVE_NEXT_CLUE);
+    @TestWithAndWithoutBlockObjects
+    public void testPlayFullMoveNextClue(boolean blockObjects) throws Exception {
+        checkNoMoveFullGrid(blockObjects, MovementStrategy.MOVE_NEXT_CLUE);
     }
 
-    @Test
-    public void testPlayFullMoveParallelWord() throws Exception {
-        checkNoMoveFullGrid(MovementStrategy.MOVE_PARALLEL_WORD);
+    @TestWithAndWithoutBlockObjects
+    public void testPlayFullMoveParallelWord(boolean blockObjects) throws Exception {
+        checkNoMoveFullGrid(blockObjects, MovementStrategy.MOVE_PARALLEL_WORD);
     }
 
-    @Test
-    public void testDetachedWord() throws Exception {
-        Puzzle puz = loadTestDetachedPuz();
+    @TestWithAndWithoutBlockObjects
+    public void testDetachedWord(boolean blockObjects) throws Exception {
+        Puzzle puz = loadTestDetachedPuz(blockObjects);
         Playboard board = new Playboard(puz);
         moveToPosition(board, 8, 2);
         Playboard.Word word = board.getCurrentWord();
@@ -371,12 +382,12 @@ public class PlayboardTest {
     }
 
     private void checkNoMoveFullGrid(
-        MovementStrategy moveStrat
+        boolean blockObjects, MovementStrategy moveStrat
     ) throws Exception {
         // pick a box this far from the edges to test
         final int CHECK_OFFSET = 5;
 
-        Puzzle puz = loadTestPuz();
+        Puzzle puz = loadTestPuz(blockObjects);
 
         int width = puz.getWidth();
         int height = puz.getHeight();
@@ -438,17 +449,59 @@ public class PlayboardTest {
             board.setHighlightLetter(pos);
     }
 
-    private Puzzle loadTestPuz() throws IOException {
-        return IO.loadNative(
+    /**
+     * Load test puzzle
+     *
+     * @param blockObjects whether to use objects for blank boxes
+     * instead of null
+     */
+    private Puzzle loadTestPuz(boolean blockObjects) throws IOException {
+        Puzzle puz = IO.loadNative(
             new DataInputStream(
                 IOTest.class.getResourceAsStream("/test.puz")
             )
         );
+
+        if (blockObjects)
+            insertBlockObjects(puz);
+
+        return puz;
     }
 
-    private Puzzle loadTestDetachedPuz() throws IOException {
-        return IPuzIO.readPuzzle(
+    /**
+     * Load test puzzle with detached cells
+     *
+     * @param blockObjects whether to use objects for blank boxes
+     * instead of null
+     */
+    private Puzzle loadTestDetachedPuz(boolean blockObjects)
+            throws IOException {
+        Puzzle puz = IPuzIO.readPuzzle(
             IOTest.class.getResourceAsStream("/detachedCells.ipuz")
         );
+
+        if (blockObjects)
+            insertBlockObjects(puz);
+
+        return puz;
+    }
+
+    /**
+     * Replace null boxes with a block object
+     */
+    private void insertBlockObjects(Puzzle puz) {
+        if (puz == null)
+            return;
+
+        Box block = new Box();
+        block.setBlock(true);
+
+        Box[][] boxes = puz.getBoxes();
+        for (int row = 0; row < puz.getHeight(); row++) {
+            for (int col = 0; col < puz.getWidth(); col++) {
+                if (boxes[row][col] == null)
+                    boxes[row][col] = block;
+            }
+        }
     }
 }
