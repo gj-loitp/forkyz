@@ -1,9 +1,10 @@
 
 package app.crossword.yourealwaysbe.puz;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ClueID implements Comparable<ClueID> {
+public class ClueID implements Comparable<ClueID>, Serializable {
     private String listName;
     private int index;
 

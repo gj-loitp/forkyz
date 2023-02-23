@@ -1,6 +1,7 @@
 
 package app.crossword.yourealwaysbe.puz;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-class MutableClueList implements ClueList {
+class MutableClueList implements ClueList, Serializable {
     List<Clue> clues = new ArrayList<>();
     Map<String, Clue> numberedClueMap = new HashMap<>();
 

@@ -1,6 +1,7 @@
 
 package app.crossword.yourealwaysbe.puz;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * Normally where an answer to a clue goes, a sequence of boxes, usually
  * in a line across or down, but can be any sequence.
  */
-public class Zone implements Iterable<Position> {
+public class Zone implements Iterable<Position>, Serializable {
     private final List<Position> positions = new ArrayList<>();
 
     public boolean hasPosition(Position pos) {
