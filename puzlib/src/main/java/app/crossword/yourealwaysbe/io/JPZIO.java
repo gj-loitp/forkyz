@@ -256,31 +256,41 @@ public class JPZIO implements PuzzleParser {
                 int y = Integer.parseInt(attributes.getValue("y")) - 1;
 
                 if (
-                    isCell(attributes)
-                    && 0 <= x && x < JPZXMLParser.this.getWidth()
+                    0 <= x && x < JPZXMLParser.this.getWidth()
                     && 0 <= y && y < JPZXMLParser.this.getHeight()
                 ) {
                     Box box = new Box();
+
+                    // keep track of whether the cell is interesting
+                    // uninteresting blocks get set to null
+                    boolean hasData = false;
+                    if (!isCell(attributes))
+                        box.setBlock(true);
 
                     String solution = attributes.getValue("solution");
                     if (solution != null && solution.length() > 0)
                         box.setSolution(solution);
 
                     String response = attributes.getValue("solve-state");
-                    if (response != null && response.length() > 0)
+                    if (response != null && response.length() > 0) {
+                        box.setInitialValue(response);
                         box.setResponse(response);
-                    else
+                        hasData = true;
+                    } else {
                         box.setBlank();
+                    }
 
                     String number = attributes.getValue("number");
                     if (number != null) {
                         box.setClueNumber(number);
+                        hasData = true;
                     }
 
                     String shape
                         = attributes.getValue("background-shape");
                     if ("circle".equalsIgnoreCase(shape)) {
                         box.setCircled(true);
+                        hasData = true;
                     }
 
                     String color
@@ -293,6 +303,7 @@ public class JPZIO implements PuzzleParser {
                             box.setColor(Integer.valueOf(
                                 color.substring(1), 16
                             ));
+                            hasData = true;
                         } catch (NumberFormatException e) {
                             // oh well, we tried
                         }
@@ -306,6 +317,7 @@ public class JPZIO implements PuzzleParser {
                     box.setBarredLeft("true".equalsIgnoreCase(leftBar));
                     String rightBar = attributes.getValue("right-bar");
                     box.setBarredRight("true".equalsIgnoreCase(rightBar));
+                    hasData |= box.isBarred();
 
                     boolean hasMarks = false;
                     String[][] marks = new String[3][3];
@@ -320,10 +332,13 @@ public class JPZIO implements PuzzleParser {
                             }
                         }
                     }
-                    if (hasMarks)
+                    if (hasMarks) {
                         box.setMarks(marks);
+                        hasData = true;
+                    }
 
-                    JPZXMLParser.this.boxes[y][x] = box;
+                    if (!box.isBlock() || hasData)
+                        JPZXMLParser.this.boxes[y][x] = box;
                 }
             }
         };

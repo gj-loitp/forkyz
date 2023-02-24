@@ -520,22 +520,15 @@ public class IPuzIO implements PuzzleParser {
 
             String initVal = optStringNull(json, FIELD_VALUE);
             if (initVal != null) {
-                if (initVal.length() != 1) {
-                    throw new IPuzFormatException(
-                        "Cannot represent init values of more "
-                        + "than one character: '"
-                        + initVal
-                        + "'"
-                    );
-                }
-                box.setResponse(initVal.charAt(0));
+                box.setInitialValue(initVal);
+                box.setResponse(initVal);
                 hasData = true;
             }
 
             JSONObject style = json.optJSONObject(FIELD_STYLE);
-            if (style == null) {
+            if (style == null && namedStyles != null) {
                 String styleName = json.optString(FIELD_STYLE);
-                if (styleName != null)
+                if (styleName != null && !styleName.isEmpty())
                     style = namedStyles.optJSONObject(styleName);
             }
 
@@ -1670,11 +1663,15 @@ public class IPuzIO implements PuzzleParser {
                     String cellContents = Box.isBlock(box)
                         ? DEFAULT_BLOCK
                         : box.getClueNumber();
-                    if (isCellWithStyle(box) || isCellWithValue(box)) {
+                    if (isCellWithStyle(box) || box.hasInitialValue()) {
                         writer.object();
 
                         writeCellStyle(box, writer);
-                        writeCellValue(box, writer);
+
+                        if (box.hasInitialValue()) {
+                            writer.key(FIELD_VALUE)
+                                .value(box.getInitialValue());
+                        }
 
                         if (cellContents != null)
                             writer.key(FIELD_CELL).value(cellContents);
@@ -1705,13 +1702,6 @@ public class IPuzIO implements PuzzleParser {
             || box.hasMarks();
     }
 
-    /**
-     * Values currently only supported for blocks
-     */
-    private static boolean isCellWithValue(Box box) {
-        return (box.isBlock() && box.getResponse() != null);
-    }
-
     private static void writeCellStyle(
         Box box, FormatableJSONWriter writer
     ) {
@@ -1734,14 +1724,6 @@ public class IPuzIO implements PuzzleParser {
         writeMarkField(box, writer);
 
         writer.endObject();
-    }
-
-    private static void writeCellValue(
-        Box box, FormatableJSONWriter writer
-    ) throws IOException {
-        if (!isCellWithValue(box))
-            return;
-        writer.keyValueNonNull(FIELD_VALUE, box.getResponse());
     }
 
     private static void writeBarredField(Box box, FormatableJSONWriter writer) {

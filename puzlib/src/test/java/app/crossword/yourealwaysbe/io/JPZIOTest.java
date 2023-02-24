@@ -126,6 +126,7 @@ public class JPZIOTest {
 
         assertEquals(boxes[0][0].getSolution(), "N");
         assertTrue(Box.isBlock(boxes[0][4]));
+        assertEquals(boxes[1][10].getInitialValue(), ",");
         assertEquals(boxes[1][10].getResponse(), ",");
 
         ClueList clues = puz.getClues(CLUES);

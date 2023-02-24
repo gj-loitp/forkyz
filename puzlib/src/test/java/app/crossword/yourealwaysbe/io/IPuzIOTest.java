@@ -171,6 +171,7 @@ public class IPuzIOTest {
         assertEquals(
             interestingBlock.getColor(), Integer.valueOf("EFEFEF", 16)
         );
+        assertEquals(interestingBlock.getInitialValue(), "X");
         assertEquals(interestingBlock.getResponse(), "X");
 
         Set<String> clueLists = puz.getClueListNames();

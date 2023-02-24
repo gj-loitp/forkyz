@@ -16,6 +16,7 @@ public class Box implements Serializable {
     private String responder;
     private boolean cheated;
     private boolean circled;
+    private String initialValue;
     private String response = BLANK;
     private String solution = null;
     private String clueNumber;
@@ -76,6 +77,10 @@ public class Box implements Serializable {
             return false;
         }
 
+        if (!Objects.equals(getInitialValue(), other.getInitialValue())) {
+            return false;
+        }
+
         if (!Objects.equals(getResponse(), other.getResponse())) {
             return false;
         }
@@ -129,6 +134,7 @@ public class Box implements Serializable {
         result = (prime * result) + (isBarredRight() ? 1231 : 1237);
         result = (prime * result) +
             ((getResponder() == null) ? 0 : getResponder().hashCode());
+        result = (prime * result) + Objects.hash(getInitialValue());
         result = (prime * result) + Objects.hash(getResponse());
         result = (prime * result) + Objects.hash(getSolution());
         result = (prime * result) + getColor();
@@ -216,6 +222,24 @@ public class Box implements Serializable {
      */
     public void setCircled(boolean circled) {
         this.circled = circled;
+    }
+
+    public boolean hasInitialValue() {
+        return initialValue != null;
+    }
+
+    public String getInitialValue() {
+        return initialValue;
+    }
+
+    /**
+     * When setting this, you should also setResponse
+     *
+     * This field will not actually be rendered, it's just used when
+     * outputting the puzzle without its saved state.
+     */
+    public void setInitialValue(String initialValue) {
+        this.initialValue = initialValue;
     }
 
     /**
@@ -367,6 +391,10 @@ public class Box implements Serializable {
     public boolean isBarredBottom() { return barBottom; }
     public boolean isBarredLeft() { return barLeft; }
     public boolean isBarredRight() { return barRight; }
+    public boolean hasBars() {
+        return isBarredTop() || isBarredBottom()
+            || isBarredLeft() || isBarredRight();
+    }
 
     /**
      * 3x3 array of text marks to put in box, can have null entries
