@@ -505,9 +505,18 @@ public class IPuzIO implements PuzzleParser {
             if (cellObj == null)
                 cellObj = empty;
 
+            // to track whether we need to return a null block or an
+            // object block with styles &c.
+            boolean createdBlock = false;
+            boolean hasData = false;
+
             Box box = getBoxFromObj(cellObj, block, empty, namedStyles);
-            if (box == null)
-                return box;
+            if (box == null) {
+                // create a box for now, in case it has styles
+                box = new Box();
+                box.setBlock(true);
+                createdBlock = true;
+            }
 
             String initVal = optStringNull(json, FIELD_VALUE);
             if (initVal != null) {
@@ -520,6 +529,7 @@ public class IPuzIO implements PuzzleParser {
                     );
                 }
                 box.setResponse(initVal.charAt(0));
+                hasData = true;
             }
 
             JSONObject style = json.optJSONObject(FIELD_STYLE);
@@ -532,16 +542,19 @@ public class IPuzIO implements PuzzleParser {
             if (style != null) {
                 if (SHAPE_BG_CIRCLE.equals(style.optString(FIELD_SHAPE_BG))) {
                     box.setCircled(true);
+                    hasData = true;
                 }
                 Integer color = hexToColor(style.optString(FIELD_COLOR));
-                if (color != null)
+                if (color != null) {
                     box.setColor(color);
+                    hasData = true;
+                }
 
-                getBarredFromStyleObj(style, box);
-                getMarksFromStyleObj(style, box);
+                hasData |= getBarredFromStyleObj(style, box);
+                hasData |= getMarksFromStyleObj(style, box);
             }
 
-            return box;
+            return (createdBlock && !hasData) ? null : box;
         } else if (cell.toString().equals(block.toString())) {
             return null;
         } else if (cell.toString().equals(empty.toString())) {
@@ -559,7 +572,13 @@ public class IPuzIO implements PuzzleParser {
         }
     }
 
-    private static void getBarredFromStyleObj(JSONObject style, Box box) {
+    /**
+     * Gets stuff about bars from style
+     *
+     * Fills in box directly, returns true if it found some bars
+     */
+    private static boolean getBarredFromStyleObj(JSONObject style, Box box) {
+        boolean hasBars = false;
         String barred = optStringNull(style, FIELD_BARRED);
         if (barred != null) {
             barred = barred.toUpperCase();
@@ -568,27 +587,38 @@ public class IPuzIO implements PuzzleParser {
                 switch(c) {
                 case BARRED_TOP:
                     box.setBarredTop(true);
+                    hasBars = true;
                     break;
                 case BARRED_BOTTOM:
                     box.setBarredBottom(true);
+                    hasBars = true;
                     break;
                 case BARRED_LEFT:
                     box.setBarredLeft(true);
+                    hasBars = true;
                     break;
                 case BARRED_RIGHT:
                     box.setBarredRight(true);
+                    hasBars = true;
                     break;
                 default:
                     // do nothing
                 }
             }
         }
+
+        return hasBars;
     }
 
-    private static void getMarksFromStyleObj(JSONObject style, Box box) {
+    /**
+     * Fills in marks data for box
+     *
+     * Returns true if found some
+     */
+    private static boolean getMarksFromStyleObj(JSONObject style, Box box) {
         JSONObject markObj = style.optJSONObject(FIELD_MARK);
         if (markObj == null)
-            return;
+            return false;
 
         String[][] marks = new String[3][3];
         marks[0][0] = optStringNull(markObj, FIELD_MARK_TOP_LEFT);
@@ -602,6 +632,8 @@ public class IPuzIO implements PuzzleParser {
         marks[2][2] = optStringNull(markObj, FIELD_MARK_BOTTOM_RIGHT);
 
         box.setMarks(marks);
+
+        return true;
     }
 
     /**
@@ -1638,11 +1670,11 @@ public class IPuzIO implements PuzzleParser {
                     String cellContents = Box.isBlock(box)
                         ? DEFAULT_BLOCK
                         : box.getClueNumber();
-                    if (isCellWithStyle(box)) {
-                        writer.object()
-                            .key(FIELD_STYLE);
+                    if (isCellWithStyle(box) || isCellWithValue(box)) {
+                        writer.object();
 
-                        writeCellStyleObj(box, writer);
+                        writeCellStyle(box, writer);
+                        writeCellValue(box, writer);
 
                         if (cellContents != null)
                             writer.key(FIELD_CELL).value(cellContents);
@@ -1673,10 +1705,21 @@ public class IPuzIO implements PuzzleParser {
             || box.hasMarks();
     }
 
-    private static void writeCellStyleObj(
+    /**
+     * Values currently only supported for blocks
+     */
+    private static boolean isCellWithValue(Box box) {
+        return (box.isBlock() && box.getResponse() != null);
+    }
+
+    private static void writeCellStyle(
         Box box, FormatableJSONWriter writer
     ) {
-        writer.object();
+        if (!isCellWithStyle(box))
+            return;
+
+        writer.key(FIELD_STYLE)
+            .object();
 
         if (box.hasColor()) {
             writer.key(FIELD_COLOR)
@@ -1691,6 +1734,14 @@ public class IPuzIO implements PuzzleParser {
         writeMarkField(box, writer);
 
         writer.endObject();
+    }
+
+    private static void writeCellValue(
+        Box box, FormatableJSONWriter writer
+    ) throws IOException {
+        if (!isCellWithValue(box))
+            return;
+        writer.keyValueNonNull(FIELD_VALUE, box.getResponse());
     }
 
     private static void writeBarredField(Box box, FormatableJSONWriter writer) {

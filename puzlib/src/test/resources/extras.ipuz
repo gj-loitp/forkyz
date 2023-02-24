@@ -9,9 +9,9 @@
   },
   "showenumerations": false,
   "title": "IPuz with odd features",
-  "author": "Structure from a Steve Mossberg puzzle",
+  "author": "Initial structure from a Steve Mossberg puzzle",
   "date": "03/15/2022",
-  "intro": "Weird features: unnumbered words, clues in non-standards lists, colors",
+  "intro": "Weird features: unnumbered words, clues in non-standards lists, colors, etc",
   "copyright": "Test",
   "styles": {
     "testStyle1": { color: "EFEFEF" },
@@ -100,8 +100,9 @@
         "cell": 12
       },
       {
-        "style": {},
-        "cell": ":"
+        "style": { color: "EFEFEF" },
+        "cell": "#",
+        "value": "X"
       },
       {
         "style": {
@@ -1152,7 +1153,7 @@
       "X",
       "X",
       "X",
-      "X",
+      "#",
       "X",
       "X",
       "X",

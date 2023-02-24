@@ -166,6 +166,13 @@ public class IPuzIOTest {
         assertEquals(boxes[0][2].getColor(), Integer.valueOf("EFEFEF", 16));
         assertEquals(boxes[0][3].getColor(), Integer.valueOf("EAEAEA", 16));
 
+        Box interestingBlock = boxes[1][3];
+        assertTrue(interestingBlock.isBlock());
+        assertEquals(
+            interestingBlock.getColor(), Integer.valueOf("EFEFEF", 16)
+        );
+        assertEquals(interestingBlock.getResponse(), "X");
+
         Set<String> clueLists = puz.getClueListNames();
         assertEquals(clueLists.size(), 3);
         assertTrue(clueLists.contains("OddOnes"));

@@ -98,6 +98,7 @@ public class Box implements Serializable {
 
         if (getColor() != other.getColor())
             return false;
+
         // Annoying Arrays.equals doesn't do arrays of arrays..
         String[][] marks = getMarks();
         String[][] otherMarks = other.getMarks();
@@ -176,8 +177,10 @@ public class Box implements Serializable {
      *
      * Could be a null box or isBlock true
      *
-     * Block boxes cannot have solutions or responses or be part of a
-     * clue or be cheated. But may have styles like colours and shapes.
+     * Block boxes cannot have solutions or be part of a clue or be
+     * cheated. But may have styles like colours and shapes. May also
+     * have responses, but only if they were defined in the original
+     * puzzle (not entered by a user).
      */
     public static boolean isBlock(Box box) {
         return box == null || box.isBlock();
