@@ -54,21 +54,7 @@ public class PlayboardRenderer {
         AndroidVersionUtils.Factory.getInstance().getSemiBoldTypeface();
     private static final float DESCENT_FUDGE_FACTOR = 1.3F;
 
-    private final Paint blackBox = new Paint();
-    private final Paint blackCircle = new Paint();
-    private final Paint blackLine = new Paint();
-    private final Paint cheated = new Paint();
-    private final Paint currentLetterBox = new Paint();
-    private final Paint currentLetterHighlight = new Paint();
-    private final Paint currentWordHighlight = new Paint();
-    private final TextPaint letterText = new TextPaint();
-    private final TextPaint numberText = new TextPaint();
-    private final TextPaint noteText = new TextPaint();
-    private final TextPaint miniNoteText = new TextPaint();
-    private final Paint red = new Paint();
-    private final TextPaint redHighlight = new TextPaint();
-    private final TextPaint white = new TextPaint();
-    private final Paint flag = new Paint();
+    private PaintProfile profile;
     private Bitmap bitmap;
     private Playboard board;
     private float dpi;
@@ -91,77 +77,7 @@ public class PlayboardRenderer {
         this.hintHighlight = hintHighlight;
         this.maxScale = getDeviceMaxScale();
         this.minScale = getDeviceMinScale();
-
-        int blankColor = ContextCompat.getColor(context, R.color.blankColor);
-        int boxColor = ContextCompat.getColor(context, R.color.boxColor);
-        int currentWordHighlightColor
-            = ContextCompat.getColor(context, R.color.currentWordHighlightColor);
-        int currentLetterHighlightColor
-            = ContextCompat.getColor(context, R.color.currentLetterHighlightColor);
-        int errorColor
-            = ContextCompat.getColor(context, R.color.errorColor);
-        int errorHighlightColor
-            = ContextCompat.getColor(context, R.color.errorHighlightColor);
-        int cheatedColor
-            = ContextCompat.getColor(context, R.color.cheatedColor);
-        int boardLetterColor
-            = ContextCompat.getColor(context, R.color.boardLetterColor);
-        int boardNoteColor
-            = ContextCompat.getColor(context, R.color.boardNoteColor);
-        int flagColor = ContextCompat.getColor(context, R.color.flagColor);
-
-        blackLine.setColor(blankColor);
-        blackLine.setStrokeWidth(2.0F);
-
-        numberText.setTextAlign(Align.LEFT);
-        numberText.setColor(boardLetterColor);
-        numberText.setAntiAlias(true);
-        numberText.setTypeface(Typeface.MONOSPACE);
-
-        noteText.setTextAlign(Align.CENTER);
-        noteText.setColor(boardNoteColor);
-        noteText.setAntiAlias(true);
-        noteText.setTypeface(TYPEFACE_SEMI_BOLD_SANS);
-
-        miniNoteText.setTextAlign(Align.CENTER);
-        miniNoteText.setColor(boardNoteColor);
-        miniNoteText.setAntiAlias(true);
-        miniNoteText.setTypeface(TYPEFACE_SEMI_BOLD_SANS);
-
-        letterText.setTextAlign(Align.CENTER);
-        letterText.setColor(boardLetterColor);
-        letterText.setAntiAlias(true);
-        letterText.setTypeface(Typeface.SANS_SERIF);
-
-        blackBox.setColor(blankColor);
-
-        blackCircle.setColor(boardLetterColor);
-        blackCircle.setAntiAlias(true);
-        blackCircle.setStyle(Style.STROKE);
-
-        currentWordHighlight.setColor(currentWordHighlightColor);
-        currentLetterHighlight.setColor(currentLetterHighlightColor);
-        currentLetterBox.setColor(boxColor);
-        currentLetterBox.setStrokeWidth(2.0F);
-
-        white.setTextAlign(Align.CENTER);
-        white.setColor(boxColor);
-        white.setAntiAlias(true);
-        white.setTypeface(Typeface.SANS_SERIF);
-
-        red.setTextAlign(Align.CENTER);
-        red.setColor(errorColor);
-        red.setAntiAlias(true);
-        red.setTypeface(Typeface.SANS_SERIF);
-
-        redHighlight.setTextAlign(Align.CENTER);
-        redHighlight.setColor(errorHighlightColor);
-        redHighlight.setAntiAlias(true);
-        redHighlight.setTypeface(Typeface.SANS_SERIF);
-
-        cheated.setColor(cheatedColor);
-
-        flag.setColor(flagColor);
+        this.profile = new PaintProfile(context, scale, dpi);
     }
 
     public float getMaxScale() {
@@ -216,6 +132,8 @@ public class PlayboardRenderer {
         }
         this.bitmap = null;
         this.scale = scale;
+
+        profile.setScale(scale, dpi);
     }
 
     public float getScale() {
@@ -344,7 +262,6 @@ public class PlayboardRenderer {
                 canvas,
                 x, y,
                 pos.getRow(), pos.getCol(),
-                boxSize,
                 boxes[i],
                 null, highlight,
                 suppressNotesLists,
@@ -354,10 +271,11 @@ public class PlayboardRenderer {
 
         // draw highlight outline again as it will have been overpainted
         if (highlight != null) {
+            PaintProfile profile = getProfile();
             int idx = zone.indexOf(highlight);
             if (idx > -1) {
                 int x = idx * boxSize;
-                drawBoxOutline(canvas, x, 0, boxSize, currentLetterBox);
+                drawBoxOutline(canvas, x, 0, profile.getCurrentLetterBox());
             }
         }
 
@@ -413,7 +331,6 @@ public class PlayboardRenderer {
             this.drawBox(canvas,
                          x, y,
                          0, i,
-                         boxSize,
                          boxes[i],
                          null,
                          highlight,
@@ -422,10 +339,11 @@ public class PlayboardRenderer {
         }
 
         if (highlight != null) {
+            PaintProfile profile = getProfile();
             int col = highlight.getCol();
             if (col >= 0 && col < boxes.length) {
                 drawBoxOutline(
-                    canvas, col * boxSize, 0, boxSize, currentLetterBox
+                    canvas, col * boxSize, 0, profile.getCurrentLetterBox()
                 );
             }
         }
@@ -731,40 +649,27 @@ public class PlayboardRenderer {
     private void drawBox(Canvas canvas,
                          int x, int y,
                          int row, int col,
-                         int boxSize,
                          Box box,
                          Word currentWord,
                          Position highlight,
                          Set<String> suppressNotesLists,
                          boolean fullBoard) {
-        int numberTextSize = boxSize / 4;
-        int miniNoteTextSize = boxSize / 2;
-        int noteTextSize = Math.round(boxSize * 0.6F);
-        int letterTextSize = Math.round(boxSize * 0.7F);
-        int barSize = boxSize / 12;
-        int numberOffset = barSize;
-        int textOffset = boxSize / 30;
-
-        // scale paints
-        numberText.setTextSize(numberTextSize);
-        letterText.setTextSize(letterTextSize);
-        red.setTextSize(letterTextSize);
-        redHighlight.setTextSize(letterTextSize);
-        white.setTextSize(letterTextSize);
-        noteText.setTextSize(noteTextSize);
-        miniNoteText.setTextSize(miniNoteTextSize);
+        PaintProfile profile = getProfile();
+        int boxSize = profile.getBoxSize();
 
         boolean isHighlighted
             = highlight.getCol() == col
                 && highlight.getRow() == row;
 
-        Paint outlineColor = isHighlighted ? currentLetterBox : blackLine;
-        drawBoxOutline(canvas, x, y, boxSize, outlineColor);
+        Paint outlineColor = isHighlighted
+            ? profile.getCurrentLetterBox()
+            : profile.getBlackLine();
+        drawBoxOutline(canvas, x, y, outlineColor);
 
         Rect r = new Rect(x + 1, y + 1, (x + boxSize) - 1, (y + boxSize) - 1);
 
         if (Box.isBlock(box)) {
-            canvas.drawRect(r, this.blackBox);
+            canvas.drawRect(r, profile.getBlackBox());
         } else {
             if (highlightError(box, isHighlighted))
                 box.setCheated(true);
@@ -773,42 +678,33 @@ public class PlayboardRenderer {
 
             // Bars before clue numbers to avoid obfuscating
             if (fullBoard)
-                drawBoxBars(canvas, x, y, box, boxSize, barSize);
+                drawBoxBars(canvas, x, y, box);
 
-            drawBoxMarks(
-                canvas, x, y, box, boxSize, numberOffset, numberText
-            );
+            drawBoxMarks(canvas, x, y, box);
             if (fullBoard) {
-                drawBoxFlags(
-                    canvas, x, y, box,
-                    boxSize, barSize, numberOffset, numberTextSize
-                );
+                drawBoxFlags(canvas, x, y, box);
             }
 
-            drawBoxCircle(canvas, x, y, box, boxSize);
+            drawBoxCircle(canvas, x, y, box);
 
             if (box.isBlank()) {
                 if (suppressNotesLists != null) {
-                    drawBoxNotes(
-                        canvas, x, y, box,
-                        boxSize, textOffset,
-                        noteText, miniNoteText,
-                        suppressNotesLists
-                    );
+                    drawBoxNotes(canvas, x, y, box, suppressNotesLists);
                 }
             } else {
                 drawBoxLetter(
                     canvas, x, y,
                     box, row, col,
-                    boxSize, textOffset, isHighlighted, currentWord
+                    isHighlighted, currentWord
                 );
             }
         }
     }
 
     private void drawBoxOutline(
-        Canvas canvas, int x, int y, int boxSize, Paint color
+        Canvas canvas, int x, int y, Paint color
     ) {
+        int boxSize = getBoxSize();
         // Draw left, top, right, bottom
         canvas.drawLine(x, y, x, y + boxSize, color);
         canvas.drawLine(x, y, x + boxSize, y, color);
@@ -820,6 +716,8 @@ public class PlayboardRenderer {
         Canvas canvas, Box box, int row, int col,
         Rect boxRect, Position highlight, Word currentWord
     ) {
+        PaintProfile profile = getProfile();
+
         // doesn't depend on current word (for BoxEditText)
         boolean isHighlighted
             = highlight.getCol() == col
@@ -827,37 +725,39 @@ public class PlayboardRenderer {
         boolean highlightError = highlightError(box, isHighlighted);
 
         if (isHighlighted && !highlightError) {
-            canvas.drawRect(boxRect, this.currentLetterHighlight);
+            canvas.drawRect(boxRect, profile.getCurrentLetterHighlight());
         } else if (isHighlighted && highlightError) {
-            canvas.drawRect(boxRect, this.redHighlight);
+            canvas.drawRect(boxRect, profile.getRedHighlight());
         } else if ((currentWord != null) && currentWord.checkInWord(row, col)) {
-            canvas.drawRect(boxRect, this.currentWordHighlight);
+            canvas.drawRect(boxRect, profile.getCurrentWordHighlight());
         } else if (highlightError) {
-            canvas.drawRect(boxRect, this.red);
+            canvas.drawRect(boxRect, profile.getRed());
         } else if (this.hintHighlight && box.isCheated()) {
-            canvas.drawRect(boxRect, this.cheated);
+            canvas.drawRect(boxRect, profile.getCheated());
         } else {
             if (!box.hasColor()) {
-                canvas.drawRect(boxRect, this.white);
+                canvas.drawRect(boxRect, profile.getWhite());
             } else {
-                Paint paint = getRelativePaint(this.white, box.getColor());
+                Paint paint = getRelativePaint(profile.getWhite(), box.getColor());
                 canvas.drawRect(boxRect, paint);
             }
         }
     }
 
-    private void drawBoxBars(
-        Canvas canvas, int x, int y, Box box,
-        int boxSize, int barSize
-    ) {
+    private void drawBoxBars(Canvas canvas, int x, int y, Box box) {
+        PaintProfile profile = getProfile();
+        int boxSize = profile.getBoxSize();
+        int barSize = profile.getBarSize();
+        Paint blackBox = profile.getBlackBox();
+
         if (box.isBarredLeft()) {
             Rect bar = new Rect(x, y, x + barSize, y + boxSize);
-            canvas.drawRect(bar, this.blackBox);
+            canvas.drawRect(bar, blackBox);
         }
 
         if (box.isBarredTop()) {
             Rect bar = new Rect(x, y, x + boxSize, y + barSize);
-            canvas.drawRect(bar, this.blackBox);
+            canvas.drawRect(bar, blackBox);
         }
 
         if (box.isBarredRight()) {
@@ -865,7 +765,7 @@ public class PlayboardRenderer {
                 x + boxSize - barSize, y,
                 x + boxSize, y + boxSize
             );
-            canvas.drawRect(bar, this.blackBox);
+            canvas.drawRect(bar, blackBox);
         }
 
         if (box.isBarredBottom()) {
@@ -873,14 +773,16 @@ public class PlayboardRenderer {
                 x, y + boxSize - barSize,
                 x + boxSize, y + boxSize
             );
-            canvas.drawRect(bar, this.blackBox);
+            canvas.drawRect(bar, blackBox);
         }
     }
 
-    private void drawBoxMarks(
-        Canvas canvas, int x, int y, Box box,
-        int boxSize, int numberOffset, TextPaint numberText
-    ) {
+    private void drawBoxMarks(Canvas canvas, int x, int y, Box box) {
+        PaintProfile profile = getProfile();
+        int boxSize = profile.getBoxSize();
+        int numberOffset = profile.getNumberOffset();
+        TextPaint numberText = profile.getNumberText();
+
         if (box.hasClueNumber()) {
             String clueNumber = box.getClueNumber();
             drawHtmlText(
@@ -941,10 +843,13 @@ public class PlayboardRenderer {
         }
     }
 
-    private void drawBoxFlags(
-        Canvas canvas, int x, int y, Box box,
-        int boxSize, int barSize, int numberOffset, int numberTextSize
-    ) {
+    private void drawBoxFlags(Canvas canvas, int x, int y, Box box) {
+        PaintProfile profile = getProfile();
+        int boxSize = profile.getBoxSize();
+        int barSize = profile.getBarSize();
+        int numberOffset = profile.getNumberOffset();
+        int numberTextSize = profile.getNumberTextSize();
+
         Puzzle puz = board.getPuzzle();
 
         boolean flagAcross = false;
@@ -970,7 +875,7 @@ public class PlayboardRenderer {
                 x + boxSize - barSize,
                 y + 2 * barSize
             );
-            canvas.drawRect(bar, this.flag);
+            canvas.drawRect(bar, profile.getFlag());
         }
 
         if (flagAcross) {
@@ -980,25 +885,35 @@ public class PlayboardRenderer {
                 x + 2 * barSize,
                 y + boxSize - barSize
             );
-            canvas.drawRect(bar, this.flag);
+            canvas.drawRect(bar, profile.getFlag());
         }
     }
 
-    private void drawBoxCircle(
-        Canvas canvas, int x, int y, Box box, int boxSize
-    ) {
+    private void drawBoxCircle(Canvas canvas, int x, int y, Box box) {
+        int boxSize = getBoxSize();
+
         // Draw circle
         if (box.isCircled()) {
-            canvas.drawCircle(x + (boxSize / 2) + 0.5F, y + (boxSize / 2) + 0.5F, (boxSize / 2) - 1.5F, blackCircle);
+            canvas.drawCircle(
+                x + (boxSize / 2) + 0.5F,
+                y + (boxSize / 2) + 0.5F,
+                (boxSize / 2) - 1.5F,
+                getProfile().blackCircle
+            );
         }
     }
 
     private void drawBoxLetter(
         Canvas canvas, int x, int y,
         Box box, int row, int col,
-        int boxSize, int textOffset, boolean isHighlighted, Word currentWord
+        boolean isHighlighted, Word currentWord
     ) {
-        TextPaint thisLetter = this.letterText;
+        PaintProfile profile = getProfile();
+        int boxSize = profile.getBoxSize();
+        int textOffset = profile.getTextOffset();
+        TextPaint letterText = profile.getLetterText();
+
+        TextPaint thisLetter = letterText;
         String letterString = box.isBlank()
             ? null
             : box.getResponse();
@@ -1011,9 +926,9 @@ public class PlayboardRenderer {
                 (currentWord != null) && currentWord.checkInWord(row, col);
 
             if (isHighlighted) {
-                thisLetter = this.white;
+                thisLetter = profile.getWhite();
             } else if (inCurrentWord) {
-                thisLetter = this.redHighlight;
+                thisLetter = profile.getRedHighlight();
             }
         }
 
@@ -1039,11 +954,15 @@ public class PlayboardRenderer {
     }
 
     private void drawBoxNotes(
-        Canvas canvas, int x, int y, Box box,
-        int boxSize, int textOffset,
-        TextPaint noteText, TextPaint miniNoteText,
-        Set<String> suppressNotesLists
+        Canvas canvas, int x, int y, Box box, Set<String> suppressNotesLists
     ) {
+        PaintProfile profile = getProfile();
+        int boxSize = profile.getBoxSize();
+        int textOffset = profile.getTextOffset();
+        TextPaint noteText = profile.getNoteText();
+        TextPaint miniNoteText = profile.getMiniNoteText();
+        TextPaint letterText = profile.getLetterText();
+
         String noteStringAcross = null;
         String noteStringDown = null;
 
@@ -1377,7 +1296,6 @@ public class PlayboardRenderer {
             this.drawBox(
                 canvas,
                 x, y, row, col,
-                boxSize,
                 boxes[row][col],
                 currentWord, highlight,
                 suppressNotesLists,
@@ -1387,10 +1305,11 @@ public class PlayboardRenderer {
 
         // draw highlight outline again as it will have been overpainted
         if (highlight != null) {
+            PaintProfile profile = getProfile();
             int idx = pinnedZone.indexOf(highlight);
             if (idx > -1) {
                 int x = (pinnedCol + idx) * boxSize;
-                drawBoxOutline(canvas, x, y, boxSize, currentLetterBox);
+                drawBoxOutline(canvas, x, y, profile.getCurrentLetterBox());
             }
         }
     }
@@ -1500,7 +1419,6 @@ public class PlayboardRenderer {
                 this.drawBox(
                     canvas,
                     x, y, row, col,
-                    boxSize,
                     boxes[row][col],
                     currentWord, highlight,
                     suppressNotesLists,
@@ -1511,9 +1429,10 @@ public class PlayboardRenderer {
 
         // draw highlight outline again as it will have been overpainted
         if (highlight != null) {
+            PaintProfile profile = getProfile();
             int curX = highlight.getCol() * boxSize;
             int curY = highlight.getRow() * boxSize;
-            drawBoxOutline(canvas, curX, curY, boxSize, currentLetterBox);
+            drawBoxOutline(canvas, curX, curY, profile.getCurrentLetterBox());
         }
     }
 
@@ -1529,11 +1448,213 @@ public class PlayboardRenderer {
      * The size of a box in pixels according to current scale
      */
     private int getBoxSize() {
-        int boxSize = (int) (BASE_BOX_SIZE_INCHES * dpi * scale);
-        if (boxSize == 0) {
-            boxSize = (int) (BASE_BOX_SIZE_INCHES * dpi * 0.25F);
+        return getProfile().getBoxSize();
+    }
+
+    /**
+     * Metrics and paint objects for drawing
+     */
+    private PaintProfile getProfile() {
+        return profile;
+    }
+
+    private static class PaintProfile {
+        private final Paint blackBox = new Paint();
+        private final Paint blackCircle = new Paint();
+        private final Paint blackLine = new Paint();
+        private final Paint cheated = new Paint();
+        private final Paint currentLetterBox = new Paint();
+        private final Paint currentLetterHighlight = new Paint();
+        private final Paint currentWordHighlight = new Paint();
+        private final TextPaint letterText = new TextPaint();
+        private final TextPaint numberText = new TextPaint();
+        private final TextPaint noteText = new TextPaint();
+        private final TextPaint miniNoteText = new TextPaint();
+        private final Paint red = new Paint();
+        private final TextPaint redHighlight = new TextPaint();
+        private final TextPaint white = new TextPaint();
+        private final Paint flag = new Paint();
+
+        private int boxSize;
+        private int numberTextSize = boxSize / 4;
+        private int miniNoteTextSize = boxSize / 2;
+        private int noteTextSize = Math.round(boxSize * 0.6F);
+        private int letterTextSize = Math.round(boxSize * 0.7F);
+        private int barSize = boxSize / 12;
+        private int numberOffset = barSize;
+        private int textOffset = boxSize / 30;
+
+        public PaintProfile(Context context, float scale, float dpi) {
+            int blankColor = ContextCompat.getColor(context, R.color.blankColor);
+            int boxColor = ContextCompat.getColor(context, R.color.boxColor);
+            int currentWordHighlightColor
+                = ContextCompat.getColor(context, R.color.currentWordHighlightColor);
+            int currentLetterHighlightColor
+                = ContextCompat.getColor(context, R.color.currentLetterHighlightColor);
+            int errorColor
+                = ContextCompat.getColor(context, R.color.errorColor);
+            int errorHighlightColor
+                = ContextCompat.getColor(context, R.color.errorHighlightColor);
+            int cheatedColor
+                = ContextCompat.getColor(context, R.color.cheatedColor);
+            int boardLetterColor
+                = ContextCompat.getColor(context, R.color.boardLetterColor);
+            int boardNoteColor
+                = ContextCompat.getColor(context, R.color.boardNoteColor);
+            int flagColor = ContextCompat.getColor(context, R.color.flagColor);
+
+            blackLine.setColor(blankColor);
+            blackLine.setStrokeWidth(2.0F);
+
+            numberText.setTextAlign(Align.LEFT);
+            numberText.setColor(boardLetterColor);
+            numberText.setAntiAlias(true);
+            numberText.setTypeface(Typeface.MONOSPACE);
+
+            noteText.setTextAlign(Align.CENTER);
+            noteText.setColor(boardNoteColor);
+            noteText.setAntiAlias(true);
+            noteText.setTypeface(TYPEFACE_SEMI_BOLD_SANS);
+
+            miniNoteText.setTextAlign(Align.CENTER);
+            miniNoteText.setColor(boardNoteColor);
+            miniNoteText.setAntiAlias(true);
+            miniNoteText.setTypeface(TYPEFACE_SEMI_BOLD_SANS);
+
+            letterText.setTextAlign(Align.CENTER);
+            letterText.setColor(boardLetterColor);
+            letterText.setAntiAlias(true);
+            letterText.setTypeface(Typeface.SANS_SERIF);
+
+            blackBox.setColor(blankColor);
+
+            blackCircle.setColor(boardLetterColor);
+            blackCircle.setAntiAlias(true);
+            blackCircle.setStyle(Style.STROKE);
+
+            currentWordHighlight.setColor(currentWordHighlightColor);
+            currentLetterHighlight.setColor(currentLetterHighlightColor);
+            currentLetterBox.setColor(boxColor);
+            currentLetterBox.setStrokeWidth(2.0F);
+
+            white.setTextAlign(Align.CENTER);
+            white.setColor(boxColor);
+            white.setAntiAlias(true);
+            white.setTypeface(Typeface.SANS_SERIF);
+
+            red.setTextAlign(Align.CENTER);
+            red.setColor(errorColor);
+            red.setAntiAlias(true);
+            red.setTypeface(Typeface.SANS_SERIF);
+
+            redHighlight.setTextAlign(Align.CENTER);
+            redHighlight.setColor(errorHighlightColor);
+            redHighlight.setAntiAlias(true);
+            redHighlight.setTypeface(Typeface.SANS_SERIF);
+
+            cheated.setColor(cheatedColor);
+
+            flag.setColor(flagColor);
+
+            setScale(scale, dpi);
         }
-        return boxSize;
+
+        public Paint getBlackBox() {
+            return blackBox;
+        }
+
+        public Paint getBlackCircle() {
+            return blackCircle;
+        }
+
+        public Paint getBlackLine() {
+            return blackLine;
+        }
+
+        public Paint getCheated() {
+            return cheated;
+        }
+
+        public Paint getCurrentLetterBox() {
+            return currentLetterBox;
+        }
+
+        public Paint getCurrentLetterHighlight() {
+            return currentLetterHighlight;
+        }
+
+        public Paint getCurrentWordHighlight() {
+            return currentWordHighlight;
+        }
+
+        public TextPaint getLetterText() {
+            return letterText;
+        }
+
+        public TextPaint getNumberText() {
+            return numberText;
+        }
+
+        public TextPaint getNoteText() {
+            return noteText;
+        }
+
+        public TextPaint getMiniNoteText() {
+            return miniNoteText;
+        }
+
+        public Paint getRed() {
+            return red;
+        }
+
+        public TextPaint getRedHighlight() {
+            return redHighlight;
+        }
+
+        public TextPaint getWhite() {
+            return white;
+        }
+
+        public Paint getFlag() {
+            return flag;
+        }
+
+        public int getBoxSize() { return boxSize; }
+        public int getNumberTextSize() { return numberTextSize; }
+        public int getMiniNoteTextSize() { return miniNoteTextSize; }
+        public int getNoteTextSize() { return noteTextSize; }
+        public int getLetterTextSize() { return letterTextSize; }
+        public int getBarSize() { return barSize; }
+        public int getNumberOffset() { return numberOffset; }
+        public int getTextOffset() { return textOffset; }
+
+
+        public void setScale(float scale, float dpi) {
+            boxSize = calcBoxSize(scale, dpi);
+            numberTextSize = boxSize / 4;
+            miniNoteTextSize = boxSize / 2;
+            noteTextSize = Math.round(boxSize * 0.6F);
+            letterTextSize = Math.round(boxSize * 0.7F);
+            barSize = boxSize / 12;
+            numberOffset = barSize;
+            textOffset = boxSize / 30;
+
+            numberText.setTextSize(numberTextSize);
+            letterText.setTextSize(letterTextSize);
+            red.setTextSize(letterTextSize);
+            redHighlight.setTextSize(letterTextSize);
+            white.setTextSize(letterTextSize);
+            noteText.setTextSize(noteTextSize);
+            miniNoteText.setTextSize(miniNoteTextSize);
+        }
+
+        private int calcBoxSize(float scale, float dpi) {
+            int boxSize = (int) (BASE_BOX_SIZE_INCHES * dpi * scale);
+            if (boxSize == 0) {
+                boxSize = (int) (BASE_BOX_SIZE_INCHES * dpi * 0.25F);
+            }
+            return boxSize;
+        }
     }
 }
 
