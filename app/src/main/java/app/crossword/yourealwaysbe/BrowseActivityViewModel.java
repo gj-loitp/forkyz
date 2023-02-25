@@ -174,7 +174,7 @@ public class BrowseActivityViewModel extends ViewModel {
             boolean deleteOnCleanup
                 = prefs.getBoolean("deleteOnCleanup", false);
             LocalDate maxAge
-                = getMaxAge(prefs.getString("cleanupAge", "2"));
+                = getMaxAge(prefs.getString("cleanupAge", "-1"));
             LocalDate archiveMaxAge
                 = getMaxAge(prefs.getString("archiveCleanupAge", "-1"));
 
@@ -186,27 +186,26 @@ public class BrowseActivityViewModel extends ViewModel {
             List<PuzMetaFile> toArchive = new ArrayList<>();
             List<PuzMetaFile> toDelete = new ArrayList<>();
 
-            if (maxAge != null) {
-                List<PuzMetaFile> puzFiles
-                    = fileHandler.getPuzMetas(crosswords);
-                Collections.sort(puzFiles);
-                for (PuzMetaFile pm : puzFiles) {
-                    if ((pm.getComplete() == 100)
-                            || (pm.getDate().isBefore(maxAge))) {
-                        if (deleteOnCleanup) {
-                            toDelete.add(pm);
-                        } else {
-                            toArchive.add(pm);
-                        }
+            List<PuzMetaFile> puzCrosswordFiles
+                = fileHandler.getPuzMetas(crosswords);
+            for (PuzMetaFile pm : puzCrosswordFiles) {
+                boolean doClean
+                    = pm.getComplete() == 100
+                    || (maxAge != null && pm.getDate().isBefore(maxAge));
+
+                if (doClean) {
+                    if (deleteOnCleanup) {
+                        toDelete.add(pm);
+                    } else {
+                        toArchive.add(pm);
                     }
                 }
             }
 
             if (archiveMaxAge != null) {
-                List<PuzMetaFile> puzFiles
+                List<PuzMetaFile> puzArchiveFiles
                     = fileHandler.getPuzMetas(archive);
-                Collections.sort(puzFiles);
-                for (PuzMetaFile pm : puzFiles) {
+                for (PuzMetaFile pm : puzArchiveFiles) {
                     if (pm.getDate().isBefore(archiveMaxAge)) {
                         toDelete.add(pm);
                     }
