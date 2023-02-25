@@ -295,17 +295,11 @@ public class JPZIO implements PuzzleParser {
 
                     String color
                         = attributes.getValue("background-color");
-                    // if is hex color
-                    if (color != null
-                            && color.startsWith("#")
-                            && color.length() == 7) {
-                        try {
-                            box.setColor(Integer.valueOf(
-                                color.substring(1), 16
-                            ));
+                    if (color != null) {
+                        int iColor = HtmlUtil.parseHtmlColor(color);
+                        if (iColor >= 0) {
+                            box.setColor(iColor);
                             hasData = true;
-                        } catch (NumberFormatException e) {
-                            // oh well, we tried
                         }
                     }
 

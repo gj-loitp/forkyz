@@ -36,6 +36,7 @@ import app.crossword.yourealwaysbe.puz.PuzImage;
 import app.crossword.yourealwaysbe.puz.Puzzle;
 import app.crossword.yourealwaysbe.puz.PuzzleBuilder;
 import app.crossword.yourealwaysbe.puz.Zone;
+import app.crossword.yourealwaysbe.util.HtmlUtil;
 import app.crossword.yourealwaysbe.util.PuzzleUtils;
 
 import static app.crossword.yourealwaysbe.util.HtmlUtil.htmlString;
@@ -2291,14 +2292,12 @@ public class IPuzIO implements PuzzleParser {
         if (hex == null || hex.isEmpty())
             return null;
 
-        // not technically IPuz, but let's be nice
-        if (hex.charAt(0) == '#')
-            hex = hex.substring(1);
-
         try {
             return Integer.valueOf(hex, 16);
         } catch (NumberFormatException e) {
-            return null;
+            // maybe it's HTML
+            int color = HtmlUtil.parseHtmlColor(hex);
+            return (color < 0) ? null : color;
         }
     }
 
