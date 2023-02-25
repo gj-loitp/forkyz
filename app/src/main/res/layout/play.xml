@@ -38,7 +38,7 @@
         android:id="@+id/voiceButtonContainer"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
-        android:background="@color/blankColor"
+        android:background="@color/blockColor"
         app:layout_constraintTop_toBottomOf="@id/board"
         app:layout_constraintBottom_toTopOf="@id/playClueTab"
         app:layout_constraintStart_toStartOf="parent"

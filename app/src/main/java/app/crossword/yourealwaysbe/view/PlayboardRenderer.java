@@ -663,13 +663,13 @@ public class PlayboardRenderer {
 
         Paint outlineColor = isHighlighted
             ? profile.getCurrentLetterBox()
-            : profile.getBlackLine();
+            : profile.getOutline(box);
         drawBoxOutline(canvas, x, y, outlineColor);
 
         Rect r = new Rect(x + 1, y + 1, (x + boxSize) - 1, (y + boxSize) - 1);
 
-        if (Box.isBlock(box)) {
-            canvas.drawRect(r, profile.getBlackBox());
+        if (box == null) {
+            canvas.drawRect(r, profile.getBoxColor(box));
         } else {
             if (highlightError(box, isHighlighted))
                 box.setCheated(true);
@@ -727,18 +727,20 @@ public class PlayboardRenderer {
         if (isHighlighted && !highlightError) {
             canvas.drawRect(boxRect, profile.getCurrentLetterHighlight());
         } else if (isHighlighted && highlightError) {
-            canvas.drawRect(boxRect, profile.getRedHighlight());
+            canvas.drawRect(boxRect, profile.getErrorHighlight());
         } else if ((currentWord != null) && currentWord.checkInWord(row, col)) {
             canvas.drawRect(boxRect, profile.getCurrentWordHighlight());
         } else if (highlightError) {
-            canvas.drawRect(boxRect, profile.getRed());
+            canvas.drawRect(boxRect, profile.getError());
         } else if (this.hintHighlight && box.isCheated()) {
             canvas.drawRect(boxRect, profile.getCheated());
         } else {
             if (!box.hasColor()) {
-                canvas.drawRect(boxRect, profile.getWhite());
+                canvas.drawRect(boxRect, profile.getBoxColor(box));
             } else {
-                Paint paint = getRelativePaint(profile.getWhite(), box.getColor());
+                Paint paint = getRelativePaint(
+                    profile.getCellColor(), box.getColor()
+                );
                 canvas.drawRect(boxRect, paint);
             }
         }
@@ -748,16 +750,16 @@ public class PlayboardRenderer {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int barSize = profile.getBarSize();
-        Paint blackBox = profile.getBlackBox();
+        Paint outline = profile.getOutline(box);
 
         if (box.isBarredLeft()) {
             Rect bar = new Rect(x, y, x + barSize, y + boxSize);
-            canvas.drawRect(bar, blackBox);
+            canvas.drawRect(bar, outline);
         }
 
         if (box.isBarredTop()) {
             Rect bar = new Rect(x, y, x + boxSize, y + barSize);
-            canvas.drawRect(bar, blackBox);
+            canvas.drawRect(bar, outline);
         }
 
         if (box.isBarredRight()) {
@@ -765,7 +767,7 @@ public class PlayboardRenderer {
                 x + boxSize - barSize, y,
                 x + boxSize, y + boxSize
             );
-            canvas.drawRect(bar, blackBox);
+            canvas.drawRect(bar, outline);
         }
 
         if (box.isBarredBottom()) {
@@ -773,7 +775,7 @@ public class PlayboardRenderer {
                 x, y + boxSize - barSize,
                 x + boxSize, y + boxSize
             );
-            canvas.drawRect(bar, blackBox);
+            canvas.drawRect(bar, outline);
         }
     }
 
@@ -781,7 +783,7 @@ public class PlayboardRenderer {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int numberOffset = profile.getNumberOffset();
-        TextPaint numberText = profile.getNumberText();
+        TextPaint numberText = profile.getNumberText(box);
 
         if (box.hasClueNumber()) {
             String clueNumber = box.getClueNumber();
@@ -898,7 +900,7 @@ public class PlayboardRenderer {
                 x + (boxSize / 2) + 0.5F,
                 y + (boxSize / 2) + 0.5F,
                 (boxSize / 2) - 1.5F,
-                getProfile().blackCircle
+                getProfile().getShape(box)
             );
         }
     }
@@ -911,7 +913,7 @@ public class PlayboardRenderer {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int textOffset = profile.getTextOffset();
-        TextPaint letterText = profile.getLetterText();
+        TextPaint letterText = profile.getLetterText(box);
 
         TextPaint thisLetter = letterText;
         String letterString = box.isBlank()
@@ -926,9 +928,9 @@ public class PlayboardRenderer {
                 (currentWord != null) && currentWord.checkInWord(row, col);
 
             if (isHighlighted) {
-                thisLetter = profile.getWhite();
+                thisLetter = profile.getBoxColor(box);
             } else if (inCurrentWord) {
-                thisLetter = profile.getRedHighlight();
+                thisLetter = profile.getErrorHighlight();
             }
         }
 
@@ -959,9 +961,9 @@ public class PlayboardRenderer {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int textOffset = profile.getTextOffset();
-        TextPaint noteText = profile.getNoteText();
-        TextPaint miniNoteText = profile.getMiniNoteText();
-        TextPaint letterText = profile.getLetterText();
+        TextPaint noteText = profile.getNoteText(box);
+        TextPaint miniNoteText = profile.getMiniNoteText(box);
+        TextPaint letterText = profile.getLetterText(box);
 
         String noteStringAcross = null;
         String noteStringDown = null;
@@ -1099,7 +1101,7 @@ public class PlayboardRenderer {
      * Return a new paint based on color
      *
      * For use when "inverting" a color to appear on the board. Relative
-     * vs. a pure white background is the pure color. Vs. a pure black
+     * vs. a pure boxColor background is the pure color. Vs. a pure black
      * background in the inverted color. Somewhere in between is
      * somewhere in between.
      *
@@ -1459,21 +1461,29 @@ public class PlayboardRenderer {
     }
 
     private static class PaintProfile {
-        private final Paint blackBox = new Paint();
-        private final Paint blackCircle = new Paint();
-        private final Paint blackLine = new Paint();
+        // box colours also can be used for text for "transparent" text
+        // (e.g. highlighted error cells)
+        private final TextPaint cellBox = new TextPaint();
+        private final TextPaint blockBox = new TextPaint();
+        private final Paint shape = new Paint();
+        private final Paint blockShape = new Paint();
+        private final Paint outline = new Paint();
         private final Paint cheated = new Paint();
         private final Paint currentLetterBox = new Paint();
         private final Paint currentLetterHighlight = new Paint();
         private final Paint currentWordHighlight = new Paint();
         private final TextPaint letterText = new TextPaint();
+        private final TextPaint blockLetterText = new TextPaint();
         private final TextPaint numberText = new TextPaint();
+        private final TextPaint blockNumberText = new TextPaint();
         private final TextPaint noteText = new TextPaint();
+        private final TextPaint blockNoteText = new TextPaint();
         private final TextPaint miniNoteText = new TextPaint();
-        private final Paint red = new Paint();
-        private final TextPaint redHighlight = new TextPaint();
-        private final TextPaint white = new TextPaint();
+        private final TextPaint blockMiniNoteText = new TextPaint();
+        private final Paint error = new Paint();
+        private final TextPaint errorHighlight = new TextPaint();
         private final Paint flag = new Paint();
+        private final TextPaint onBlock = new TextPaint();
 
         private int boxSize;
         private int numberTextSize = boxSize / 4;
@@ -1485,12 +1495,15 @@ public class PlayboardRenderer {
         private int textOffset = boxSize / 30;
 
         public PaintProfile(Context context, float scale, float dpi) {
-            int blankColor = ContextCompat.getColor(context, R.color.blankColor);
-            int boxColor = ContextCompat.getColor(context, R.color.boxColor);
-            int currentWordHighlightColor
-                = ContextCompat.getColor(context, R.color.currentWordHighlightColor);
-            int currentLetterHighlightColor
-                = ContextCompat.getColor(context, R.color.currentLetterHighlightColor);
+            int blockColor
+                = ContextCompat.getColor(context, R.color.blockColor);
+            int cellColor = ContextCompat.getColor(context, R.color.cellColor);
+            int currentWordHighlightColor = ContextCompat.getColor(
+                context, R.color.currentWordHighlightColor
+            );
+            int currentLetterHighlightColor = ContextCompat.getColor(
+                context, R.color.currentLetterHighlightColor
+            );
             int errorColor
                 = ContextCompat.getColor(context, R.color.errorColor);
             int errorHighlightColor
@@ -1502,73 +1515,105 @@ public class PlayboardRenderer {
             int boardNoteColor
                 = ContextCompat.getColor(context, R.color.boardNoteColor);
             int flagColor = ContextCompat.getColor(context, R.color.flagColor);
+            int onBlockColor
+                = ContextCompat.getColor(context, R.color.onBlockColor);
 
-            blackLine.setColor(blankColor);
-            blackLine.setStrokeWidth(2.0F);
+            outline.setColor(blockColor);
+            outline.setStrokeWidth(2.0F);
 
             numberText.setTextAlign(Align.LEFT);
             numberText.setColor(boardLetterColor);
             numberText.setAntiAlias(true);
             numberText.setTypeface(Typeface.MONOSPACE);
 
+            blockNumberText.setTextAlign(Align.LEFT);
+            blockNumberText.setColor(onBlockColor);
+            blockNumberText.setAntiAlias(true);
+            blockNumberText.setTypeface(Typeface.MONOSPACE);
+
             noteText.setTextAlign(Align.CENTER);
             noteText.setColor(boardNoteColor);
             noteText.setAntiAlias(true);
             noteText.setTypeface(TYPEFACE_SEMI_BOLD_SANS);
+
+            blockNoteText.setTextAlign(Align.CENTER);
+            blockNoteText.setColor(onBlockColor);
+            blockNoteText.setAntiAlias(true);
+            blockNoteText.setTypeface(TYPEFACE_SEMI_BOLD_SANS);
 
             miniNoteText.setTextAlign(Align.CENTER);
             miniNoteText.setColor(boardNoteColor);
             miniNoteText.setAntiAlias(true);
             miniNoteText.setTypeface(TYPEFACE_SEMI_BOLD_SANS);
 
+            blockMiniNoteText.setTextAlign(Align.CENTER);
+            blockMiniNoteText.setColor(onBlockColor);
+            blockMiniNoteText.setAntiAlias(true);
+            blockMiniNoteText.setTypeface(TYPEFACE_SEMI_BOLD_SANS);
+
             letterText.setTextAlign(Align.CENTER);
             letterText.setColor(boardLetterColor);
             letterText.setAntiAlias(true);
             letterText.setTypeface(Typeface.SANS_SERIF);
 
-            blackBox.setColor(blankColor);
+            blockLetterText.setTextAlign(Align.CENTER);
+            blockLetterText.setColor(onBlockColor);
+            blockLetterText.setAntiAlias(true);
+            blockLetterText.setTypeface(Typeface.SANS_SERIF);
 
-            blackCircle.setColor(boardLetterColor);
-            blackCircle.setAntiAlias(true);
-            blackCircle.setStyle(Style.STROKE);
+            shape.setColor(boardLetterColor);
+            shape.setAntiAlias(true);
+            shape.setStyle(Style.STROKE);
+
+            blockShape.setColor(onBlockColor);
+            blockShape.setAntiAlias(true);
+            blockShape.setStyle(Style.STROKE);
 
             currentWordHighlight.setColor(currentWordHighlightColor);
             currentLetterHighlight.setColor(currentLetterHighlightColor);
-            currentLetterBox.setColor(boxColor);
+            currentLetterBox.setColor(cellColor);
             currentLetterBox.setStrokeWidth(2.0F);
 
-            white.setTextAlign(Align.CENTER);
-            white.setColor(boxColor);
-            white.setAntiAlias(true);
-            white.setTypeface(Typeface.SANS_SERIF);
+            error.setTextAlign(Align.CENTER);
+            error.setColor(errorColor);
+            error.setAntiAlias(true);
+            error.setTypeface(Typeface.SANS_SERIF);
 
-            red.setTextAlign(Align.CENTER);
-            red.setColor(errorColor);
-            red.setAntiAlias(true);
-            red.setTypeface(Typeface.SANS_SERIF);
+            errorHighlight.setTextAlign(Align.CENTER);
+            errorHighlight.setColor(errorHighlightColor);
+            errorHighlight.setAntiAlias(true);
+            errorHighlight.setTypeface(Typeface.SANS_SERIF);
 
-            redHighlight.setTextAlign(Align.CENTER);
-            redHighlight.setColor(errorHighlightColor);
-            redHighlight.setAntiAlias(true);
-            redHighlight.setTypeface(Typeface.SANS_SERIF);
+            blockBox.setColor(blockColor);
+            blockBox.setTextAlign(Align.CENTER);
+            blockBox.setAntiAlias(true);
+            blockBox.setTypeface(Typeface.SANS_SERIF);
+
+            cellBox.setColor(cellColor);
+            cellBox.setTextAlign(Align.CENTER);
+            cellBox.setAntiAlias(true);
+            cellBox.setTypeface(Typeface.SANS_SERIF);
 
             cheated.setColor(cheatedColor);
-
             flag.setColor(flagColor);
 
             setScale(scale, dpi);
         }
 
-        public Paint getBlackBox() {
-            return blackBox;
+        public TextPaint getBoxColor(Box box) {
+            return Box.isBlock(box) ? blockBox : cellBox;
         }
 
-        public Paint getBlackCircle() {
-            return blackCircle;
+        public TextPaint getCellColor() {
+            return cellBox;
         }
 
-        public Paint getBlackLine() {
-            return blackLine;
+        public Paint getShape(Box box) {
+            return Box.isBlock(box) ? blockShape : shape;
+        }
+
+        public Paint getOutline(Box box) {
+            return outline;
         }
 
         public Paint getCheated() {
@@ -1587,32 +1632,28 @@ public class PlayboardRenderer {
             return currentWordHighlight;
         }
 
-        public TextPaint getLetterText() {
-            return letterText;
+        public TextPaint getLetterText(Box box) {
+            return Box.isBlock(box) ? blockLetterText : letterText;
         }
 
-        public TextPaint getNumberText() {
-            return numberText;
+        public TextPaint getNumberText(Box box) {
+            return Box.isBlock(box) ? blockNumberText : numberText;
         }
 
-        public TextPaint getNoteText() {
-            return noteText;
+        public TextPaint getNoteText(Box box) {
+            return Box.isBlock(box) ? blockNoteText : noteText;
         }
 
-        public TextPaint getMiniNoteText() {
-            return miniNoteText;
+        public TextPaint getMiniNoteText(Box box) {
+            return Box.isBlock(box) ? blockMiniNoteText : miniNoteText;
         }
 
-        public Paint getRed() {
-            return red;
+        public Paint getError() {
+            return error;
         }
 
-        public TextPaint getRedHighlight() {
-            return redHighlight;
-        }
-
-        public TextPaint getWhite() {
-            return white;
+        public TextPaint getErrorHighlight() {
+            return errorHighlight;
         }
 
         public Paint getFlag() {
@@ -1640,12 +1681,17 @@ public class PlayboardRenderer {
             textOffset = boxSize / 30;
 
             numberText.setTextSize(numberTextSize);
+            blockNumberText.setTextSize(numberTextSize);
             letterText.setTextSize(letterTextSize);
-            red.setTextSize(letterTextSize);
-            redHighlight.setTextSize(letterTextSize);
-            white.setTextSize(letterTextSize);
+            blockLetterText.setTextSize(letterTextSize);
+            cellBox.setTextSize(letterTextSize);
+            blockBox.setTextSize(letterTextSize);
+            error.setTextSize(letterTextSize);
+            errorHighlight.setTextSize(letterTextSize);
             noteText.setTextSize(noteTextSize);
+            blockNoteText.setTextSize(noteTextSize);
             miniNoteText.setTextSize(miniNoteTextSize);
+            blockMiniNoteText.setTextSize(miniNoteTextSize);
         }
 
         private int calcBoxSize(float scale, float dpi) {

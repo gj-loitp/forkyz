@@ -34,10 +34,11 @@
     <color name="cheatedColor">#FFE0E0</color>
     <color name="boardLetterColor">#000</color>
     <color name="boardNoteColor">#60000000</color>
-    <color name="blankColor">#000</color>
+    <color name="blockColor">#000</color>
+    <color name="onBlockColor">#fff</color>
     <color name="errorColor">#f00</color>
     <color name="errorHighlightColor">#f00</color>
-    <color name="boxColor">#fff</color>
+    <color name="cellColor">#fff</color>
     <color name="flagColor">@color/errorColor</color>
 
     <color name="screenFade">#66eaeaea</color>

@@ -29,8 +29,9 @@
     <color name="inversePrimary">#52a9df</color>
     <color name="surfaceTint">#999</color>
 
-    <color name="boxColor">#333</color>
-    <color name="blankColor">#000</color>
+    <color name="cellColor">#333</color>
+    <color name="blockColor">#000</color>
+    <color name="onBlockColor">#aaa</color>
     <color name="errorColor">#04526c</color>
     <color name="errorHighlightColor">#09b7ef</color>
     <color name="currentWordHighlightColor">#743513</color>
