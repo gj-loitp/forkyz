@@ -20,7 +20,7 @@
   "puzzle": [
     [
       {
-        "style": {},
+        "style": {"highlight": "true"},
         "cell": 1
       },
       {

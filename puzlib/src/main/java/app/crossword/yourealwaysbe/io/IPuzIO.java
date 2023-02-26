@@ -104,6 +104,7 @@ public class IPuzIO implements PuzzleParser {
     private static final int HEX_CODE_LEN = 6;
     private static final String HEX_COLOR_FORMAT = "%0" + HEX_CODE_LEN + "X";
     private static final String FIELD_BARRED = "barred";
+    private static final String FIELD_HIGHLIGHT = "highlight";
 
     private static final String SHAPE_BG_CIRCLE = "circle";
     private static final char BARRED_TOP = 'T';
@@ -277,6 +278,7 @@ public class IPuzIO implements PuzzleParser {
     };
     private static final int DEFINED_COLOURS_MAX_DIGITS
         = ((int) Math.log10(DEFINED_COLORS.length)) + 1;
+    private static final int HIGHLIGHT_COLOR = DEFINED_COLORS[3];
 
     /**
      * An unfancy exception indicating error while parsing
@@ -551,6 +553,10 @@ public class IPuzIO implements PuzzleParser {
             if (style != null) {
                 if (SHAPE_BG_CIRCLE.equals(style.optString(FIELD_SHAPE_BG))) {
                     box.setCircled(true);
+                    hasData = true;
+                }
+                if (style.optBoolean(FIELD_HIGHLIGHT)) {
+                    box.setColor(HIGHLIGHT_COLOR);
                     hasData = true;
                 }
                 Integer color = readColor(style.optString(FIELD_COLOR));

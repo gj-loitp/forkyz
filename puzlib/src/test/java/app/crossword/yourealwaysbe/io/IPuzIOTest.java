@@ -164,6 +164,9 @@ public class IPuzIOTest {
         int grey2 = Integer.valueOf("EFEFEF", 16);
         int grey3 = Integer.valueOf("EAEAEA", 16);
         int darkGreen = Integer.valueOf("50c878", 16);
+        int yellow = Integer.valueOf("FFFAA0", 16);
+        assertEquals(boxes[0][0].getColor(), yellow);
+        assertFalse(boxes[1][1].hasColor());
         assertEquals(boxes[6][0].getColor(), grey1);
         assertEquals(boxes[10][6].getColor(), grey1);
         assertEquals(boxes[0][2].getColor(), grey2);
