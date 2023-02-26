@@ -1046,6 +1046,44 @@ public class Playboard implements Serializable {
         return previous;
     }
 
+    public Position revealInitialLetter() {
+        Position highlightLetter = getHighlightLetter();
+        Box b = puzzle.checkedGetBox(highlightLetter);
+
+        if (!Box.isBlock(b) && b.hasInitialValue()) {
+            if (!Objects.equals(b.getResponse(), b.getInitialValue())) {
+                b.setResponse(b.getInitialValue());
+                flagChange(highlightLetter);
+                notifyChange();
+                return highlightLetter;
+            }
+        }
+
+        return null;
+    }
+
+    public void revealInitialLetters() {
+        boolean changed = false;
+
+        for (int row = 0; row < puzzle.getHeight(); row++) {
+            for (int col = 0; col < puzzle.getWidth(); col++) {
+                Box b = puzzle.checkedGetBox(row, col);
+                boolean reveal =
+                    !Box.isBlock(b) && b.hasInitialValue()
+                    && !Objects.equals(b.getResponse(), b.getInitialValue());
+
+                if (reveal) {
+                    b.setResponse(b.getInitialValue());
+                    flagChange(new Position(row, col));
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed)
+            notifyChange();
+    }
+
     public Position revealLetter() {
         Position highlightLetter = getHighlightLetter();
         Box b = puzzle.checkedGetBox(highlightLetter);

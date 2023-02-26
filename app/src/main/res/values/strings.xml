@@ -353,6 +353,8 @@
     <string name="show_errors_cursor">Cursor</string>
     <string name="scratch_mode">Scratch Mode</string>
     <string name="reveal">Reveal</string>
+    <string name="initial_letter">Initial Letter</string>
+    <string name="initial_letters">Initial Letters</string>
     <string name="letter">Letter</string>
     <string name="word">Word</string>
     <string name="errors">Errors</string>

@@ -81,12 +81,20 @@
     >
         <menu>
             <item
+                android:id="@+id/play_menu_reveal_initial_letter"
+                android:title="@string/initial_letter"
+            />
+            <item
                 android:id="@+id/play_menu_reveal_letter"
                 android:title="@string/letter"
             />
             <item
                 android:id="@+id/play_menu_reveal_word"
                 android:title="@string/word"
+            />
+            <item
+                android:id="@+id/play_menu_reveal_initial_letters"
+                android:title="@string/initial_letters"
             />
             <item
                 android:id="@+id/play_menu_reveal_errors"

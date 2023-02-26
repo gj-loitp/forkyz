@@ -381,6 +381,35 @@ public class PlayboardTest {
         assertEquals(boardZone, expectedZone);
     }
 
+    @TestWithAndWithoutBlockObjects
+    public void testRevealInitialLetter(boolean blockObjects) throws Exception {
+        Puzzle puz = loadTestPuz(blockObjects);
+        Playboard board = new Playboard(puz);
+        Position pos1 = new Position(14, 5);
+        Box box1 = puz.checkedGetBox(pos1);
+        Box box2 = puz.checkedGetBox(0, 3);
+        Box box3 = puz.checkedGetBox(3, 6);
+
+        board.setHighlightLetter(pos1);
+        box1.setResponse("_");
+
+        board.revealInitialLetter();
+        assertEquals(box1.getResponse(), "_");
+
+        box1.setInitialValue("*");
+        box2.setInitialValue("*");
+
+        board.revealInitialLetter();
+        assertEquals(box1.getResponse(), "*");
+        assertTrue(box2.isBlank());
+        assertTrue(box3.isBlank());
+
+        board.revealInitialLetters();
+        assertEquals(box1.getResponse(), "*");
+        assertEquals(box2.getResponse(), "*");
+        assertTrue(box3.isBlank());
+    }
+
     private void checkNoMoveFullGrid(
         boolean blockObjects, MovementStrategy moveStrat
     ) throws Exception {

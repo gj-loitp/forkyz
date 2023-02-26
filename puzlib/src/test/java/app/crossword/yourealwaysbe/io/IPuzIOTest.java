@@ -176,6 +176,8 @@ public class IPuzIOTest {
         assertEquals(interestingBlock.getInitialValue(), "X");
         assertEquals(interestingBlock.getResponse(), "X");
 
+        assertTrue(puz.hasInitialValueCells());
+
         Set<String> clueLists = puz.getClueListNames();
         assertEquals(clueLists.size(), 3);
         assertTrue(clueLists.contains("OddOnes"));

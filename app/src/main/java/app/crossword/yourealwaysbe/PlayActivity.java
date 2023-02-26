@@ -31,6 +31,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import app.crossword.yourealwaysbe.forkyz.ForkyzApplication;
 import app.crossword.yourealwaysbe.forkyz.R;
+import app.crossword.yourealwaysbe.puz.Box;
 import app.crossword.yourealwaysbe.puz.Clue;
 import app.crossword.yourealwaysbe.puz.MovementStrategy;
 import app.crossword.yourealwaysbe.puz.Playboard.PlayboardChanges;
@@ -73,6 +74,7 @@ public class PlayActivity extends PuzzleActivity
     private BoardEditView boardView;
     private TextView clue;
     private View voiceButtonContainer;
+    private boolean hasInitialValues = false;
 
     private Runnable fitToScreenTask = new Runnable() {
         @Override
@@ -349,6 +351,7 @@ public class PlayActivity extends PuzzleActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
+        Playboard board = getBoard();
         Puzzle puz = getPuzzle();
 
         if (puz == null || puz.isUpdatable()) {
@@ -388,6 +391,14 @@ public class PlayActivity extends PuzzleActivity
             .setChecked(showErrorsGrid);
         menu.findItem(R.id.play_menu_show_errors_cursor)
             .setChecked(showErrorsCursor);
+
+        Box box = (board == null) ? null : board.getCurrentBox();
+        boolean hasInitial = !Box.isBlock(box) && box.hasInitialValue();
+        menu.findItem(R.id.play_menu_reveal_initial_letter)
+            .setVisible(hasInitial);
+
+        menu.findItem(R.id.play_menu_reveal_initial_letters)
+            .setVisible(hasInitialValues);
 
         return true;
     }
@@ -536,11 +547,17 @@ public class PlayActivity extends PuzzleActivity
         }
 
         if (getBoard() != null) {
-            if (id == R.id.play_menu_reveal_letter) {
+            if (id == R.id.play_menu_reveal_initial_letter) {
+                getBoard().revealInitialLetter();
+                return true;
+            } if (id == R.id.play_menu_reveal_letter) {
                 getBoard().revealLetter();
                 return true;
             } else if (id == R.id.play_menu_reveal_word) {
                 getBoard().revealWord();
+                return true;
+            } if (id == R.id.play_menu_reveal_initial_letters) {
+                getBoard().revealInitialLetters();
                 return true;
             } else if (id == R.id.play_menu_reveal_errors) {
                 getBoard().revealErrors();
@@ -672,6 +689,10 @@ public class PlayActivity extends PuzzleActivity
         }
 
         setClueText();
+
+        // changed cells could mean change in reveal letters options
+        if (hasInitialValues)
+            invalidateOptionsMenu();
     }
 
     @Override
@@ -772,17 +793,19 @@ public class PlayActivity extends PuzzleActivity
             clueTabs.refresh();
         }
 
-        if (board != null) {
-            board.setSkipCompletedLetters(
-                this.prefs.getBoolean("skipFilled", false)
-            );
-            board.setMovementStrategy(this.getMovementStrategy());
-            board.addListener(this);
+        board.setSkipCompletedLetters(
+            this.prefs.getBoolean("skipFilled", false)
+        );
+        board.setMovementStrategy(this.getMovementStrategy());
+        board.addListener(this);
 
-            keyboardManager.attachKeyboardToView(boardView);
+        keyboardManager.attachKeyboardToView(boardView);
 
-            setClueText();
-        }
+        setClueText();
+
+        hasInitialValues = puz.hasInitialValueCells();
+        // always invalidate as anything in puzzle could have changed
+        invalidateOptionsMenu();
     }
 
     @Override

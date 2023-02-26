@@ -652,6 +652,24 @@ public class Puzzle implements Serializable{
     }
 
     /**
+     * Returns true if some non-block has an initial value
+     */
+    public boolean hasInitialValueCells() {
+        if (boxes == null)
+            return false;
+
+        for (int row = 0; row < boxes.length; row++) {
+            for (int col = 0; col < boxes[row].length; col++) {
+                Box box = boxes[row][col];
+                if (!Box.isBlock(box) && box.hasInitialValue())
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Set pinned clue
      *
      * This is a clue that should be displayed permanently somewhere.
