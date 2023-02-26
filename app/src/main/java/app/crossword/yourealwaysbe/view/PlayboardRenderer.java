@@ -927,8 +927,6 @@ public class PlayboardRenderer {
             }
         }
 
-        float letterTextSize = letterText.getTextSize();
-
         if (letterString.length() > 1) {
             letterText.setTextSize(getIdealTextSize(
                 letterString, letterText, boxSize
@@ -944,8 +942,6 @@ public class PlayboardRenderer {
             boxSize,
             thisLetter
         );
-
-        thisLetter.setTextSize(letterTextSize);
     }
 
     private void drawBoxNotes(
