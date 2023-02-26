@@ -735,14 +735,7 @@ public class PlayboardRenderer {
         } else if (this.hintHighlight && box.isCheated()) {
             canvas.drawRect(boxRect, profile.getCheated());
         } else {
-            if (!box.hasColor()) {
-                canvas.drawRect(boxRect, profile.getBoxColor(box));
-            } else {
-                Paint paint = getRelativePaint(
-                    profile.getCellColor(), box.getColor()
-                );
-                canvas.drawRect(boxRect, paint);
-            }
+            canvas.drawRect(boxRect, profile.getBoxColor(box));
         }
     }
 
@@ -928,7 +921,7 @@ public class PlayboardRenderer {
                 (currentWord != null) && currentWord.checkInWord(row, col);
 
             if (isHighlighted) {
-                thisLetter = profile.getBoxColor(box);
+                thisLetter = profile.getCellColor();
             } else if (inCurrentWord) {
                 thisLetter = profile.getErrorHighlight();
             }
@@ -1095,43 +1088,6 @@ public class PlayboardRenderer {
             && !box.isBlank()
             && box.hasSolution()
             && !Objects.equals(box.getSolution(), box.getResponse());
-    }
-
-    /**
-     * Return a new paint based on color
-     *
-     * For use when "inverting" a color to appear on the board. Relative
-     * vs. a pure boxColor background is the pure color. Vs. a pure black
-     * background in the inverted color. Somewhere in between is
-     * somewhere in between.
-     *
-     * @param base the standard background color
-     * @param color 24-bit 0x00rrggbb "pure" color
-     */
-    private Paint getRelativePaint(Paint base, int pureColor) {
-        int baseCol = base.getColor();
-
-        // the android color library is compatible with 0x00rrggbb
-        int mixedR = mixColors(Color.red(baseCol), Color.red(pureColor));
-        int mixedG = mixColors(Color.green(baseCol), Color.green(pureColor));
-        int mixedB = mixColors(Color.blue(baseCol), Color.blue(pureColor));
-
-        Paint mixedPaint = new Paint(base);
-        mixedPaint.setColor(Color.rgb(mixedR, mixedG, mixedB));
-
-        return mixedPaint;
-    }
-
-    /**
-     * Tint a 0-255 pure color against a base
-     *
-     * See getRelativePaint
-     */
-    private int mixColors(int base, int pure) {
-        double baseBias = base / 255.0;
-        return (int)(
-            (baseBias * pure) + ((1- baseBias) * (255 - pure))
-        );
     }
 
     private static void drawText(
@@ -1601,7 +1557,10 @@ public class PlayboardRenderer {
         }
 
         public TextPaint getBoxColor(Box box) {
-            return Box.isBlock(box) ? blockBox : cellBox;
+            if (box == null || !box.hasColor())
+               return Box.isBlock(box) ? blockBox : cellBox;
+            else
+               return getRelativePaint(cellBox, box.getColor());
         }
 
         public TextPaint getCellColor() {
@@ -1700,6 +1659,52 @@ public class PlayboardRenderer {
                 boxSize = (int) (BASE_BOX_SIZE_INCHES * dpi * 0.25F);
             }
             return boxSize;
+        }
+
+        /**
+         * Return a new paint based on color
+         *
+         * For use when "inverting" a color to appear on the board. Relative
+         * vs. a pure boxColor background is the pure color. Vs. a pure black
+         * background in the inverted color. Somewhere in between is
+         * somewhere in between.
+         *
+         * @param base the standard background color
+         * @param color 24-bit 0x00rrggbb "pure" color
+         */
+        private Paint getRelativePaint(Paint base, int pureColor) {
+            Paint mixedPaint = new Paint(base);
+            mixedPaint.setColor(getRelativeColor(base.getColor(), pureColor));
+            return mixedPaint;
+        }
+
+        /**
+         * Return a new text paint based on color
+         */
+        private TextPaint getRelativePaint(TextPaint base, int pureColor) {
+            TextPaint mixedPaint = new TextPaint(base);
+            mixedPaint.setColor(getRelativeColor(base.getColor(), pureColor));
+            return mixedPaint;
+        }
+
+        private int getRelativeColor(int baseColor, int pureColor) {
+            int mixedR = mixColors(Color.red(baseColor), Color.red(pureColor));
+            int mixedG = mixColors(Color.green(baseColor), Color.green(pureColor));
+            int mixedB = mixColors(Color.blue(baseColor), Color.blue(pureColor));
+
+            return Color.rgb(mixedR, mixedG, mixedB);
+        }
+
+        /**
+         * Tint a 0-255 pure color against a base
+         *
+         * See getRelativePaint
+         */
+        private int mixColors(int base, int pure) {
+            double baseBias = base / 255.0;
+            return (int)(
+                (baseBias * pure) + ((1- baseBias) * (255 - pure))
+            );
         }
     }
 }
