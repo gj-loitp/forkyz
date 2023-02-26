@@ -120,6 +120,7 @@ public class IPuzIO implements PuzzleParser {
     private static final String FIELD_MARK_BOTTOM_LEFT = "BL";
     private static final String FIELD_MARK_BOTTOM = "B";
     private static final String FIELD_MARK_BOTTOM_RIGHT = "BR";
+    private static final String FIELD_LABEL = "label";
 
     private static final String FIELD_CLUES_ACROSS = "Across";
     private static final String FIELD_CLUES_DOWN = "Down";
@@ -540,13 +541,6 @@ public class IPuzIO implements PuzzleParser {
                 createdBlock = true;
             }
 
-            String initVal = optStringNull(json, FIELD_VALUE);
-            if (initVal != null) {
-                box.setInitialValue(initVal);
-                box.setResponse(initVal);
-                hasData = true;
-            }
-
             JSONObject style = json.optJSONObject(FIELD_STYLE);
             if (style == null && namedStyles != null) {
                 String styleName = json.optString(FIELD_STYLE);
@@ -564,9 +558,23 @@ public class IPuzIO implements PuzzleParser {
                     box.setColor(color);
                     hasData = true;
                 }
+                String label = style.optString(FIELD_LABEL);
+                if (label != null && !label.isEmpty()) {
+                    box.setInitialValue(label);
+                    box.setResponse(label);
+                    hasData = true;
+                }
 
                 hasData |= getBarredFromStyleObj(style, box);
                 hasData |= getMarksFromStyleObj(style, box);
+            }
+
+            // overwrites label if there is one (not supporting both)
+            String initVal = optStringNull(json, FIELD_VALUE);
+            if (initVal != null) {
+                box.setInitialValue(initVal);
+                box.setResponse(initVal);
+                hasData = true;
             }
 
             return (createdBlock && !hasData) ? null : box;
@@ -1690,7 +1698,8 @@ public class IPuzIO implements PuzzleParser {
 
                         writeCellStyle(box, writer);
 
-                        if (box.hasInitialValue()) {
+                        // written as style label for blocks
+                        if (!Box.isBlock(box) && box.hasInitialValue()) {
                             writer.key(FIELD_VALUE)
                                 .value(box.getInitialValue());
                         }
@@ -1740,6 +1749,11 @@ public class IPuzIO implements PuzzleParser {
 
         if (box.isCircled()) {
             writer.key(FIELD_SHAPE_BG).value(SHAPE_BG_CIRCLE);
+        }
+
+        // i say blocks have labels rather than values
+        if (Box.isBlock(box) && box.hasInitialValue()) {
+            writer.key(FIELD_LABEL).value(box.getInitialValue());
         }
 
         writeBarredField(box, writer);

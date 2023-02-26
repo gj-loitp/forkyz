@@ -98,12 +98,12 @@
         "style": {
           "barred": "T"
         },
-        "cell": 12
+        "cell": 12,
+        "value": "A"
       },
       {
-        "style": { color: "EFEFEF" },
+        "style": { color: "EFEFEF", "label": "X" },
         "cell": "#",
-        "value": "X"
       },
       {
         "style": {
