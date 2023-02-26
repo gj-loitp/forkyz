@@ -55,7 +55,8 @@
       },
       {
         "style": {
-          "barred": "L"
+          "barred": "L",
+          "color": "10"
         },
         "cell": 5
       },

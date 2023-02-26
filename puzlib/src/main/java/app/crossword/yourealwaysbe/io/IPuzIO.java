@@ -256,6 +256,27 @@ public class IPuzIO implements PuzzleParser {
     private static final String ACROSTIC_BOARD_CLUE_LIST = "Quote";
     private static final String ACROSTIC_BOARD_CLUE_HINT = "Quote";
 
+    private static final int[] DEFINED_COLORS = new int[] {
+        HtmlUtil.parseHtmlColor("#000000"), // 0 - black
+        HtmlUtil.parseHtmlColor("#d9d1f1"), // 1 - light purple
+        HtmlUtil.parseHtmlColor("#afe1af"), // 2 - light green
+        HtmlUtil.parseHtmlColor("#fffaa0"), // 3 - light yellow
+        HtmlUtil.parseHtmlColor("#add8e6"), // 4 - light blue
+        HtmlUtil.parseHtmlColor("#faa0a0"), // 5 - light red
+        HtmlUtil.parseHtmlColor("#bdffff"), // 6 - light cyan
+        HtmlUtil.parseHtmlColor("#f5f5dc"), // 7 - off white
+        HtmlUtil.parseHtmlColor("#cccccc"), // 8 - light black
+        HtmlUtil.parseHtmlColor("#cf9fff"), // 9 - dark purple
+        HtmlUtil.parseHtmlColor("#50c878"), // 10 - dark green
+        HtmlUtil.parseHtmlColor("#fafa33"), // 11 - dark yellow
+        HtmlUtil.parseHtmlColor("#4169e1"), // 12 - dark blue
+        HtmlUtil.parseHtmlColor("#fa8072"), // 13 - dark red
+        HtmlUtil.parseHtmlColor("#00ffff"), // 14 - cyan
+        HtmlUtil.parseHtmlColor("#ebca9a")  // 15 - dark off white
+    };
+    private static final int DEFINED_COLOURS_MAX_DIGITS
+        = ((int) Math.log10(DEFINED_COLORS.length)) + 1;
+
     /**
      * An unfancy exception indicating error while parsing
      */
@@ -538,7 +559,7 @@ public class IPuzIO implements PuzzleParser {
                     box.setCircled(true);
                     hasData = true;
                 }
-                Integer color = hexToColor(style.optString(FIELD_COLOR));
+                Integer color = readColor(style.optString(FIELD_COLOR));
                 if (color != null) {
                     box.setColor(color);
                     hasData = true;
@@ -2284,21 +2305,35 @@ public class IPuzIO implements PuzzleParser {
     }
 
     /**
-     * Convert (#?)dddddd to 0x00dddddd
+     * Read colour
+     *
+     * Should be a number (DEFINED_COLORS are what we support) or a
+     * 6-digit hex bbbbbb of form 0x00rrggbb.
+     *
+     * Allows some flex. Assumes DEFINED_COLOURS_MAX_DIGITS chars or
+     * less is a number or is a hex code. As a backup, falls back to
+     * HTML format.
      *
      * Returns null if cannot
      */
-    private static Integer hexToColor(String hex) {
-        if (hex == null || hex.isEmpty())
+    private static Integer readColor(String color) {
+        if (color == null || color.isEmpty())
             return null;
 
         try {
-            return Integer.valueOf(hex, 16);
+            if (color.length() <= DEFINED_COLOURS_MAX_DIGITS) {
+                int colorNum = Integer.valueOf(color);
+                if (0 <= colorNum && colorNum < DEFINED_COLORS.length)
+                    return DEFINED_COLORS[colorNum];
+                // else fall through to backup
+            } else {
+                return Integer.valueOf(color, 16);
+            }
         } catch (NumberFormatException e) {
-            // maybe it's HTML
-            int color = HtmlUtil.parseHtmlColor(hex);
-            return (color < 0) ? null : color;
+            // fall through to HTML backup
         }
+        int iColor = HtmlUtil.parseHtmlColor(color);
+        return (iColor < 0) ? null : iColor;
     }
 
     /**

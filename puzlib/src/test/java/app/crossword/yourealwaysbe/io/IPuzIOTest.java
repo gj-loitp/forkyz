@@ -163,10 +163,12 @@ public class IPuzIOTest {
         int grey1 = Integer.valueOf("DCDCDC", 16);
         int grey2 = Integer.valueOf("EFEFEF", 16);
         int grey3 = Integer.valueOf("EAEAEA", 16);
+        int darkGreen = Integer.valueOf("50c878", 16);
         assertEquals(boxes[6][0].getColor(), grey1);
         assertEquals(boxes[10][6].getColor(), grey1);
         assertEquals(boxes[0][2].getColor(), grey2);
         assertEquals(boxes[0][3].getColor(), grey3);
+        assertEquals(boxes[0][8].getColor(), darkGreen);
 
         Box interestingBlock = boxes[1][3];
         assertTrue(interestingBlock.isBlock());
