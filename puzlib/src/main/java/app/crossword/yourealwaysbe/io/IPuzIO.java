@@ -1730,7 +1730,8 @@ public class IPuzIO implements PuzzleParser {
         return box.isCircled()
             || box.isBarred()
             || box.hasColor()
-            || box.hasMarks();
+            || box.hasMarks()
+            || (Box.isBlock(box) && box.hasInitialValue());
     }
 
     private static void writeCellStyle(

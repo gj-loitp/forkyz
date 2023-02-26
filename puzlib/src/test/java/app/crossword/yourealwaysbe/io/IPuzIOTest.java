@@ -171,6 +171,7 @@ public class IPuzIOTest {
         assertEquals(boxes[0][8].getColor(), darkGreen);
         assertEquals(boxes[1][2].getInitialValue(), "A");
         assertFalse(boxes[1][1].hasInitialValue());
+        assertEquals(boxes[1][4].getInitialValue(), "Y");
 
         Box interestingBlock = boxes[1][3];
         assertTrue(interestingBlock.isBlock());

@@ -268,8 +268,12 @@ public class JPZIO implements PuzzleParser {
                         box.setBlock(true);
 
                     String solution = attributes.getValue("solution");
-                    if (solution != null && solution.length() > 0)
+                    if (
+                        solution != null && solution.length() > 0
+                        && !Box.isBlock(box)
+                    ) {
                         box.setSolution(solution);
+                    }
 
                     String response = attributes.getValue("solve-state");
                     if (response != null && response.length() > 0) {
@@ -342,6 +346,8 @@ public class JPZIO implements PuzzleParser {
             if ("block".equalsIgnoreCase(cellType))
                 return false;
             if ("void".equalsIgnoreCase(cellType))
+                return false;
+            if ("clue".equalsIgnoreCase(cellType))
                 return false;
             return true;
         }
