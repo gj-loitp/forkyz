@@ -674,28 +674,35 @@ public class PlayboardRenderer {
             if (highlightError(box, isHighlighted))
                 box.setCheated(true);
 
-            drawBoxBackground(canvas, box, row, col, r, highlight, currentWord);
+            boolean inCurrentWord =
+                (currentWord != null) && currentWord.checkInWord(row, col);
+
+            drawBoxBackground(
+                canvas, box, row, col, r, highlight, inCurrentWord
+            );
 
             // Bars before clue numbers to avoid obfuscating
             if (fullBoard)
                 drawBoxBars(canvas, x, y, box);
 
-            drawBoxMarks(canvas, x, y, box);
+            drawBoxMarks(canvas, x, y, box, inCurrentWord);
             if (fullBoard) {
                 drawBoxFlags(canvas, x, y, box);
             }
 
-            drawBoxCircle(canvas, x, y, box);
+            drawBoxCircle(canvas, x, y, box, inCurrentWord);
 
             if (box.isBlank()) {
                 if (suppressNotesLists != null) {
-                    drawBoxNotes(canvas, x, y, box, suppressNotesLists);
+                    drawBoxNotes(
+                        canvas, x, y, box, inCurrentWord, suppressNotesLists
+                    );
                 }
             } else {
                 drawBoxLetter(
                     canvas, x, y,
                     box, row, col,
-                    isHighlighted, currentWord
+                    isHighlighted, inCurrentWord
                 );
             }
         }
@@ -714,7 +721,7 @@ public class PlayboardRenderer {
 
     private void drawBoxBackground(
         Canvas canvas, Box box, int row, int col,
-        Rect boxRect, Position highlight, Word currentWord
+        Rect boxRect, Position highlight, boolean inCurrentWord
     ) {
         PaintProfile profile = getProfile();
 
@@ -728,7 +735,7 @@ public class PlayboardRenderer {
             canvas.drawRect(boxRect, profile.getCurrentLetterHighlight());
         } else if (isHighlighted && highlightError) {
             canvas.drawRect(boxRect, profile.getErrorHighlight());
-        } else if ((currentWord != null) && currentWord.checkInWord(row, col)) {
+        } else if (inCurrentWord) {
             canvas.drawRect(boxRect, profile.getCurrentWordHighlight());
         } else if (highlightError) {
             canvas.drawRect(boxRect, profile.getError());
@@ -739,20 +746,22 @@ public class PlayboardRenderer {
         }
     }
 
-    private void drawBoxBars(Canvas canvas, int x, int y, Box box) {
+    private void drawBoxBars(
+        Canvas canvas, int x, int y, Box box
+    ) {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int barSize = profile.getBarSize();
-        Paint outline = profile.getOutline(box);
+        Paint barColor = profile.getBarColor(box);
 
         if (box.isBarredLeft()) {
             Rect bar = new Rect(x, y, x + barSize, y + boxSize);
-            canvas.drawRect(bar, outline);
+            canvas.drawRect(bar, barColor);
         }
 
         if (box.isBarredTop()) {
             Rect bar = new Rect(x, y, x + boxSize, y + barSize);
-            canvas.drawRect(bar, outline);
+            canvas.drawRect(bar, barColor);
         }
 
         if (box.isBarredRight()) {
@@ -760,7 +769,7 @@ public class PlayboardRenderer {
                 x + boxSize - barSize, y,
                 x + boxSize, y + boxSize
             );
-            canvas.drawRect(bar, outline);
+            canvas.drawRect(bar, barColor);
         }
 
         if (box.isBarredBottom()) {
@@ -768,15 +777,17 @@ public class PlayboardRenderer {
                 x, y + boxSize - barSize,
                 x + boxSize, y + boxSize
             );
-            canvas.drawRect(bar, outline);
+            canvas.drawRect(bar, barColor);
         }
     }
 
-    private void drawBoxMarks(Canvas canvas, int x, int y, Box box) {
+    private void drawBoxMarks(
+        Canvas canvas, int x, int y, Box box, boolean inCurrentWord
+    ) {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int numberOffset = profile.getNumberOffset();
-        TextPaint numberText = profile.getNumberText(box);
+        TextPaint numberText = profile.getNumberText(box, inCurrentWord);
 
         if (box.hasClueNumber()) {
             String clueNumber = box.getClueNumber();
@@ -884,7 +895,9 @@ public class PlayboardRenderer {
         }
     }
 
-    private void drawBoxCircle(Canvas canvas, int x, int y, Box box) {
+    private void drawBoxCircle(
+        Canvas canvas, int x, int y, Box box, boolean inCurrentWord
+    ) {
         int boxSize = getBoxSize();
 
         // Draw circle
@@ -893,7 +906,7 @@ public class PlayboardRenderer {
                 x + (boxSize / 2) + 0.5F,
                 y + (boxSize / 2) + 0.5F,
                 (boxSize / 2) - 1.5F,
-                getProfile().getShape(box)
+                getProfile().getShape(box, inCurrentWord)
             );
         }
     }
@@ -901,12 +914,12 @@ public class PlayboardRenderer {
     private void drawBoxLetter(
         Canvas canvas, int x, int y,
         Box box, int row, int col,
-        boolean isHighlighted, Word currentWord
+        boolean isHighlighted, boolean inCurrentWord
     ) {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int textOffset = profile.getTextOffset();
-        TextPaint letterText = profile.getLetterText(box);
+        TextPaint letterText = profile.getLetterText(box, inCurrentWord);
 
         TextPaint thisLetter = letterText;
         String letterString = box.isBlank()
@@ -917,9 +930,6 @@ public class PlayboardRenderer {
             return;
 
         if (highlightError(box, isHighlighted)) {
-            boolean inCurrentWord =
-                (currentWord != null) && currentWord.checkInWord(row, col);
-
             if (isHighlighted) {
                 thisLetter = profile.getCellColor();
             } else if (inCurrentWord) {
@@ -945,14 +955,15 @@ public class PlayboardRenderer {
     }
 
     private void drawBoxNotes(
-        Canvas canvas, int x, int y, Box box, Set<String> suppressNotesLists
+        Canvas canvas, int x, int y, Box box,
+        boolean inCurrentWord, Set<String> suppressNotesLists
     ) {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int textOffset = profile.getTextOffset();
-        TextPaint noteText = profile.getNoteText(box);
-        TextPaint miniNoteText = profile.getMiniNoteText(box);
-        TextPaint letterText = profile.getLetterText(box);
+        TextPaint noteText = profile.getNoteText(box, inCurrentWord);
+        TextPaint miniNoteText = profile.getMiniNoteText(box, inCurrentWord);
+        TextPaint letterText = profile.getLetterText(box, inCurrentWord);
 
         String noteStringAcross = null;
         String noteStringDown = null;
@@ -1563,12 +1574,29 @@ public class PlayboardRenderer {
             return cellBox;
         }
 
-        public Paint getShape(Box box) {
-            return Box.isBlock(box) ? blockShape : shape;
+        public Paint getShape(Box box, boolean inCurrentWord) {
+            Paint base = Box.isBlock(box) ? blockShape : shape;
+            if (box == null || !box.hasTextColor() || inCurrentWord) {
+               return base;
+            } else {
+                Paint mixedPaint = new Paint(base);
+                Paint cell = getCellColor();
+                mixedPaint.setColor(getRelativeColor(
+                    cell.getColor(), box.getTextColor()
+                ));
+                return mixedPaint;
+            }
         }
 
         public Paint getOutline(Box box) {
             return outline;
+        }
+
+        public Paint getBarColor(Box box) {
+            if (box == null || !box.hasBarColor())
+               return outline;
+            else
+               return getRelativePaint(getCellColor(), box.getBarColor());
         }
 
         public Paint getCheated() {
@@ -1587,20 +1615,26 @@ public class PlayboardRenderer {
             return currentWordHighlight;
         }
 
-        public TextPaint getLetterText(Box box) {
-            return Box.isBlock(box) ? blockLetterText : letterText;
+        public TextPaint getLetterText(Box box, boolean inCurrentWord) {
+            return mixTextPaint(
+                box, letterText, blockLetterText, inCurrentWord
+            );
         }
 
-        public TextPaint getNumberText(Box box) {
-            return Box.isBlock(box) ? blockNumberText : numberText;
+        public TextPaint getNumberText(Box box, boolean inCurrentWord) {
+            return mixTextPaint(
+                box, numberText, blockNumberText, inCurrentWord
+            );
         }
 
-        public TextPaint getNoteText(Box box) {
-            return Box.isBlock(box) ? blockNoteText : noteText;
+        public TextPaint getNoteText(Box box, boolean inCurrentWord) {
+            return mixTextPaint(box, noteText, blockNoteText, inCurrentWord);
         }
 
-        public TextPaint getMiniNoteText(Box box) {
-            return Box.isBlock(box) ? blockMiniNoteText : miniNoteText;
+        public TextPaint getMiniNoteText(Box box, boolean inCurrentWord) {
+            return mixTextPaint(
+                box, miniNoteText, blockMiniNoteText, inCurrentWord
+            );
         }
 
         public Paint getError() {
@@ -1624,7 +1658,6 @@ public class PlayboardRenderer {
         public int getNumberOffset() { return numberOffset; }
         public int getTextOffset() { return textOffset; }
 
-
         public void setScale(float scale, float dpi) {
             boxSize = calcBoxSize(scale, dpi);
             numberTextSize = boxSize / 4;
@@ -1647,6 +1680,23 @@ public class PlayboardRenderer {
             blockNoteText.setTextSize(noteTextSize);
             miniNoteText.setTextSize(miniNoteTextSize);
             blockMiniNoteText.setTextSize(miniNoteTextSize);
+        }
+
+        private TextPaint mixTextPaint(
+            Box box, TextPaint cellBase, TextPaint blockBase,
+            boolean inCurrentWord
+        ) {
+            TextPaint base = Box.isBlock(box) ? blockBase : cellBase;
+            if (box == null || !box.hasTextColor() || inCurrentWord) {
+               return base;
+            } else {
+                TextPaint mixedPaint = new TextPaint(base);
+                Paint cell = getCellColor();
+                mixedPaint.setColor(getRelativeColor(
+                    cell.getColor(), box.getTextColor()
+                ));
+                return mixedPaint;
+            }
         }
 
         private int calcBoxSize(float scale, float dpi) {
