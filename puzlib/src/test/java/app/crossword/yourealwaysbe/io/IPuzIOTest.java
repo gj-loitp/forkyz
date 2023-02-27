@@ -171,7 +171,17 @@ public class IPuzIOTest {
         assertEquals(boxes[10][6].getColor(), grey1);
         assertEquals(boxes[0][2].getColor(), grey2);
         assertEquals(boxes[0][3].getColor(), grey3);
+        assertFalse(boxes[0][3].hasTextColor());
+        assertFalse(boxes[0][3].hasBarColor());
         assertEquals(boxes[0][8].getColor(), darkGreen);
+        assertTrue(boxes[0][8].hasTextColor());
+        assertTrue(boxes[0][8].hasBarColor());
+        assertEquals(boxes[0][8].getTextColor(), Integer.valueOf("123456", 16));
+        assertEquals(boxes[0][8].getBarColor(), Integer.valueOf("654321", 16));
+        assertFalse(boxes[0][9].hasBarColor());
+        assertEquals(boxes[0][9].getTextColor(), Integer.valueOf("121212", 16));
+        assertFalse(boxes[0][10].hasTextColor());
+        assertEquals(boxes[0][10].getBarColor(), Integer.valueOf("212121", 16));
         assertEquals(boxes[1][2].getInitialValue(), "A");
         assertFalse(boxes[1][1].hasInitialValue());
         assertEquals(boxes[1][4].getInitialValue(), "Y");

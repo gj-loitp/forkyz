@@ -33,6 +33,8 @@ public class Box implements Serializable {
 
     // 24-bit representation 0x00rrggbb
     private int color = NOCOLOR;
+    private int textColor = NOCOLOR;
+    private int barColor = NOCOLOR;
 
     @Override
     public boolean equals(Object obj) {
@@ -104,6 +106,12 @@ public class Box implements Serializable {
         if (getColor() != other.getColor())
             return false;
 
+        if (getTextColor() != other.getTextColor())
+            return false;
+
+        if (getBarColor() != other.getBarColor())
+            return false;
+
         // Annoying Arrays.equals doesn't do arrays of arrays..
         String[][] marks = getMarks();
         String[][] otherMarks = other.getMarks();
@@ -137,7 +145,7 @@ public class Box implements Serializable {
         result = (prime * result) + Objects.hash(getInitialValue());
         result = (prime * result) + Objects.hash(getResponse());
         result = (prime * result) + Objects.hash(getSolution());
-        result = (prime * result) + getColor();
+        result = (prime * result) + getColor() + getTextColor() + getBarColor();
         result = (prime * result) + (isBlock() ? 1231 : 1237);
         // ignore marks, too awkward and probably empty
 
@@ -454,10 +462,15 @@ public class Box implements Serializable {
      */
     public int getColor() { return color; }
 
+    public boolean hasTextColor() { return textColor != NOCOLOR; }
+    public int getTextColor() { return textColor; }
+    public boolean hasBarColor() { return barColor != NOCOLOR; }
+    public int getBarColor() { return barColor; }
+
     /**
      * Set as 24-bit 0x00rrggbb
      */
-    public void setColor(int color) {
-        this.color = color;
-    }
+    public void setColor(int color) { this.color = color; }
+    public void setTextColor(int textColor) { this.textColor = textColor; }
+    public void setBarColor(int barColor) { this.barColor = barColor; }
 }

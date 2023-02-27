@@ -101,6 +101,8 @@ public class IPuzIO implements PuzzleParser {
     private static final String FIELD_STYLE = "style";
     private static final String FIELD_SHAPE_BG = "shapebg";
     private static final String FIELD_COLOR = "color";
+    private static final String FIELD_TEXT_COLOR = "colortext";
+    private static final String FIELD_BAR_COLOR = "colorbar";
     private static final int HEX_CODE_LEN = 6;
     private static final String HEX_COLOR_FORMAT = "%0" + HEX_CODE_LEN + "X";
     private static final String FIELD_BARRED = "barred";
@@ -555,15 +557,6 @@ public class IPuzIO implements PuzzleParser {
                     box.setCircled(true);
                     hasData = true;
                 }
-                if (style.optBoolean(FIELD_HIGHLIGHT)) {
-                    box.setColor(HIGHLIGHT_COLOR);
-                    hasData = true;
-                }
-                Integer color = readColor(style.optString(FIELD_COLOR));
-                if (color != null) {
-                    box.setColor(color);
-                    hasData = true;
-                }
                 String label = style.optString(FIELD_LABEL);
                 if (label != null && !label.isEmpty()) {
                     box.setInitialValue(label);
@@ -571,6 +564,7 @@ public class IPuzIO implements PuzzleParser {
                     hasData = true;
                 }
 
+                hasData |= getColorsFromStyleObj(style, box);
                 hasData |= getBarredFromStyleObj(style, box);
                 hasData |= getMarksFromStyleObj(style, box);
             }
@@ -599,6 +593,39 @@ public class IPuzIO implements PuzzleParser {
                 );
             }
         }
+    }
+
+    /**
+     * Reads various colours from style and set in box
+     *
+     * Returns true if something set
+     */
+    private static boolean getColorsFromStyleObj(JSONObject style, Box box) {
+        boolean hasData = false;
+        if (style.optBoolean(FIELD_HIGHLIGHT)) {
+            box.setColor(HIGHLIGHT_COLOR);
+            hasData = true;
+        }
+
+        Integer color = readColor(style.optString(FIELD_COLOR));
+        if (color != null) {
+            box.setColor(color);
+            hasData = true;
+        }
+
+        Integer textColor = readColor(style.optString(FIELD_TEXT_COLOR));
+        if (textColor != null) {
+            box.setTextColor(textColor);
+            hasData = true;
+        }
+
+        Integer barColor = readColor(style.optString(FIELD_BAR_COLOR));
+        if (barColor != null) {
+            box.setBarColor(barColor);
+            hasData = true;
+        }
+
+        return hasData;
     }
 
     /**
@@ -1736,6 +1763,8 @@ public class IPuzIO implements PuzzleParser {
         return box.isCircled()
             || box.isBarred()
             || box.hasColor()
+            || box.hasTextColor()
+            || box.hasBarColor()
             || box.hasMarks()
             || (Box.isBlock(box) && box.hasInitialValue());
     }
@@ -1749,11 +1778,6 @@ public class IPuzIO implements PuzzleParser {
         writer.key(FIELD_STYLE)
             .object();
 
-        if (box.hasColor()) {
-            writer.key(FIELD_COLOR)
-                .value(colorToHex(box.getColor()));
-        }
-
         if (box.isCircled()) {
             writer.key(FIELD_SHAPE_BG).value(SHAPE_BG_CIRCLE);
         }
@@ -1763,10 +1787,26 @@ public class IPuzIO implements PuzzleParser {
             writer.key(FIELD_LABEL).value(box.getInitialValue());
         }
 
+        writeColorFields(box, writer);
         writeBarredField(box, writer);
         writeMarkField(box, writer);
 
         writer.endObject();
+    }
+
+    private static void writeColorFields(Box box, FormatableJSONWriter writer) {
+        if (box.hasColor()) {
+            writer.key(FIELD_COLOR)
+                .value(colorToHex(box.getColor()));
+        }
+        if (box.hasTextColor()) {
+            writer.key(FIELD_TEXT_COLOR)
+                .value(colorToHex(box.getTextColor()));
+        }
+        if (box.hasBarColor()) {
+            writer.key(FIELD_BAR_COLOR)
+                .value(colorToHex(box.getBarColor()));
+        }
     }
 
     private static void writeBarredField(Box box, FormatableJSONWriter writer) {

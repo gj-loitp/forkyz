@@ -56,18 +56,23 @@
       {
         "style": {
           "barred": "L",
-          "color": "10"
+          "color": "10",
+          "colortext": "123456",
+          "colorbar": "654321"
         },
         "cell": 5
       },
       {
         "style": {
-          "barred": "L"
+          "barred": "L",
+          "colortext": "121212"
         },
         "cell": 6
       },
       {
-        "style": {},
+        "style": {
+            "colorbar": "212121"
+        },
         "cell": 7
       },
       {
