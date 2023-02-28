@@ -5,9 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.text.Layout;
@@ -596,29 +598,42 @@ public class PlayboardRenderer {
                 : R.string.cur_box_not_circled
         );
 
-        String barTop = context.getString(
-            box.isBarredTop()
-                ? R.string.cur_box_bar_top
-                : R.string.cur_box_no_bar_top
-        );
+        // far too much copy-pasting here...
+        int barTopId;
+        switch(box.getBarTop()) {
+        case SOLID: barTopId = R.string.cur_box_bar_top; break;
+        case DASHED: barTopId = R.string.cur_box_bar_dashed_top; break;
+        case DOTTED: barTopId = R.string.cur_box_bar_dotted_top; break;
+        default: barTopId = R.string.cur_box_no_bar_top; break;
+        }
+        String barTop = context.getString(barTopId);
 
-        String barRight = context.getString(
-            box.isBarredRight()
-                ? R.string.cur_box_bar_right
-                : R.string.cur_box_no_bar_right
-        );
+        int barRightId;
+        switch(box.getBarRight()) {
+        case SOLID: barRightId = R.string.cur_box_bar_right; break;
+        case DASHED: barRightId = R.string.cur_box_bar_dashed_right; break;
+        case DOTTED: barRightId = R.string.cur_box_bar_dotted_right; break;
+        default: barRightId = R.string.cur_box_no_bar_right; break;
+        }
+        String barRight = context.getString(barRightId);
 
-        String barBottom = context.getString(
-            box.isBarredBottom()
-                ? R.string.cur_box_bar_bottom
-                : R.string.cur_box_no_bar_bottom
-        );
+        int barBottomId;
+        switch(box.getBarBottom()) {
+        case SOLID: barBottomId = R.string.cur_box_bar_bottom; break;
+        case DASHED: barBottomId = R.string.cur_box_bar_dashed_bottom; break;
+        case DOTTED: barBottomId = R.string.cur_box_bar_dotted_bottom; break;
+        default: barBottomId = R.string.cur_box_no_bar_bottom; break;
+        }
+        String barBottom = context.getString(barBottomId);
 
-        String barLeft = context.getString(
-            box.isBarredLeft()
-                ? R.string.cur_box_bar_left
-                : R.string.cur_box_no_bar_left
-        );
+        int barLeftId;
+        switch(box.getBarLeft()) {
+        case SOLID: barLeftId = R.string.cur_box_bar_left; break;
+        case DASHED: barLeftId = R.string.cur_box_bar_dashed_left; break;
+        case DOTTED: barLeftId = R.string.cur_box_bar_dotted_left; break;
+        default: barLeftId = R.string.cur_box_no_bar_left; break;
+        }
+        String barLeft = context.getString(barLeftId);
 
         String error = context.getString(
             highlightError(box, hasCursor)
@@ -752,33 +767,56 @@ public class PlayboardRenderer {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int barSize = profile.getBarSize();
-        Paint barColor = profile.getBarColor(box);
+        int offset = barSize / 2;
 
         if (box.isBarredLeft()) {
-            Rect bar = new Rect(x, y, x + barSize, y + boxSize);
-            canvas.drawRect(bar, barColor);
+            int barx = x + offset;
+            drawBar(
+                canvas,
+                barx, y, barx, y + boxSize,
+                box, box.getBarLeft()
+            );
         }
 
         if (box.isBarredTop()) {
-            Rect bar = new Rect(x, y, x + boxSize, y + barSize);
-            canvas.drawRect(bar, barColor);
+            int bary = y + offset;
+            drawBar(
+                canvas,
+                x, bary, x + boxSize, bary,
+                box, box.getBarTop()
+            );
         }
 
         if (box.isBarredRight()) {
-            Rect bar = new Rect(
-                x + boxSize - barSize, y,
-                x + boxSize, y + boxSize
+            int barx = x + boxSize - offset;
+            drawBar(
+                canvas,
+                barx, y, barx, y + boxSize,
+                box, box.getBarRight()
             );
-            canvas.drawRect(bar, barColor);
         }
 
         if (box.isBarredBottom()) {
-            Rect bar = new Rect(
-                x, y + boxSize - barSize,
-                x + boxSize, y + boxSize
+            int bary = y + boxSize - offset;
+            drawBar(
+                canvas,
+                x, bary, x + boxSize, bary,
+                box, box.getBarBottom()
             );
-            canvas.drawRect(bar, barColor);
         }
+    }
+
+    private void drawBar(
+        Canvas canvas,
+        int xstart, int ystart, int xend, int yend,
+        Box box, Box.Bar barStyle
+    ) {
+        PaintProfile profile = getProfile();
+        Paint barColor = profile.getBarColor(box, barStyle);
+        Path path = new Path();
+        path.moveTo(xstart, ystart);
+        path.lineTo(xend, yend);
+        canvas.drawPath(path, barColor);
     }
 
     private void drawBoxMarks(
@@ -1431,6 +1469,9 @@ public class PlayboardRenderer {
         private final Paint shape = new Paint();
         private final Paint blockShape = new Paint();
         private final Paint outline = new Paint();
+        private final Paint bar = new Paint();
+        private final Paint barDashed = new Paint();
+        private final Paint barDotted = new Paint();
         private final Paint cheated = new Paint();
         private final Paint currentLetterBox = new Paint();
         private final Paint currentLetterHighlight = new Paint();
@@ -1483,6 +1524,14 @@ public class PlayboardRenderer {
 
             outline.setColor(blockColor);
             outline.setStrokeWidth(2.0F);
+
+            // line styles set in scale
+            bar.setColor(blockColor);
+            bar.setStyle(Style.STROKE);
+            barDashed.setColor(blockColor);
+            barDashed.setStyle(Style.STROKE);
+            barDotted.setColor(blockColor);
+            barDotted.setStyle(Style.STROKE);
 
             numberText.setTextAlign(Align.LEFT);
             numberText.setColor(boardLetterColor);
@@ -1592,11 +1641,23 @@ public class PlayboardRenderer {
             return outline;
         }
 
-        public Paint getBarColor(Box box) {
-            if (box == null || !box.hasBarColor())
-               return outline;
-            else
-               return getRelativePaint(getCellColor(), box.getBarColor());
+        public Paint getBarColor(Box box, Box.Bar barStyle) {
+            Paint base = bar;
+            if (barStyle == Box.Bar.DOTTED)
+                base = barDotted;
+            else if (barStyle == Box.Bar.DASHED)
+                base = barDashed;
+
+            if (box == null || !box.hasBarColor()) {
+               return base;
+            } else {
+                Paint mixedPaint = new Paint(base);
+                Paint cell = getCellColor();
+                mixedPaint.setColor(getRelativeColor(
+                    cell.getColor(), box.getBarColor()
+                ));
+                return mixedPaint;
+            }
         }
 
         public Paint getCheated() {
@@ -1680,6 +1741,17 @@ public class PlayboardRenderer {
             blockNoteText.setTextSize(noteTextSize);
             miniNoteText.setTextSize(miniNoteTextSize);
             blockMiniNoteText.setTextSize(miniNoteTextSize);
+
+            bar.setStrokeWidth(barSize);
+            barDashed.setStrokeWidth(barSize);
+            float dashSize = boxSize / 9.0F;
+            barDashed.setPathEffect(new DashPathEffect(
+                new float[] { 2 * dashSize, dashSize }, dashSize
+            ));
+            barDotted.setStrokeWidth(barSize);
+            barDotted.setPathEffect(new DashPathEffect(
+                new float[] { barSize, barSize}, (barSize / 2)
+            ));
         }
 
         private TextPaint mixTextPaint(
