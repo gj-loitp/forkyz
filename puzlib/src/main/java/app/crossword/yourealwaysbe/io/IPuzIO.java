@@ -106,6 +106,8 @@ public class IPuzIO implements PuzzleParser {
     private static final int HEX_CODE_LEN = 6;
     private static final String HEX_COLOR_FORMAT = "%0" + HEX_CODE_LEN + "X";
     private static final String FIELD_BARRED = "barred";
+    private static final String FIELD_BARRED_DASHED = "dashed";
+    private static final String FIELD_BARRED_DOTTED = "dotted";
     private static final String FIELD_HIGHLIGHT = "highlight";
 
     private static final String SHAPE_BG_CIRCLE = "circle";
@@ -635,26 +637,47 @@ public class IPuzIO implements PuzzleParser {
      */
     private static boolean getBarredFromStyleObj(JSONObject style, Box box) {
         boolean hasBars = false;
-        String barred = optStringNull(style, FIELD_BARRED);
+
+        hasBars |= getBarredFromStyleObj(
+            style, FIELD_BARRED_DOTTED, Box.Bar.DOTTED, box
+        );
+        hasBars |= getBarredFromStyleObj(
+            style, FIELD_BARRED_DASHED, Box.Bar.DASHED, box
+        );
+        hasBars |= getBarredFromStyleObj(
+            style, FIELD_BARRED, Box.Bar.SOLID, box
+        );
+        return hasBars;
+    }
+
+    /**
+     * Look for bars of a particular kind in style object
+     */
+    private static boolean getBarredFromStyleObj(
+        JSONObject style, String barField, Box.Bar barStyle, Box box
+    ) {
+        boolean hasBars = false;
+
+        String barred = optStringNull(style, barField);
         if (barred != null) {
             barred = barred.toUpperCase();
             for (int i = 0; i < barred.length(); i++) {
                 char c = barred.charAt(i);
                 switch(c) {
                 case BARRED_TOP:
-                    box.setBarredTop(true);
+                    box.setBarTop(barStyle);
                     hasBars = true;
                     break;
                 case BARRED_BOTTOM:
-                    box.setBarredBottom(true);
+                    box.setBarBottom(barStyle);
                     hasBars = true;
                     break;
                 case BARRED_LEFT:
-                    box.setBarredLeft(true);
+                    box.setBarLeft(barStyle);
                     hasBars = true;
                     break;
                 case BARRED_RIGHT:
-                    box.setBarredRight(true);
+                    box.setBarRight(barStyle);
                     hasBars = true;
                     break;
                 default:
@@ -1761,7 +1784,7 @@ public class IPuzIO implements PuzzleParser {
 
     private static boolean isCellWithStyle(Box box) {
         return box.isCircled()
-            || box.isBarred()
+            || box.hasBars()
             || box.hasColor()
             || box.hasTextColor()
             || box.hasBarColor()
@@ -1788,7 +1811,7 @@ public class IPuzIO implements PuzzleParser {
         }
 
         writeColorFields(box, writer);
-        writeBarredField(box, writer);
+        writeBarredFields(box, writer);
         writeMarkField(box, writer);
 
         writer.endObject();
@@ -1809,20 +1832,31 @@ public class IPuzIO implements PuzzleParser {
         }
     }
 
-    private static void writeBarredField(Box box, FormatableJSONWriter writer) {
-        if (box.isBarred()) {
-            String barred = "";
-            if (box.isBarredTop())
-                barred += BARRED_TOP;
-            if (box.isBarredRight())
-                barred += BARRED_RIGHT;
-            if (box.isBarredBottom())
-                barred += BARRED_BOTTOM;
-            if (box.isBarredLeft())
-                barred += BARRED_LEFT;
+    private static void writeBarredFields(Box box, FormatableJSONWriter writer) {
+        if (!box.hasBars())
+            return;
 
-            writer.key(FIELD_BARRED).value(barred.toString());
-        }
+        writeBarredField(box, FIELD_BARRED, Box.Bar.SOLID, writer);
+        writeBarredField(box, FIELD_BARRED_DASHED, Box.Bar.DASHED, writer);
+        writeBarredField(box, FIELD_BARRED_DOTTED, Box.Bar.DOTTED, writer);
+    }
+
+    private static void writeBarredField(
+        Box box, String barField, Box.Bar barStyle, FormatableJSONWriter writer
+    ) {
+        String barred = "";
+
+        if (box.getBarTop() == barStyle)
+            barred += BARRED_TOP;
+        if (box.getBarRight() == barStyle)
+            barred += BARRED_RIGHT;
+        if (box.getBarBottom() == barStyle)
+            barred += BARRED_BOTTOM;
+        if (box.getBarLeft() == barStyle)
+            barred += BARRED_LEFT;
+
+        if (!barred.isEmpty())
+            writer.key(barField).value(barred);
     }
 
     private static void writeMarkField(Box box, FormatableJSONWriter writer) {

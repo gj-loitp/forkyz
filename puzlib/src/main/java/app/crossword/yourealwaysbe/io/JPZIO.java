@@ -308,14 +308,18 @@ public class JPZIO implements PuzzleParser {
                     }
 
                     String topBar = attributes.getValue("top-bar");
-                    box.setBarredTop("true".equalsIgnoreCase(topBar));
+                    if ("true".equalsIgnoreCase(topBar))
+                        box.setBarTop(Box.Bar.SOLID);
                     String bottomBar = attributes.getValue("bottom-bar");
-                    box.setBarredBottom("true".equalsIgnoreCase(bottomBar));
+                    if ("true".equalsIgnoreCase(bottomBar))
+                        box.setBarBottom(Box.Bar.SOLID);
                     String leftBar = attributes.getValue("left-bar");
-                    box.setBarredLeft("true".equalsIgnoreCase(leftBar));
+                    if ("true".equalsIgnoreCase(leftBar))
+                        box.setBarLeft(Box.Bar.SOLID);
                     String rightBar = attributes.getValue("right-bar");
-                    box.setBarredRight("true".equalsIgnoreCase(rightBar));
-                    hasData |= box.isBarred();
+                    if ("true".equalsIgnoreCase(rightBar))
+                        box.setBarRight(Box.Bar.SOLID);
+                    hasData |= box.hasBars();
 
                     boolean hasMarks = false;
                     String[][] marks = new String[3][3];

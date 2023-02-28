@@ -66,6 +66,8 @@ public class Puzzle implements Serializable{
     public enum Kind { CROSSWORD, ACROSTIC };
     private Kind kind = Kind.CROSSWORD;
 
+    public enum BarStyle { NONE, SOLID, DASHED, DOTTED };
+
     // Temporary fields used for unscrambling.
     public int[] unscrambleKey;
     public byte[] unscrambleTmp;

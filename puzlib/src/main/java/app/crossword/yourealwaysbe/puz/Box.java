@@ -24,10 +24,12 @@ public class Box implements Serializable {
     // the clue word, sorted for consistency of cycling through clues
     private NavigableMap<ClueID, Integer> cluePositions = new TreeMap<>();
 
-    private boolean barTop = false;
-    private boolean barBottom = false;
-    private boolean barLeft = false;
-    private boolean barRight = false;
+    public enum Bar { NONE, SOLID, DASHED, DOTTED };
+    private Bar barTop = Bar.NONE;
+    private Bar barBottom = Bar.NONE;
+    private Bar barLeft = Bar.NONE;
+    private Bar barRight = Bar.NONE;
+
     // 3x3 grid of small text marks
     private String[][] marks = null;
 
@@ -91,16 +93,16 @@ public class Box implements Serializable {
             return false;
         }
 
-        if (isBarredTop() != other.isBarredTop())
+        if (!Objects.equals(getBarTop(), other.getBarTop()))
             return false;
 
-        if (isBarredBottom() != other.isBarredBottom())
+        if (!Objects.equals(getBarBottom(), other.getBarBottom()))
             return false;
 
-        if (isBarredLeft() != other.isBarredLeft())
+        if (!Objects.equals(getBarLeft(), other.getBarLeft()))
             return false;
 
-        if (isBarredRight() != other.isBarredRight())
+        if (!Objects.equals(getBarRight(), other.getBarRight()))
             return false;
 
         if (getColor() != other.getColor())
@@ -136,10 +138,9 @@ public class Box implements Serializable {
         result = (prime * result) + (isCheated() ? 1231 : 1237);
         result = (prime * result) + Objects.hash(getClueNumber());
         result = (prime * result) + (isCircled() ? 1231 : 1237);
-        result = (prime * result) + (isBarredTop() ? 1231 : 1237);
-        result = (prime * result) + (isBarredBottom() ? 1231 : 1237);
-        result = (prime * result) + (isBarredLeft() ? 1231 : 1237);
-        result = (prime * result) + (isBarredRight() ? 1231 : 1237);
+        result = (prime * result) + Objects.hash(
+            getBarTop(), getBarBottom(), getBarLeft(), getBarRight()
+        );
         result = (prime * result) +
             ((getResponder() == null) ? 0 : getResponder().hashCode());
         result = (prime * result) + Objects.hash(getInitialValue());
@@ -395,14 +396,21 @@ public class Box implements Serializable {
         return (pos == null) ? -1 : pos;
     }
 
-    public boolean isBarredTop() { return barTop; }
-    public boolean isBarredBottom() { return barBottom; }
-    public boolean isBarredLeft() { return barLeft; }
-    public boolean isBarredRight() { return barRight; }
+    public Bar getBarTop() { return barTop; }
+    public Bar getBarBottom() { return barBottom; }
+    public Bar getBarLeft() { return barLeft; }
+    public Bar getBarRight() { return barRight; }
     public boolean hasBars() {
-        return isBarredTop() || isBarredBottom()
-            || isBarredLeft() || isBarredRight();
+        return
+            getBarTop() != Bar.NONE
+            || getBarBottom() != Bar.NONE
+            || getBarLeft() != Bar.NONE
+            || getBarRight() != Bar.NONE;
     }
+    public boolean isBarredTop() { return barTop != Bar.NONE; }
+    public boolean isBarredBottom() { return barBottom != Bar.NONE; }
+    public boolean isBarredLeft() { return barLeft != Bar.NONE; }
+    public boolean isBarredRight() { return barRight != Bar.NONE; }
 
     /**
      * 3x3 array of text marks to put in box, can have null entries
@@ -431,27 +439,19 @@ public class Box implements Serializable {
         this.marks = marks;
     }
 
-    /**
-     * True if box has any bars
-     */
-    public boolean isBarred() {
-        return isBarredTop() || isBarredBottom()
-            || isBarredLeft() || isBarredRight();
-    }
-
-    public void setBarredTop(boolean barTop) {
+    public void setBarTop(Bar barTop) {
         this.barTop = barTop;
     }
 
-    public void setBarredBottom(boolean barBottom) {
+    public void setBarBottom(Bar barBottom) {
         this.barBottom = barBottom;
     }
 
-    public void setBarredLeft(boolean barLeft) {
+    public void setBarLeft(Bar barLeft) {
         this.barLeft = barLeft;
     }
 
-    public void setBarredRight(boolean barRight) {
+    public void setBarRight(Bar barRight) {
         this.barRight = barRight;
     }
 

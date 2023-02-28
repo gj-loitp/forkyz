@@ -194,6 +194,12 @@ public class IPuzIOTest {
 
         assertTrue(puz.hasInitialValueCells());
 
+        Box bars = boxes[0][4];
+        assertEquals(bars.getBarTop(), Box.Bar.DASHED);
+        assertEquals(bars.getBarBottom(), Box.Bar.DOTTED);
+        assertEquals(bars.getBarLeft(), Box.Bar.SOLID);
+        assertEquals(bars.getBarRight(), Box.Bar.NONE);
+
         Set<String> clueLists = puz.getClueListNames();
         assertEquals(clueLists.size(), 3);
         assertTrue(clueLists.contains("OddOnes"));
