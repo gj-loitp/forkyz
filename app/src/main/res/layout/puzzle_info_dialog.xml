@@ -75,21 +75,36 @@
             android:orientation="vertical"
         >
             <TextView
+                android:id="@+id/puzzle_info_intro_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/introduction"
+                android:paddingTop="20sp"
+                android:textStyle="bold"
+            />
+            <TextView
                 android:id="@+id/puzzle_info_intro"
-                android:textSize="20sp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/puzzle_intro"
                 android:scrollbars="vertical"
-                android:paddingBottom="20sp"
+                android:lineSpacingMultiplier="1.2"
+            />
+            <TextView
+                android:id="@+id/puzzle_info_notes_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/notes"
+                android:paddingTop="20sp"
+                android:textStyle="bold"
             />
             <TextView
                 android:id="@+id/puzzle_info_notes"
-                android:textSize="20sp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/puzzle_notes"
                 android:scrollbars="vertical"
+                android:lineSpacingMultiplier="1.2"
             />
         </LinearLayout>
   </ScrollView>

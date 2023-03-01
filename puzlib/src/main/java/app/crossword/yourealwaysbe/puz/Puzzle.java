@@ -381,6 +381,10 @@ public class Puzzle implements Serializable{
         return notes;
     }
 
+    public boolean hasNotes() {
+        return notes != null && !notes.isEmpty();
+    }
+
     public String getIntroMessage() {
         return introMessage;
     }

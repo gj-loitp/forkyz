@@ -1154,6 +1154,8 @@ public class PlayActivity extends PuzzleActivity
         }
 
         private void addIntro(View dialogView) {
+            TextView titleView
+                = dialogView.findViewById(R.id.puzzle_info_intro_title);
             TextView view = dialogView.findViewById(R.id.puzzle_info_intro);
 
             Puzzle puz = ((PlayActivity) getActivity()).getPuzzle();
@@ -1162,23 +1164,31 @@ public class PlayActivity extends PuzzleActivity
 
             String intro = puz.getIntroMessage();
             if (intro == null || intro.isEmpty()) {
+                titleView.setVisibility(View.GONE);
                 view.setVisibility(View.GONE);
             } else {
                 view.setText(smartHtml(intro));
+                titleView.setVisibility(View.VISIBLE);
                 view.setVisibility(View.VISIBLE);
             }
         }
 
         private void addNotes(View dialogView) {
+            TextView titleView
+                = dialogView.findViewById(R.id.puzzle_info_notes_title);
             TextView view = dialogView.findViewById(R.id.puzzle_info_notes);
 
             Puzzle puz = ((PlayActivity) getActivity()).getPuzzle();
-            if (puz == null)
+            if (puz == null || !puz.hasNotes()) {
+                titleView.setVisibility(View.GONE);
+                view.setVisibility(View.GONE);
                 return;
+            }
+
+            titleView.setVisibility(View.VISIBLE);
+            view.setVisibility(View.VISIBLE);
 
             String puzNotes = puz.getNotes();
-            if (puzNotes == null)
-                puzNotes = "";
 
             final String notes = puzNotes;
 
