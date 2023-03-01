@@ -744,6 +744,8 @@ public class PlayActivity extends PuzzleActivity
 
         if (keyboardManager != null)
             keyboardManager.onResume();
+
+        handleFirstPlay();
     }
 
     private void registerBoard() {
@@ -1079,6 +1081,18 @@ public class PlayActivity extends PuzzleActivity
         }
     }
 
+    private void handleFirstPlay() {
+        if (!isFirstPlay())
+            return;
+
+        Puzzle puz = getPuzzle();
+        if (puz == null || !puz.hasIntroMessage())
+            return;
+
+        DialogFragment dialog = new IntroMsgDialog();
+        dialog.show(getSupportFragmentManager(), "IntroMsgDialog");
+    }
+
     public static class InfoDialog extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -1263,4 +1277,22 @@ public class PlayActivity extends PuzzleActivity
             return builder.create();
         }
     }
+
+    public static class IntroMsgDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            MaterialAlertDialogBuilder builder
+                = new MaterialAlertDialogBuilder(getActivity());
+
+            Puzzle puz = ((PlayActivity) getActivity()).getPuzzle();
+            if (puz != null && puz.hasIntroMessage()) {
+                builder.setTitle(getString(R.string.introduction))
+                    .setMessage(smartHtml(puz.getIntroMessage()))
+                    .setPositiveButton(R.string.ok, null);
+            }
+
+            return builder.create();
+        }
+    }
+
 }

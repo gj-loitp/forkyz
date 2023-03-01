@@ -53,6 +53,7 @@ public abstract class PuzzleActivity
         = "buttonActivatesVoice";
 
 
+    private boolean firstPlay = false;
     private ImaginaryTimer timer;
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -202,7 +203,9 @@ public abstract class PuzzleActivity
 
         Puzzle puz = getPuzzle();
         if (puz != null && puz.getPercentComplete() != 100) {
-            ImaginaryTimer timer = new ImaginaryTimer(puz.getTime());
+            long time = puz.getTime();
+            firstPlay = (time == 0);
+            ImaginaryTimer timer = new ImaginaryTimer(time);
             setTimer(timer);
             timer.start();
         }
@@ -244,6 +247,10 @@ public abstract class PuzzleActivity
     protected Puzzle getPuzzle() {
         Playboard board = getBoard();
         return (board == null) ? null : getBoard().getPuzzle();
+    }
+
+    protected boolean isFirstPlay() {
+        return firstPlay;
     }
 
     protected void setTimer(ImaginaryTimer timer) {
