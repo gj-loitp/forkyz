@@ -44,7 +44,7 @@ public class PuzzleStreamReader implements PuzzleParser {
                 try {
                     unzipped.reset();
                     LOGGER.info(
-                        "Attemptting parse with " + parser.getClass().getName()
+                        "Attempting parse with " + parser.getClass().getName()
                     );
                     Puzzle puz = parser.parseInput(unzipped);
                     if (puz != null)
