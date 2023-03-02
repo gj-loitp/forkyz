@@ -39,6 +39,7 @@ The majority of the links on this page come from [Michael F. Gill
 * [Jeff Davidson][jeff-davidson] -- crosswords, rows gardens, crosswordles...
 * [JimJar's Cryptopica][jimjar].
 * [Keglar's Cryptics][keglar] -- homepage of Ron Sweet, block puzzles compatible with Forkyz.
+* [Knotty Grids][knotty-grids] -- by Adam Simon Levine.
 * [Lexicon Devil][lexicon-devil] -- by Richard D. Allen.
 * [Mad Dog Cryptics][mad-dog-cryptics] -- by Terry Brennan.
 * [Mokelfish][mokelfish-puzzles] -- "Multi-part variety word and logic puzzles by Michael F. Gill"
@@ -88,6 +89,7 @@ The majority of the links on this page come from [Michael F. Gill
 [jeff-davidson]: https://puzzles.jeffpdavidson.com/
 [jimjar]: https://twitter.com/Jimjar
 [keglar]: https://kegler.gitlab.io/
+[knotty-grids]: https://knottygrids.blogspot.com/
 [lexicon-devil]: http://www.lexicondevil.live/
 [mad-dog-cryptics]: https://maddogcryptics.com/
 [mokelfish-puzzles]: https://bbtp.net/puzzle/
