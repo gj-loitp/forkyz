@@ -35,13 +35,13 @@ public class JPZIOTest {
         assertEquals("Jeff Chen / Ed. Rich Norris", puz.getAuthor());
         assertEquals("© 2011 Tribune Media Services, Inc.", puz.getCopyright());
         assertEquals("Instructions", puz.getIntroMessage());
-        assertEquals("Congratulations", puz.getCompletionMessage());
+        assertEquals("Test", puz.getNotes());
         assertEquals(
-            "Test"
+            "Congratulations<br/>"
                 + "<h1>Down</h1>"
                 + "<p>22: Shower Heads v7</p>"
                 + "<p>61: I'm NOT going to ATTEND it / I'm going to SKIP it</p>",
-            puz.getNotes()
+            puz.getCompletionMessage()
         );
 
         Box[][] boxes = puz.getBoxes();

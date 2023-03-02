@@ -620,10 +620,10 @@ public class JPZIO implements PuzzleParser {
             .setAuthor(handler.getCreator())
             .setCopyright(handler.getCopyright())
             .setIntroMessage(handler.getInstructions())
-            .setCompletionMessage(handler.getCompletion());
+            .setNotes(handler.getDescription());
 
         setClues(builder, handler);
-        setNote(builder, handler);
+        setCompletionMessage(builder, handler);
 
         return builder.getPuzzle();
     }
@@ -644,12 +644,16 @@ public class JPZIO implements PuzzleParser {
         }
     }
 
-    private static void setNote(PuzzleBuilder builder, JPZXMLParser handler) {
-        StringBuilder notes = new StringBuilder();
+    private static void setCompletionMessage(
+        PuzzleBuilder builder, JPZXMLParser handler
+    ) {
+        StringBuilder fullCompletion = new StringBuilder();
 
-        String description = handler.getDescription();
-        if (description != null)
-            notes.append(description);
+        String completion = handler.getCompletion();
+        if (completion != null) {
+            fullCompletion.append(completion);
+            fullCompletion.append("<br/>");
+        }
 
         // sort lists into order then construct citations text
         Map<String, StringBuilder> listNotes = new HashMap<>();
@@ -673,11 +677,11 @@ public class JPZIO implements PuzzleParser {
         Collections.sort(listNames);
 
         for (String listName : listNames) {
-            notes.append("<h1>" + listName + "</h1>");
-            notes.append(listNotes.get(listName).toString());
+            fullCompletion.append("<h1>" + listName + "</h1>");
+            fullCompletion.append(listNotes.get(listName).toString());
         }
 
-        builder.setNotes(notes.toString());
+        builder.setCompletionMessage(fullCompletion.toString());
     }
 
     /**
@@ -696,7 +700,7 @@ public class JPZIO implements PuzzleParser {
             .setAuthor(handler.getCreator())
             .setCopyright(handler.getCopyright())
             .setIntroMessage(handler.getInstructions())
-            .setCompletionMessage(handler.getCompletion())
+            .setNotes(handler.getDescription())
             .setKind(Puzzle.Kind.ACROSTIC);
 
         try {
@@ -705,7 +709,7 @@ public class JPZIO implements PuzzleParser {
             return null;
         }
 
-        setNote(builder, handler);
+        setCompletionMessage(builder, handler);
 
         return builder.getPuzzle();
     }
