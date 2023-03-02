@@ -149,6 +149,14 @@ public class IPuzIOTest {
     }
 
     public static void assertIsTestPuzzleExtras(Puzzle puz) throws Exception {
+        assertEquals(
+            puz.getIntroMessage(),
+            "Weird features: unnumbered words, clues "
+                +  "in non-standards lists, colors, etc"
+        );
+        assertEquals(puz.getNotes(), "Puzzle notes");
+        assertEquals(puz.getCompletionMessage(), "You solved the puzzle");
+
         Box[][] boxes = puz.getBoxes();
 
         assertFalse(boxes[0][6].hasClueNumber());
