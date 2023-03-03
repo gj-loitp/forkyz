@@ -5,12 +5,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:paddingTop="10sp"
-    android:paddingBottom="10sp"
-    android:paddingStart="10sp"
-    android:paddingEnd="10sp"
-    android:paddingLeft="10sp"
-    android:paddingRight="10sp"
+    android:paddingTop="?dialogPreferredPadding"
+    android:paddingBottom="?dialogPreferredPadding"
+    android:paddingStart="?dialogPreferredPadding"
+    android:paddingEnd="?dialogPreferredPadding"
+    android:paddingLeft="?dialogPreferredPadding"
+    android:paddingRight="?dialogPreferredPadding"
 >
   <TextView
       android:id="@+id/puzzle_info_title"
@@ -79,7 +79,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/introduction"
-                android:paddingTop="20sp"
+                android:paddingTop="?dialogPreferredPadding"
                 android:textStyle="bold"
             />
             <TextView
@@ -95,7 +95,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/notes"
-                android:paddingTop="20sp"
+                android:paddingTop="?dialogPreferredPadding"
                 android:textStyle="bold"
             />
             <TextView
@@ -106,6 +106,23 @@
                 android:scrollbars="vertical"
                 android:lineSpacingMultiplier="1.2"
             />
+            <TextView
+                android:id="@+id/puzzle_info_completed_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/completed"
+                android:paddingTop="?dialogPreferredPadding"
+                android:textStyle="bold"
+            />
+            <!-- padding for when the title is hidden -->
+            <View
+                android:id="@+id/puzzle_info_completed_padding"
+                android:layout_width="fill_parent"
+                android:layout_height="?dialogPreferredPadding"
+                android:background="@android:color/transparent"
+                android:visibility="gone"
+            />
+            <include layout="@layout/completion_info"/>
         </LinearLayout>
   </ScrollView>
 </LinearLayout>

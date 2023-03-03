@@ -13,7 +13,6 @@ import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,7 +26,6 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import app.crossword.yourealwaysbe.forkyz.ForkyzApplication;
 import app.crossword.yourealwaysbe.forkyz.R;
@@ -41,11 +39,11 @@ import app.crossword.yourealwaysbe.puz.Position;
 import app.crossword.yourealwaysbe.puz.Puzzle;
 import app.crossword.yourealwaysbe.util.KeyboardManager;
 import app.crossword.yourealwaysbe.util.VoiceCommands.VoiceCommand;
-import app.crossword.yourealwaysbe.util.files.FileHandler;
 import app.crossword.yourealwaysbe.view.BoardEditView.BoardClickListener;
 import app.crossword.yourealwaysbe.view.BoardEditView;
 import app.crossword.yourealwaysbe.view.ClueTabs;
 import app.crossword.yourealwaysbe.view.ForkyzKeyboard;
+import app.crossword.yourealwaysbe.view.PuzzleInfoDialogs;
 import app.crossword.yourealwaysbe.view.ScrollingImageView.ScaleListener;
 
 import java.util.Objects;
@@ -907,8 +905,8 @@ public class PlayActivity extends PuzzleActivity
     }
 
     private void showInfoDialog() {
-        DialogFragment dialog = new InfoDialog();
-        dialog.show(getSupportFragmentManager(), "InfoDialog");
+        DialogFragment dialog = new PuzzleInfoDialogs.Info();
+        dialog.show(getSupportFragmentManager(), "PuzzleInfoDialgs.Info");
     }
 
     private void showRevealPuzzleDialog() {
@@ -1089,171 +1087,8 @@ public class PlayActivity extends PuzzleActivity
         if (puz == null || !puz.hasIntroMessage())
             return;
 
-        DialogFragment dialog = new IntroMsgDialog();
-        dialog.show(getSupportFragmentManager(), "IntroMsgDialog");
-    }
-
-    public static class InfoDialog extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            MaterialAlertDialogBuilder builder
-                = new MaterialAlertDialogBuilder(getActivity());
-            LayoutInflater inflater = requireActivity().getLayoutInflater();
-
-            View view = inflater.inflate(R.layout.puzzle_info_dialog, null);
-
-            PlayActivity activity = (PlayActivity) getActivity();
-
-            Puzzle puz = activity.getPuzzle();
-            if (puz != null) {
-                TextView title = view.findViewById(R.id.puzzle_info_title);
-                title.setText(smartHtml(puz.getTitle()));
-
-                TextView author = view.findViewById(R.id.puzzle_info_author);
-                author.setText(puz.getAuthor());
-
-                TextView copyright
-                    = view.findViewById(R.id.puzzle_info_copyright);
-                copyright.setText(smartHtml(puz.getCopyright()));
-
-                TextView time = view.findViewById(R.id.puzzle_info_time);
-
-                ImaginaryTimer timer = activity.getTimer();
-                if (timer != null) {
-                    timer.stop();
-                    time.setText(getString(
-                        R.string.elapsed_time, timer.time()
-                    ));
-                    timer.start();
-                } else {
-                    time.setText(getString(
-                        R.string.elapsed_time,
-                        new ImaginaryTimer(puz.getTime()).time()
-                    ));
-                }
-
-                LinearProgressIndicator progress
-                    = view.findViewById(R.id.puzzle_info_progress);
-                progress.setProgress(puz.getPercentComplete());
-
-                TextView filename
-                    = view.findViewById(R.id.puzzle_info_filename);
-                FileHandler fileHandler
-                    = ForkyzApplication.getInstance().getFileHandler();
-                filename.setText(
-                    fileHandler.getUri(activity.getPuzHandle()).toString()
-                );
-
-                addIntro(view);
-                addNotes(view);
-            }
-
-            builder.setView(view);
-
-            return builder.create();
-        }
-
-        private void addIntro(View dialogView) {
-            TextView titleView
-                = dialogView.findViewById(R.id.puzzle_info_intro_title);
-            TextView view = dialogView.findViewById(R.id.puzzle_info_intro);
-
-            Puzzle puz = ((PlayActivity) getActivity()).getPuzzle();
-            if (puz == null)
-                return;
-
-            String intro = puz.getIntroMessage();
-            if (intro == null || intro.isEmpty()) {
-                titleView.setVisibility(View.GONE);
-                view.setVisibility(View.GONE);
-            } else {
-                view.setText(smartHtml(intro));
-                titleView.setVisibility(View.VISIBLE);
-                view.setVisibility(View.VISIBLE);
-            }
-        }
-
-        private void addNotes(View dialogView) {
-            TextView titleView
-                = dialogView.findViewById(R.id.puzzle_info_notes_title);
-            TextView view = dialogView.findViewById(R.id.puzzle_info_notes);
-
-            Puzzle puz = ((PlayActivity) getActivity()).getPuzzle();
-            if (puz == null || !puz.hasNotes()) {
-                titleView.setVisibility(View.GONE);
-                view.setVisibility(View.GONE);
-                return;
-            }
-
-            titleView.setVisibility(View.VISIBLE);
-            view.setVisibility(View.VISIBLE);
-
-            String puzNotes = puz.getNotes();
-
-            final String notes = puzNotes;
-
-            String[] split = notes.split(
-                "(?i:(?m:"
-                    + "^\\s*Across:?\\s*$|^.*>Across<.*|"
-                    + "^\\s*Down:?\\s*$|^.*>Down<.*|"
-                    + "^\\s*\\d))", 2
-            );
-
-            final String text = split[0].trim();
-            final boolean hasMore = split.length > 1;
-
-            if (!hasMore) {
-                view.setText(smartHtml(text));
-            } else {
-                if (text.length() > 0) {
-                    view.setText(smartHtml(
-                        getString(R.string.tap_to_show_full_notes_with_text, text)
-                    ));
-                } else {
-                    view.setText(getString(
-                        R.string.tap_to_show_full_notes_no_text
-                    ));
-                }
-
-                view.setOnClickListener(new OnClickListener() {
-                    private boolean showAll = true;
-
-                    public void onClick(View view) {
-                        TextView tv = (TextView) view;
-
-                        if (showAll) {
-                            if (notes == null || notes.length() == 0) {
-                                tv.setText(getString(
-                                    R.string.tap_to_hide_full_notes_no_text
-                                ));
-                            } else {
-                                tv.setText(smartHtml(
-                                    getString(
-                                        R.string.tap_to_hide_full_notes_with_text,
-                                        notes
-                                    )
-                                ));
-                            }
-                        } else {
-                            if (text == null || text.length() == 0) {
-                                tv.setText(getString(
-                                    R.string.tap_to_show_full_notes_no_text
-                                ));
-                            } else {
-                                tv.setText(smartHtml(
-                                    getString(
-                                        R.string.tap_to_show_full_notes_with_text,
-                                        text
-                                    )
-                                ));
-                            }
-                        }
-
-                        showAll = !showAll;
-                    }
-                });
-            }
-        }
+        DialogFragment dialog = new PuzzleInfoDialogs.Intro();
+        dialog.show(getSupportFragmentManager(), "PuzzleInfoDialogs.Intro");
     }
 
     public static class RevealPuzzleDialog extends DialogFragment {
@@ -1287,22 +1122,4 @@ public class PlayActivity extends PuzzleActivity
             return builder.create();
         }
     }
-
-    public static class IntroMsgDialog extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            MaterialAlertDialogBuilder builder
-                = new MaterialAlertDialogBuilder(getActivity());
-
-            Puzzle puz = ((PlayActivity) getActivity()).getPuzzle();
-            if (puz != null && puz.hasIntroMessage()) {
-                builder.setTitle(getString(R.string.introduction))
-                    .setMessage(smartHtml(puz.getIntroMessage()))
-                    .setPositiveButton(R.string.ok, null);
-            }
-
-            return builder.create();
-        }
-    }
-
 }

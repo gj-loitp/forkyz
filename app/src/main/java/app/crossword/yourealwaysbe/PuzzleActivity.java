@@ -31,6 +31,7 @@ import app.crossword.yourealwaysbe.util.VoiceCommands.VoiceCommand;
 import app.crossword.yourealwaysbe.util.VoiceCommands;
 import app.crossword.yourealwaysbe.util.files.FileHandlerShared;
 import app.crossword.yourealwaysbe.util.files.PuzHandle;
+import app.crossword.yourealwaysbe.view.PuzzleInfoDialogs;
 import app.crossword.yourealwaysbe.view.SpecialEntryDialog;
 
 import java.util.Locale;
@@ -105,6 +106,10 @@ public abstract class PuzzleActivity
         }
     }
 
+    public ImaginaryTimer getTimer() {
+        return timer;
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -135,10 +140,10 @@ public abstract class PuzzleActivity
             puz.setTime(timer.getElapsed());
             setTimer(null);
 
-            DialogFragment dialog = new PuzzleFinishedDialog();
+            DialogFragment dialog = new PuzzleInfoDialogs.Finished();
             dialog.show(
                 getSupportFragmentManager(),
-                "PuzzleFinishedDialog"
+                "PuzzleInfoDialogs.Finished"
             );
         }
     }
@@ -255,10 +260,6 @@ public abstract class PuzzleActivity
 
     protected void setTimer(ImaginaryTimer timer) {
         this.timer = timer;
-    }
-
-    protected ImaginaryTimer getTimer() {
-        return timer;
     }
 
     protected PuzHandle getPuzHandle() {
