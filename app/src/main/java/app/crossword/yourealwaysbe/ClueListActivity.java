@@ -39,6 +39,7 @@ public class ClueListActivity extends PuzzleActivity
     private BoardWordEditView boardView;
     private ClueTabs clueTabs;
     private View voiceButtonContainer;
+    private View rootView;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -82,6 +83,8 @@ public class ClueListActivity extends PuzzleActivity
         }
 
         setContentView(R.layout.clue_list);
+
+        this.rootView = this.findViewById(android.R.id.content);
 
         this.boardView = this.findViewById(R.id.miniboard);
         this.boardView.setAllowOverScroll(false);

@@ -249,4 +249,9 @@ public class IceCreamSandwichUtil implements AndroidVersionUtils {
     ) {
         return false;
     }
+
+    @Override
+    public void announceForAccessibility(View view, CharSequence text) {
+        // not available
+    }
 }

@@ -1,6 +1,7 @@
 package app.crossword.yourealwaysbe;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -24,17 +26,21 @@ import app.crossword.yourealwaysbe.puz.Box;
 import app.crossword.yourealwaysbe.puz.Clue;
 import app.crossword.yourealwaysbe.puz.ClueID;
 import app.crossword.yourealwaysbe.puz.Playboard.PlayboardChanges;
+import app.crossword.yourealwaysbe.puz.Playboard.Word;
 import app.crossword.yourealwaysbe.puz.Playboard;
+import app.crossword.yourealwaysbe.puz.Position;
 import app.crossword.yourealwaysbe.puz.Puzzle;
 import app.crossword.yourealwaysbe.util.SpeechContract;
 import app.crossword.yourealwaysbe.util.VoiceCommands.VoiceCommand;
 import app.crossword.yourealwaysbe.util.VoiceCommands;
 import app.crossword.yourealwaysbe.util.files.FileHandlerShared;
 import app.crossword.yourealwaysbe.util.files.PuzHandle;
+import app.crossword.yourealwaysbe.view.PlayboardTextRenderer;
 import app.crossword.yourealwaysbe.view.PuzzleInfoDialogs;
 import app.crossword.yourealwaysbe.view.SpecialEntryDialog;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -57,6 +63,7 @@ public abstract class PuzzleActivity
     private boolean firstPlay = false;
     private ImaginaryTimer timer;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private PlayboardTextRenderer textRenderer;
 
     private Runnable updateTimeTask = new Runnable() {
         public void run() {
@@ -129,23 +136,8 @@ public abstract class PuzzleActivity
 
     @Override
     public void onPlayboardChange(PlayboardChanges changes) {
-        Puzzle puz = getPuzzle();
-        ImaginaryTimer timer = getTimer();
-
-        if (puz != null &&
-            puz.getPercentComplete() == 100 &&
-            timer != null) {
-
-            timer.stop();
-            puz.setTime(timer.getElapsed());
-            setTimer(null);
-
-            DialogFragment dialog = new PuzzleInfoDialogs.Finished();
-            dialog.show(
-                getSupportFragmentManager(),
-                "PuzzleInfoDialogs.Finished"
-            );
-        }
+        handleChangeTimer();
+        handleChangeAccessibility(changes);
     }
 
     @Override
@@ -272,45 +264,7 @@ public abstract class PuzzleActivity
 
     protected String getLongClueText(Clue clue) {
         boolean showCount = prefs.getBoolean("showCount", false);
-
-        if (clue == null)
-            return getString(R.string.unknown_hint);
-
-        int wordLen = clue.hasZone() ? clue.getZone().size() : -1;
-
-        if (showCount && wordLen >= 0) {
-            if (clue.hasClueNumber()) {
-                return getString(
-                    R.string.clue_format_long_with_count,
-                    clue.getClueID().getListName(),
-                    clue.getClueNumber(),
-                    clue.getHint(),
-                    wordLen
-                );
-            } else {
-                return getString(
-                    R.string.clue_format_long_no_num_with_count,
-                    clue.getClueID().getListName(),
-                    clue.getHint(),
-                    wordLen
-                );
-            }
-        } else {
-            if (clue.hasClueNumber()) {
-                return getString(
-                    R.string.clue_format_long,
-                    clue.getClueID().getListName(),
-                    clue.getClueNumber(),
-                    clue.getHint()
-                );
-            } else {
-                return getString(
-                    R.string.clue_format_long_no_num,
-                    clue.getClueID().getListName(),
-                    clue.getHint()
-                );
-            }
-        }
+        return PlayboardTextRenderer.getLongClueText(this, clue, showCount);
     }
 
     protected void launchClueNotes(ClueID cid) {
@@ -608,5 +562,66 @@ public abstract class PuzzleActivity
      */
     protected boolean isButtonActivatesVoicePref() {
         return prefs.getBoolean(PREF_BUTTON_ACTIVATES_VOICE, false);
+    }
+
+    private void handleChangeTimer() {
+        Puzzle puz = getPuzzle();
+        if (puz == null)
+            return;
+
+        ImaginaryTimer timer = getTimer();
+        if (puz != null &&
+            puz.getPercentComplete() == 100 &&
+            timer != null) {
+
+            timer.stop();
+            puz.setTime(timer.getElapsed());
+            setTimer(null);
+
+            DialogFragment dialog = new PuzzleInfoDialogs.Finished();
+            dialog.show(
+                getSupportFragmentManager(),
+                "PuzzleInfoDialogs.Finished"
+            );
+        }
+    }
+
+    private void handleChangeAccessibility(PlayboardChanges changes) {
+        AccessibilityManager manager
+            = (AccessibilityManager) getSystemService(
+                Context.ACCESSIBILITY_SERVICE
+            );
+        if (manager == null || !manager.isEnabled())
+            return;
+
+        Playboard board = getBoard();
+        if (board == null)
+            return;
+
+        Word previousWord = changes.getPreviousWord();
+        Position newPos = board.getHighlightLetter();
+
+        boolean isNewWord = !Objects.equals(
+            changes.getPreviousWord(), changes.getCurrentWord()
+        );
+        boolean isNewPosition
+            = !Objects.equals(changes.getPreviousPosition(), newPos);
+
+        if (isNewWord) {
+            // announce new clue for accessibility
+            boolean showCount = prefs.getBoolean("showCount", false);
+            utils.announceForAccessibility(
+                findViewById(android.R.id.content),
+                PlayboardTextRenderer.getAccessibleCurrentClueWord(
+                    this, board, showCount
+                )
+            );
+        } else if (isNewPosition) {
+            // announce new box for accessibility
+            utils.announceForAccessibility(
+                findViewById(android.R.id.content),
+                PlayboardTextRenderer.getAccessibleCurrentBox(this, board)
+            );
+        }
     }
 }

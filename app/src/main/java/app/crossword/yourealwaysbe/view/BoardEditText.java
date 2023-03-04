@@ -14,6 +14,8 @@ import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -64,7 +66,6 @@ public class BoardEditText
     private SharedPreferences prefs;
 
     private BoardEditFilter[] filters;
-    private CharSequence contentDescriptionBase;
 
     public BoardEditText(Context context, AttributeSet as) {
         super(context, as);
@@ -87,8 +88,6 @@ public class BoardEditText
         setAllowZoom(false);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        contentDescriptionBase = getContentDescription();
     }
 
     @Override
@@ -237,6 +236,7 @@ public class BoardEditText
             boxes[pos].setResponse(c);
             flagChanged(pos);
             render();
+            sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
         }
     }
 
@@ -377,6 +377,33 @@ public class BoardEditText
         return super.onKeyUp(keyCode, event);
     }
 
+    @Override
+    public void onPopulateAccessibilityEvent(AccessibilityEvent event) {
+        super.onPopulateAccessibilityEvent(event);
+        event.getText().add(toString());
+    }
+
+    @Override
+    public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
+        super.onInitializeAccessibilityEvent(event);
+        event.setClassName(BoardEditText.class.getName());
+        if (event.getEventType() ==
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED) {
+            int col = getSelectedCol();
+            if (col >= 0) {
+                event.setFromIndex(col);
+                event.setToIndex(col + 1);
+                event.setItemCount(1);
+            }
+        }
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+        info.setText(toString());
+    }
+
     public int getNumNonBlank() {
         int count = 0;
         int len = getLength();
@@ -457,12 +484,6 @@ public class BoardEditText
         ));
 
         clearChanges();
-
-        setContentDescription(
-            renderer.getContentDescription(
-                contentDescriptionBase, boxes, getSelectedCol(), true
-            )
-        );
     }
 
     private boolean canDelete(Position pos) {
@@ -530,14 +551,19 @@ public class BoardEditText
         flagChanged(selection.getCol(), col);
         selection.setCol(col);
         updateInputConnection();
+        sendAccessibilityEvent(
+            AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED
+        );
     }
 
     private String getSelectedResponse() {
+        Box box = getSelectedBox();
+        return box == null ? Box.BLANK : box.getResponse();
+    }
+
+    private Box getSelectedBox() {
         int col = getSelectedCol();
-        if (0 <= col && col < boxes.length)
-            return boxes[col].getResponse();
-        else
-            return Box.BLANK;
+        return (0 <= col && col < boxes.length) ? boxes[col] : null;
     }
 
     private void updateInputConnection() {

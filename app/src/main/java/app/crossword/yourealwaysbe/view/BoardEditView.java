@@ -45,7 +45,6 @@ public abstract class BoardEditView
     private PlayboardRenderer renderer;
     private Set<BoardClickListener> clickListeners = new HashSet<>();
     private long lastTap = 0;
-    private CharSequence contentDescriptionBase;
     private BoxInputConnection currentInputConnection = null;
     private boolean nativeInput = false;
 
@@ -56,7 +55,6 @@ public abstract class BoardEditView
 
     public BoardEditView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        contentDescriptionBase = getContentDescription();
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -349,9 +347,6 @@ public abstract class BoardEditView
     protected PlayboardRenderer getRenderer() { return renderer; }
     protected Playboard getBoard() { return board; }
     protected SharedPreferences getPrefs() { return prefs; }
-    protected CharSequence getContentDescriptionBase() {
-        return contentDescriptionBase;
-    }
 
     /**
      * What scratch to suppress when rendering

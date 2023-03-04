@@ -27,6 +27,7 @@ public class Playboard implements Serializable {
     private boolean preserveCorrectLettersInShowErrors;
     private boolean dontDeleteCrossing;
     private Word previousWord = null;
+    private Position previousPosition = null;
     // used by findZoneDelta to track last index to handle clues with
     // repeated positions
     private int lastFoundZoneIndex = -1;
@@ -1316,14 +1317,17 @@ public class Playboard implements Serializable {
             Collection<Position> posChanges = wholeBoard ? null : getChanges();
 
             notificationChanges.setValues(
-                currentWord, previousWord, posChanges,
+                currentWord, previousWord, previousPosition, posChanges,
                 historyChange, lastHistoryIndex
             );
 
             for (PlayboardListener listener : listeners) {
                 listener.onPlayboardChange(notificationChanges);
             }
+
             previousWord = currentWord;
+            previousPosition = getHighlightLetter();
+
             clearChanges();
 
             flagNotifying(false);
@@ -1603,6 +1607,10 @@ public class Playboard implements Serializable {
             return zone.hasPosition(new Position(row, col));
         }
 
+        public int indexOf(Position pos) {
+            return zone.indexOf(pos);
+        }
+
         /**
          * Length of word
          *
@@ -1646,6 +1654,7 @@ public class Playboard implements Serializable {
     public static class PlayboardChanges {
         private Word currentWord;
         private Word previousWord;
+        private Position previousPosition;
         private Collection<Position> cellChanges;
         private boolean historyChange;
         private int lastHistoryIndex;
@@ -1653,12 +1662,14 @@ public class Playboard implements Serializable {
         private void setValues(
             Word currentWord,
             Word previousWord,
+            Position previousPosition,
             Collection<Position> cellChanges,
             boolean historyChange,
             int lastHistoryIndex
         ) {
             this.currentWord = currentWord;
             this.previousWord = previousWord;
+            this.previousPosition = previousPosition;
             this.cellChanges = cellChanges;
             this.historyChange = historyChange;
             this.lastHistoryIndex = lastHistoryIndex;
@@ -1673,6 +1684,11 @@ public class Playboard implements Serializable {
          * The word selected at last notification (may be null)
          */
         public Word getPreviousWord() { return previousWord; }
+
+        /**
+         * The position selected at last notification (may be null)
+         */
+        public Position getPreviousPosition() { return previousPosition; }
 
         /**
          * A set of changed cell positions since update

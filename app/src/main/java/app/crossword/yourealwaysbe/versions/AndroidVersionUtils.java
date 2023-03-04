@@ -145,4 +145,11 @@ public interface AndroidVersionUtils {
      * If rationale is needed when requesting notification permission
      */
     boolean shouldShowRequestNotificationPermissionRationale(Activity activity);
+
+    /**
+     * Calls announceForAccessibility on view if available
+     *
+     * And text not null
+     */
+    void announceForAccessibility(View view, CharSequence text);
 }

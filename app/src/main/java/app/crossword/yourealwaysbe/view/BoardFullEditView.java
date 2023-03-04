@@ -94,9 +94,6 @@ public class BoardFullEditView extends BoardEditView {
             renderer.draw(changes, getSuppressNotesList()),
             rescale
         );
-        setContentDescription(
-            renderer.getContentDescription(getContentDescriptionBase())
-        );
     }
 
     @Override

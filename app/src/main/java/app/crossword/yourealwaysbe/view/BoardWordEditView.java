@@ -174,12 +174,6 @@ public class BoardWordEditView extends BoardEditView {
             ),
             rescale
         );
-        setContentDescription(
-            renderer.getContentDescription(
-                renderWord,
-                getContentDescriptionBase()
-            )
-        );
     }
 
     @Override

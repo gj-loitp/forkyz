@@ -679,10 +679,13 @@ public class PlayActivity extends PuzzleActivity
 
         Word previousWord = changes.getPreviousWord();
 
-        // hide keyboard when moving to a new word
         Position newPos = getBoard().getHighlightLetter();
-        if ((previousWord == null) ||
-            !previousWord.checkInWord(newPos.getRow(), newPos.getCol())) {
+
+        boolean isNewWord = (previousWord == null) ||
+            !previousWord.checkInWord(newPos);
+
+        if (isNewWord) {
+            // hide keyboard when moving to a new word
             keyboardManager.hideKeyboard();
         }
 
