@@ -8,8 +8,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.ActivityCompat;
+
 
 @TargetApi(Build.VERSION_CODES.TIRAMISU)
 public class TiramisuUtil extends RUtil {
@@ -33,5 +36,10 @@ public class TiramisuUtil extends RUtil {
         return ActivityCompat.shouldShowRequestPermissionRationale(
             activity, Manifest.permission.POST_NOTIFICATIONS
         );
+    }
+
+    @Override
+    public void invalidateInput(InputMethodManager imm, View view) {
+        imm.invalidateInput(view);
     }
 }

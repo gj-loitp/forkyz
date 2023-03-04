@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -152,4 +153,9 @@ public interface AndroidVersionUtils {
      * And text not null
      */
     void announceForAccessibility(View view, CharSequence text);
+
+    /**
+     * Call invalidateInput or restartInput as available
+     */
+    void invalidateInput(InputMethodManager imm, View view);
 }

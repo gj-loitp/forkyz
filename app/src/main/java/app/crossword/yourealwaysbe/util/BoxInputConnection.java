@@ -17,7 +17,12 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
+import app.crossword.yourealwaysbe.versions.AndroidVersionUtils;
+
 public class BoxInputConnection extends BaseInputConnection {
+
+    private static final AndroidVersionUtils utils
+        = AndroidVersionUtils.Factory.getInstance();
 
     private static final int INPUT_TYPE =
         InputType.TYPE_CLASS_TEXT
@@ -93,10 +98,7 @@ public class BoxInputConnection extends BaseInputConnection {
 
     public void refreshInput() {
         InputMethodManager imm = getInputMethodManager();
-        // this ultimately kills the input connection and creates a
-        // new one, but in API 33 we can replace it with
-        // invalidateInput
-        imm.restartInput(targetView);
+        utils.invalidateInput(imm, targetView);
     }
 
     private InputMethodManager getInputMethodManager() {

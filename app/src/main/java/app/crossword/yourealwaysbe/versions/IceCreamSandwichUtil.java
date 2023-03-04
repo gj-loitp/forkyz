@@ -26,6 +26,7 @@ import android.view.View.OnClickListener;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -253,5 +254,10 @@ public class IceCreamSandwichUtil implements AndroidVersionUtils {
     @Override
     public void announceForAccessibility(View view, CharSequence text) {
         // not available
+    }
+
+    @Override
+    public void invalidateInput(InputMethodManager imm, View view) {
+        imm.restartInput(view);
     }
 }
