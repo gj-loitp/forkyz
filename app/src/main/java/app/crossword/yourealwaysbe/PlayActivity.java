@@ -101,9 +101,10 @@ public class PlayActivity extends PuzzleActivity
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.play);
+
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.play);
 
         utils.holographic(this);
         utils.finishOnHomeButton(this);
@@ -321,6 +322,8 @@ public class PlayActivity extends PuzzleActivity
 
         setupVoiceButtons();
         setupVoiceCommands();
+
+        addAccessibilityActions(this.boardView);
     }
 
     private void fitBoardToScreen() {
@@ -413,7 +416,6 @@ public class PlayActivity extends PuzzleActivity
         case KeyEvent.KEYCODE_VOLUME_DOWN:
             return isVolumeDownActivatesVoicePref();
         }
-
 
         char c = Character.toUpperCase(event.getDisplayLabel());
         if (Character.isLetterOrDigit(c))

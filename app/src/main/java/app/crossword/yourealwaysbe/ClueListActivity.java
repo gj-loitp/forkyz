@@ -65,10 +65,6 @@ public class ClueListActivity extends PuzzleActivity
      */
     @Override
     public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-        utils.holographic(this);
-        utils.finishOnHomeButton(this);
-
         Playboard board = getBoard();
         Puzzle puz = getPuzzle();
 
@@ -82,6 +78,11 @@ public class ClueListActivity extends PuzzleActivity
         }
 
         setContentView(R.layout.clue_list);
+
+        super.onCreate(icicle);
+
+        utils.holographic(this);
+        utils.finishOnHomeButton(this);
 
         this.rootView = this.findViewById(android.R.id.content);
 
@@ -107,6 +108,8 @@ public class ClueListActivity extends PuzzleActivity
 
         setupVoiceButtons();
         setupVoiceCommands();
+
+        addAccessibilityActions(this.boardView);
     }
 
     @Override

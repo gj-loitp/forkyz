@@ -23,6 +23,12 @@
         android:summary="@string/announce_clue_button_desc"
         android:key="buttonAnnounceClue"
     />
+    <androidx.preference.CheckBoxPreference
+        android:title="@string/announce_clue_equals"
+        android:defaultValue="true"
+        android:summary="@string/announce_clue_equals_desc"
+        android:key="equalsAnnounceClue"
+    />
     <androidx.preference.Preference
         android:title="@string/about_voice_commands"
         android:key="aboutVoiceCommands"

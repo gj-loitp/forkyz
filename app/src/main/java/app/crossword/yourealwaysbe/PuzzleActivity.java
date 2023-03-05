@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,8 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.core.app.ShareCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityViewCommand;
 import androidx.fragment.app.DialogFragment;
 
 import org.jg.wordstonumbers.WordsToNumbersUtil;
@@ -62,7 +65,8 @@ public abstract class PuzzleActivity
         = "buttonActivatesVoice";
     private static final String PREF_BUTTON_ANNOUNCE_CLUE
         = "buttonAnnounceClue";
-
+    private static final String PREF_EQUALS_ANNOUNCE_CLUE
+        = "equalsAnnounceClue";
 
     private boolean firstPlay = false;
     private ImaginaryTimer timer;
@@ -250,6 +254,28 @@ public abstract class PuzzleActivity
         if (timer != null) {
             timer.stop();
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_EQUALS:
+            if (isAnnounceClueEquals())
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_EQUALS:
+            if (isAnnounceClueEquals()) {
+                announceClue(false);
+                return true;
+            }
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     /**
@@ -662,6 +688,26 @@ public abstract class PuzzleActivity
                 );
             }
         }
+    }
+
+    /**
+     * Add available accessibility actions to view
+     *
+     * Just announce clue for now
+     */
+    protected void addAccessibilityActions(View view) {
+        ViewCompat.addAccessibilityAction(
+            view,
+            getString(R.string.announce_clue_label),
+            (View v, AccessibilityViewCommand.CommandArguments arguments) -> {
+                announceClue(true);
+                return true;
+            }
+        );
+    }
+
+    protected boolean isAnnounceClueEquals() {
+        return prefs.getBoolean(PREF_EQUALS_ANNOUNCE_CLUE, true);
     }
 
     private void handleChangeTimer() {

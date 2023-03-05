@@ -97,10 +97,6 @@ public class NotesActivity extends PuzzleActivity {
      */
     @Override
     public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-        utils.holographic(this);
-        utils.finishOnHomeButton(this);
-
         Playboard board = getBoard();
         Puzzle puz = getPuzzle();
 
@@ -111,6 +107,11 @@ public class NotesActivity extends PuzzleActivity {
         }
 
         setContentView(R.layout.notes);
+
+        super.onCreate(icicle);
+
+        utils.holographic(this);
+        utils.finishOnHomeButton(this);
 
         clueLine = (TextView) this.findViewById(R.id.clueLine);
         if (clueLine != null && clueLine.getVisibility() != View.GONE) {
@@ -274,6 +275,8 @@ public class NotesActivity extends PuzzleActivity {
         });
 
         setupVoiceCommands();
+
+        addAccessibilityActions(this.boardView);
     }
 
     @Override

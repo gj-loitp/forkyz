@@ -539,4 +539,8 @@
     <string name="announce_clue_button">Show button to announce clue</string>
     <string name="announce_clue_button_desc">Add an on-screen button to announce current clue and word contents. Uses accessibility service if running.</string>
     <string name="speech_not_ready">Speech service not ready.</string>
+    <string name="voice_command">Voice Command</string>
+    <string name="announce_clue_label">Announce Clue</string>
+    <string name="announce_clue_equals">Announce clue with equals key</string>
+    <string name="announce_clue_equals_desc">Press equals key to announce current clue and word.</string>
 </resources>
