@@ -38,7 +38,6 @@ public class ClueListActivity extends PuzzleActivity
     private KeyboardManager keyboardManager;
     private BoardWordEditView boardView;
     private ClueTabs clueTabs;
-    private View voiceButtonContainer;
     private View rootView;
 
     @Override
@@ -106,12 +105,7 @@ public class ClueListActivity extends PuzzleActivity
         ForkyzKeyboard keyboard = (ForkyzKeyboard) findViewById(R.id.keyboard);
         keyboardManager = new KeyboardManager(this, keyboard, boardView);
 
-        this.voiceButtonContainer
-            = this.findViewById(R.id.voiceButtonContainer);
-        this.findViewById(R.id.voiceButton).setOnClickListener(view -> {
-            launchVoiceInput();
-        });
-
+        setupVoiceButtons();
         setupVoiceCommands();
     }
 
@@ -142,9 +136,7 @@ public class ClueListActivity extends PuzzleActivity
 
         keyboardManager.onResume();
 
-        voiceButtonContainer.setVisibility(
-            isButtonActivatesVoicePref() ? View.VISIBLE : View.GONE
-        );
+        setVoiceButtonVisibility();
     }
 
     @Override

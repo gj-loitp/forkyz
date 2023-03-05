@@ -71,7 +71,6 @@ public class PlayActivity extends PuzzleActivity
     private MovementStrategy movement = null;
     private BoardEditView boardView;
     private TextView clue;
-    private View voiceButtonContainer;
     private boolean hasInitialValues = false;
 
     private Runnable fitToScreenTask = new Runnable() {
@@ -320,12 +319,7 @@ public class PlayActivity extends PuzzleActivity
             this.handler.postDelayed(fitToScreenTask, 100);
         }
 
-        this.voiceButtonContainer
-            = this.findViewById(R.id.voiceButtonContainer);
-        this.findViewById(R.id.voiceButton).setOnClickListener(view -> {
-            launchVoiceInput();
-        });
-
+        setupVoiceButtons();
         setupVoiceCommands();
     }
 
@@ -737,9 +731,7 @@ public class PlayActivity extends PuzzleActivity
             hideClueTabs();
         }
 
-        voiceButtonContainer.setVisibility(
-            isButtonActivatesVoicePref() ? View.VISIBLE : View.GONE
-        );
+        setVoiceButtonVisibility();
 
         registerBoard();
 

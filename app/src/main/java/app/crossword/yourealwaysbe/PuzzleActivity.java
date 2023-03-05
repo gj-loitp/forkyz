@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -26,7 +28,6 @@ import app.crossword.yourealwaysbe.puz.Box;
 import app.crossword.yourealwaysbe.puz.Clue;
 import app.crossword.yourealwaysbe.puz.ClueID;
 import app.crossword.yourealwaysbe.puz.Playboard.PlayboardChanges;
-import app.crossword.yourealwaysbe.puz.Playboard.Word;
 import app.crossword.yourealwaysbe.puz.Playboard;
 import app.crossword.yourealwaysbe.puz.Position;
 import app.crossword.yourealwaysbe.puz.Puzzle;
@@ -46,7 +47,8 @@ import java.util.regex.Pattern;
 
 public abstract class PuzzleActivity
         extends ForkyzActivity
-        implements Playboard.PlayboardListener {
+        implements Playboard.PlayboardListener,
+            TextToSpeech.OnInitListener {
 
     private static final Logger LOG = Logger.getLogger("app.crossword.yourealwaysbe");
 
@@ -58,12 +60,20 @@ public abstract class PuzzleActivity
         = "volumeActivatesVoice";
     private static final String PREF_BUTTON_ACTIVATES_VOICE
         = "buttonActivatesVoice";
+    private static final String PREF_BUTTON_ANNOUNCE_CLUE
+        = "buttonAnnounceClue";
 
 
     private boolean firstPlay = false;
     private ImaginaryTimer timer;
     private Handler handler = new Handler(Looper.getMainLooper());
     private PlayboardTextRenderer textRenderer;
+    private View voiceButtonContainer;
+    private View voiceButton;
+    private View announceClueButton;
+    private TextToSpeech ttsService = null;
+    private boolean ttsReady = false;
+    private int speechReqCount = 0;
 
     private Runnable updateTimeTask = new Runnable() {
         public void run() {
@@ -183,6 +193,12 @@ public abstract class PuzzleActivity
         Playboard board = getBoard();
         if (board != null)
             board.removeListener(this);
+
+        if (ttsService != null) {
+            ttsService.shutdown();
+            ttsService = null;
+            ttsReady = false;
+        }
     }
 
     @Override
@@ -214,6 +230,16 @@ public abstract class PuzzleActivity
         Playboard board = getBoard();
         if (board != null)
             board.addListener(this);
+
+        if (needsTextToSpeech())
+            ttsService = new TextToSpeech(getApplicationContext(), this);
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            ttsReady = true;
+        }
     }
 
     @Override
@@ -564,6 +590,80 @@ public abstract class PuzzleActivity
         return prefs.getBoolean(PREF_BUTTON_ACTIVATES_VOICE, false);
     }
 
+    /**
+     * Whether to show an on-screen button to activate voice
+     */
+    protected boolean isButtonAnnounceCluePref() {
+        return prefs.getBoolean(PREF_BUTTON_ANNOUNCE_CLUE, false);
+    }
+
+    protected void setupVoiceButtons() {
+        this.voiceButtonContainer
+            = this.findViewById(R.id.voiceButtonContainer);
+        this.voiceButton
+            = this.findViewById(R.id.voiceButton);
+        this.announceClueButton
+            = this.findViewById(R.id.announceClueButton);
+        voiceButton.setOnClickListener(view -> {
+            launchVoiceInput();
+        });
+        announceClueButton.setOnClickListener(view -> {
+            announceClue(false);
+        });
+    }
+
+    protected void setVoiceButtonVisibility() {
+        boolean anyButton
+            = isButtonActivatesVoicePref() || isButtonAnnounceCluePref();
+
+        voiceButtonContainer.setVisibility(
+            anyButton ? View.VISIBLE : View.GONE
+        );
+        voiceButton.setVisibility(
+            isButtonActivatesVoicePref() ? View.VISIBLE : View.GONE
+        );
+        announceClueButton.setVisibility(
+            isButtonAnnounceCluePref() ? View.VISIBLE : View.GONE
+        );
+    }
+
+    /**
+     * Announce clue
+     *
+     * With accessibility service if available.
+     */
+    protected void announceClue(boolean onlyIfAccessibilityService) {
+        Playboard board = getBoard();
+        if (board == null)
+            return;
+
+        // announce new clue for accessibility
+        boolean showCount = prefs.getBoolean("showCount", false);
+        CharSequence clue = PlayboardTextRenderer.getAccessibleCurrentClueWord(
+            this, board, showCount
+        );
+
+        if (isAccessibilityServiceRunning()) {
+            utils.announceForAccessibility(
+                findViewById(android.R.id.content), clue
+            );
+        } else if (!onlyIfAccessibilityService) {
+            if (ttsService == null || !ttsReady) {
+                Toast t = Toast.makeText(
+                    this,
+                    R.string.speech_not_ready,
+                    Toast.LENGTH_SHORT
+                );
+                t.show();
+            } else {
+                ttsService.speak(
+                    clue, TextToSpeech.QUEUE_ADD, null,
+                    "ReadClue_" + (speechReqCount++)
+                );
+            }
+        }
+    }
+
     private void handleChangeTimer() {
         Puzzle puz = getPuzzle();
         if (puz == null)
@@ -586,21 +686,23 @@ public abstract class PuzzleActivity
         }
     }
 
-    private void handleChangeAccessibility(PlayboardChanges changes) {
+    private boolean isAccessibilityServiceRunning() {
         AccessibilityManager manager
             = (AccessibilityManager) getSystemService(
                 Context.ACCESSIBILITY_SERVICE
             );
-        if (manager == null || !manager.isEnabled())
+        return manager != null && manager.isEnabled();
+    }
+
+    private void handleChangeAccessibility(PlayboardChanges changes) {
+        if (!isAccessibilityServiceRunning())
             return;
 
         Playboard board = getBoard();
         if (board == null)
             return;
 
-        Word previousWord = changes.getPreviousWord();
         Position newPos = board.getHighlightLetter();
-
         boolean isNewWord = !Objects.equals(
             changes.getPreviousWord(), changes.getCurrentWord()
         );
@@ -608,14 +710,7 @@ public abstract class PuzzleActivity
             = !Objects.equals(changes.getPreviousPosition(), newPos);
 
         if (isNewWord) {
-            // announce new clue for accessibility
-            boolean showCount = prefs.getBoolean("showCount", false);
-            utils.announceForAccessibility(
-                findViewById(android.R.id.content),
-                PlayboardTextRenderer.getAccessibleCurrentClueWord(
-                    this, board, showCount
-                )
-            );
+            announceClue(true);
         } else if (isNewPosition) {
             // announce new box for accessibility
             utils.announceForAccessibility(
@@ -623,5 +718,9 @@ public abstract class PuzzleActivity
                 PlayboardTextRenderer.getAccessibleCurrentBox(this, board)
             );
         }
+    }
+
+    private boolean needsTextToSpeech() {
+        return isButtonAnnounceCluePref() && !isAccessibilityServiceRunning();
     }
 }

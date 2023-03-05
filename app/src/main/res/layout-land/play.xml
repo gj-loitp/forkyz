@@ -59,6 +59,22 @@
             app:icon="@drawable/ic_voice"
             app:iconPadding="0dp"
             app:iconGravity="textStart"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+        />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/announceClueButton"
+            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            app:icon="@drawable/ic_announce"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
         />
     </LinearLayout>
     <app.crossword.yourealwaysbe.view.ForkyzKeyboard

@@ -55,6 +55,12 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:name="app.crossword.yourealwaysbe.forkyz.ForkyzApplication"
         android:backupAgent="app.crossword.yourealwaysbe.forkyz.BackupAgent"

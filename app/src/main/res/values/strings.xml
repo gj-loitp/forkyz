@@ -141,8 +141,8 @@
     <string name="browser_settings_desc">Behaviour and appearance of the puzzle list page.</string>
     <string name="interaction_settings">Interaction Settings</string>
     <string name="interaction_settings_desc">Behaviour and control of the puzzle grid while playing.</string>
-    <string name="voice_settings">Voice Input Settings</string>
-    <string name="voice_settings_desc">Configure the use of voice commands in game.</string>
+    <string name="voice_settings">Voice and Accessibility Settings</string>
+    <string name="voice_settings_desc">Configure the use of voice commands and announcements in game.</string>
     <string name="keyboard_settings">Keyboard Settings</string>
     <string name="keyboard_settings_desc">Appearance, behaviour, and type of keyboard used for entering text during play.</string>
     <string name="display_settings">Display Settings</string>
@@ -536,4 +536,7 @@
     <string name="voice_with_button">Show button to activate voice</string>
     <string name="voice_with_button_desc">Add an on-screen button to activate voice command input.</string>
     <string name="about_voice_commands">About Voice Commands</string>
+    <string name="announce_clue_button">Show button to announce clue</string>
+    <string name="announce_clue_button_desc">Add an on-screen button to announce current clue and word contents. Uses accessibility service if running.</string>
+    <string name="speech_not_ready">Speech service not ready.</string>
 </resources>
