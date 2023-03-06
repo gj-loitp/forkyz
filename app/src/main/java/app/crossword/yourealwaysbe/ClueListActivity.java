@@ -400,6 +400,7 @@ public class ClueListActivity extends PuzzleActivity
         registerVoiceCommandLetter();
         registerVoiceCommandClear();
         registerVoiceCommandNumber();
+        registerVoiceCommandAnnounceClue();
 
         registerVoiceCommand(new VoiceCommand(
             getString(R.string.command_left),

@@ -50,8 +50,7 @@ import java.util.regex.Pattern;
 
 public abstract class PuzzleActivity
         extends ForkyzActivity
-        implements Playboard.PlayboardListener,
-            TextToSpeech.OnInitListener {
+        implements Playboard.PlayboardListener {
 
     private static final Logger LOG = Logger.getLogger("app.crossword.yourealwaysbe");
 
@@ -238,16 +237,6 @@ public abstract class PuzzleActivity
         Playboard board = getBoard();
         if (board != null)
             board.addListener(this);
-
-        if (needsTextToSpeech())
-            ttsService = new TextToSpeech(getApplicationContext(), this);
-    }
-
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            ttsReady = true;
-        }
     }
 
     @Override
@@ -526,6 +515,16 @@ public abstract class PuzzleActivity
         ));
     }
 
+    /**
+     * Prepared command for announcing current clue
+     */
+    protected void registerVoiceCommandAnnounceClue() {
+        registerVoiceCommand(new VoiceCommand(
+            getString(R.string.command_announce_clue),
+            args -> { announceClue(false); }
+        ));
+    }
+
     private String getSharePuzzleDetails(Puzzle puz) {
         if (puz == null)
             return "";
@@ -776,13 +775,6 @@ public abstract class PuzzleActivity
             announceBox(!isAlwaysAnnounceBox());
     }
 
-    private boolean needsTextToSpeech() {
-        boolean speechEnabled = isButtonAnnounceCluePref()
-            || isAlwaysAnnounceClue()
-            || isAlwaysAnnounceBox();
-        return speechEnabled && !isAccessibilityServiceRunning();
-    }
-
     /**
      * Announce text with accessibility if running or tts
      */
@@ -794,7 +786,19 @@ public abstract class PuzzleActivity
                 findViewById(android.R.id.content), text
             );
         } else if (!onlyIfAccessibilityService) {
-            if (ttsService == null || !ttsReady) {
+            if (ttsService == null) {
+                ttsService = new TextToSpeech(
+                    getApplicationContext(),
+                    (int status) -> {
+                        if (status == TextToSpeech.SUCCESS) {
+                            ttsReady = true;
+                            announceText(text, onlyIfAccessibilityService);
+                        }
+                    }
+                );
+            } else if (!ttsReady) {
+                // hopefully rare occasion where tts being prepared but not
+                // ready yet
                 Toast t = Toast.makeText(
                     this,
                     R.string.speech_not_ready,

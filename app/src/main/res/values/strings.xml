@@ -531,6 +531,7 @@
     <string name="command_notes">Notes</string>
     <string name="command_scratch">Scratch</string>
     <string name="command_flag">Flag</string>
+    <string name="command_announce_clue">Announce</string>
     <string name="voice_with_volume">Volume down activates voice</string>
     <string name="voice_with_volume_desc">Use the volume down key to activate voice command input during play.</string>
     <string name="voice_with_button">Show button to activate voice</string>
