@@ -67,6 +67,10 @@ public abstract class PuzzleActivity
         = "buttonAnnounceClue";
     private static final String PREF_EQUALS_ANNOUNCE_CLUE
         = "equalsAnnounceClue";
+    private static final String PREF_ALWAYS_ANNOUNCE_CLUE
+        = "alwaysAnnounceClue";
+    private static final String PREF_ALWAYS_ANNOUNCE_BOX
+        = "alwaysAnnounceBox";
 
     private boolean firstPlay = false;
     private ImaginaryTimer timer;
@@ -663,31 +667,30 @@ public abstract class PuzzleActivity
         if (board == null)
             return;
 
-        // announce new clue for accessibility
         boolean showCount = prefs.getBoolean("showCount", false);
         CharSequence clue = PlayboardTextRenderer.getAccessibleCurrentClueWord(
             this, board, showCount
         );
 
-        if (isAccessibilityServiceRunning()) {
-            utils.announceForAccessibility(
-                findViewById(android.R.id.content), clue
-            );
-        } else if (!onlyIfAccessibilityService) {
-            if (ttsService == null || !ttsReady) {
-                Toast t = Toast.makeText(
-                    this,
-                    R.string.speech_not_ready,
-                    Toast.LENGTH_SHORT
-                );
-                t.show();
-            } else {
-                ttsService.speak(
-                    clue, TextToSpeech.QUEUE_ADD, null,
-                    "ReadClue_" + (speechReqCount++)
-                );
-            }
-        }
+        if (clue != null)
+            announceText(clue, onlyIfAccessibilityService);
+    }
+
+    /**
+     * Announce box
+     *
+     * With accessibility service if available.
+     */
+    protected void announceBox(boolean onlyIfAccessibilityService) {
+        Playboard board = getBoard();
+        if (board == null)
+            return;
+
+        CharSequence box =
+            PlayboardTextRenderer.getAccessibleCurrentBox(this, board);
+
+        if (box != null)
+            announceText(box, onlyIfAccessibilityService);
     }
 
     /**
@@ -740,8 +743,20 @@ public abstract class PuzzleActivity
         return manager != null && manager.isEnabled();
     }
 
+    private boolean isAlwaysAnnounceClue() {
+        return prefs.getBoolean(PREF_ALWAYS_ANNOUNCE_CLUE, false);
+    }
+
+    private boolean isAlwaysAnnounceBox() {
+        return prefs.getBoolean(PREF_ALWAYS_ANNOUNCE_BOX, false);
+    }
+
     private void handleChangeAccessibility(PlayboardChanges changes) {
-        if (!isAccessibilityServiceRunning())
+        boolean accessibilityRunning = isAccessibilityServiceRunning();
+        boolean announceClue = accessibilityRunning || isAlwaysAnnounceClue();
+        boolean announceBox = accessibilityRunning || isAlwaysAnnounceBox();
+
+        if (!announceClue && !announceBox)
             return;
 
         Playboard board = getBoard();
@@ -755,18 +770,43 @@ public abstract class PuzzleActivity
         boolean isNewPosition
             = !Objects.equals(changes.getPreviousPosition(), newPos);
 
-        if (isNewWord) {
-            announceClue(true);
-        } else if (isNewPosition) {
-            // announce new box for accessibility
-            utils.announceForAccessibility(
-                findViewById(android.R.id.content),
-                PlayboardTextRenderer.getAccessibleCurrentBox(this, board)
-            );
-        }
+        if (isNewWord && announceClue)
+            announceClue(!isAlwaysAnnounceClue());
+        else if (isNewPosition && announceBox)
+            announceBox(!isAlwaysAnnounceBox());
     }
 
     private boolean needsTextToSpeech() {
-        return isButtonAnnounceCluePref() && !isAccessibilityServiceRunning();
+        boolean speechEnabled = isButtonAnnounceCluePref()
+            || isAlwaysAnnounceClue()
+            || isAlwaysAnnounceBox();
+        return speechEnabled && !isAccessibilityServiceRunning();
+    }
+
+    /**
+     * Announce text with accessibility if running or tts
+     */
+    private void announceText(
+        CharSequence text, boolean onlyIfAccessibilityService
+    ) {
+        if (isAccessibilityServiceRunning()) {
+            utils.announceForAccessibility(
+                findViewById(android.R.id.content), text
+            );
+        } else if (!onlyIfAccessibilityService) {
+            if (ttsService == null || !ttsReady) {
+                Toast t = Toast.makeText(
+                    this,
+                    R.string.speech_not_ready,
+                    Toast.LENGTH_SHORT
+                );
+                t.show();
+            } else {
+                ttsService.speak(
+                    text, TextToSpeech.QUEUE_FLUSH, null,
+                    "ReadGame_" + (speechReqCount++)
+                );
+            }
+        }
     }
 }

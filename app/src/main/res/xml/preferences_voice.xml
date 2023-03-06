@@ -29,6 +29,18 @@
         android:summary="@string/announce_clue_equals_desc"
         android:key="equalsAnnounceClue"
     />
+    <androidx.preference.CheckBoxPreference
+        android:title="@string/announce_clue_always"
+        android:defaultValue="false"
+        android:summary="@string/announce_clue_always_desc"
+        android:key="alwaysAnnounceClue"
+    />
+    <androidx.preference.CheckBoxPreference
+        android:title="@string/announce_box_always"
+        android:defaultValue="false"
+        android:summary="@string/announce_box_always_desc"
+        android:key="alwaysAnnounceBox"
+    />
     <androidx.preference.Preference
         android:title="@string/about_voice_commands"
         android:key="aboutVoiceCommands"

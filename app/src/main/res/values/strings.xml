@@ -543,4 +543,8 @@
     <string name="announce_clue_label">Announce Clue</string>
     <string name="announce_clue_equals">Announce clue with equals key</string>
     <string name="announce_clue_equals_desc">Press equals key to announce current clue and word.</string>
+    <string name="announce_clue_always">Always announce clues</string>
+    <string name="announce_clue_always_desc">Always announce clues on change, not just when an accessibility service is active.</string>
+    <string name="announce_box_always">Always announce boxes</string>
+    <string name="announce_box_always_desc">Always announce box contents on change, not just when an accessibility service is active.</string>
 </resources>
