@@ -17,7 +17,7 @@ public class PuzzleUtils {
         if (Box.isBlock(boxAbove) || Box.isBlock(boxCur))
             return false;
 
-        return !(boxCur.isBarredTop() || boxAbove.isBarredBottom());
+        return !(boxCur.isSolidBarredTop() || boxAbove.isSolidBarredBottom());
     }
 
     public static boolean joinedBottom(Puzzle puzzle, int row, int col) {
@@ -27,7 +27,7 @@ public class PuzzleUtils {
         if (Box.isBlock(boxBelow) || Box.isBlock(boxCur))
             return false;
 
-        return !(boxCur.isBarredBottom() || boxBelow.isBarredTop());
+        return !(boxCur.isSolidBarredBottom() || boxBelow.isSolidBarredTop());
     }
 
     public static boolean joinedLeft(Puzzle puzzle, int row, int col) {
@@ -37,7 +37,7 @@ public class PuzzleUtils {
         if (Box.isBlock(boxLeft) || Box.isBlock(boxCur))
             return false;
 
-        return !(boxCur.isBarredLeft() || boxLeft.isBarredRight());
+        return !(boxCur.isSolidBarredLeft() || boxLeft.isSolidBarredRight());
     }
 
     public static boolean joinedRight(Puzzle puzzle, int row, int col) {
@@ -47,7 +47,7 @@ public class PuzzleUtils {
         if (Box.isBlock(boxRight) || Box.isBlock(boxCur))
             return false;
 
-        return !(boxCur.isBarredRight() || boxRight.isBarredLeft());
+        return !(boxCur.isSolidBarredRight() || boxRight.isSolidBarredLeft());
     }
 
     /**

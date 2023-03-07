@@ -411,6 +411,10 @@ public class Box implements Serializable {
     public boolean isBarredBottom() { return barBottom != Bar.NONE; }
     public boolean isBarredLeft() { return barLeft != Bar.NONE; }
     public boolean isBarredRight() { return barRight != Bar.NONE; }
+    public boolean isSolidBarredTop() { return barTop == Bar.SOLID; }
+    public boolean isSolidBarredBottom() { return barBottom == Bar.SOLID; }
+    public boolean isSolidBarredLeft() { return barLeft == Bar.SOLID; }
+    public boolean isSolidBarredRight() { return barRight == Bar.SOLID; }
 
     /**
      * 3x3 array of text marks to put in box, can have null entries
