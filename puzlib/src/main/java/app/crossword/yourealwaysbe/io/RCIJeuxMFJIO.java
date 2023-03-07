@@ -26,10 +26,6 @@ import app.crossword.yourealwaysbe.puz.PuzzleBuilder;
  * Which are the same as the Swedish crosswords for RaetselZentrale:
  * the grid, with arrows pointing to the box where the answer starts.
  *
- * The data file includes spountzV and spountzH fields i don't
- * understand. On the web player, some cells have dotted lines between
- * them. I don't know why and they don't seem to correlate to these
- * fields. So i don't know what the fields are for either.
  *
  * The basic crossword structure will be playable, but perhaps a
  * completion game is missing.
@@ -135,6 +131,8 @@ public class RCIJeuxMFJIO implements PuzzleParser {
 
         Box[][] boxes = new Box[numRows][numCols];
         JsonArray rows = asArray(hjson.get("grille"));
+        JsonArray vdashes = asArray(hjson.get("spountzV"));
+        JsonArray hdashes = asArray(hjson.get("spountzH"));
 
         for (int row = 0; row < numRows; row++) {
             String cols = asString(rows.get(row));
@@ -146,6 +144,20 @@ public class RCIJeuxMFJIO implements PuzzleParser {
                     // clue numbers set with clues
                 }
             }
+        }
+
+        for (JsonValue vdash: vdashes) {
+            JsonArray vdash_arr = vdash.asArray();
+            int row = vdash_arr.get(1).asInt() - 1;
+            int col = vdash_arr.get(0).asInt() - 1;
+            boxes[row][col].setBarRight(Box.Bar.DASHED);
+        }
+
+        for (JsonValue hdash: hdashes) {
+            JsonArray hdash_arr = hdash.asArray();
+            int row = hdash_arr.get(1).asInt() - 1;
+            int col = hdash_arr.get(0).asInt() - 1;
+            boxes[row][col].setBarBottom(Box.Bar.DASHED);
         }
 
         return boxes;
@@ -215,6 +227,8 @@ public class RCIJeuxMFJIO implements PuzzleParser {
                 char cell = cols.charAt(col);
                 if (Character.isLowerCase(cell)) {
                     Arrow arrow = getArrowFromCell(cell);
+                    if (arrow.getUpper() == 'z')
+                        continue;
 
                     Position position1 = arrow.getPosition1(row, col);
                     boolean isAcross1 = arrow.getIsAcross1();
@@ -296,11 +310,12 @@ public class RCIJeuxMFJIO implements PuzzleParser {
         RIGHT('a', 'a', 0, 1, true),
         DOWN('b', 'b', 1, 0, false),
         RIGHT_DOWN('c', 'c', 0, 1, false),
-        LEFT_DOWN('d', 'd', 0, -1, false), // guessed, not seen
+        LEFT_DOWN('d', 'd', 1, 0, true), // guessed, not seen
         RIGHT_AND_DOWN('e', 'i', 0, 1, true, 1, 0, false),
         RIGHT_DOWN_AND_DOWN('j', 'n', 0, 1, false, 1, 0, false),
         RIGHT_AND_DOWN_RIGHT('o', 's', 0, 1, true, 1, 0, true),
-        RIGHT_DOWN_AND_DOWN_RIGHT('t', 'x', 0, 1, false, 1, 0, true);
+        RIGHT_DOWN_AND_DOWN_RIGHT('t', 'x', 0, 1, false, 1, 0, true),
+        NONE('z', 'z', 0, 0, false);
 
         private final char lower;
         private final char upper;
