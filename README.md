@@ -14,6 +14,8 @@ Play crosswords! Full board view, clue list view, make notes about clues, anagra
 
 Support for block, bar, and acrostic puzzles. Puzzles don't have to be across/down. E.g. rows gardens and marching bands are supported in JPZ and IPuz.
 
+[Changelogs are available here][changelogs].
+
 ## Screenshots
 
 <img
@@ -124,5 +126,6 @@ Licensed under the GNU General Public License, Version 3
 
 ipuz is a trademark of Puzzazz, used with permission
 
+[changelogs]: https://yourealwaysbe.github.io/forkyz/changes.html
 [gnome-crosswords]: https://gitlab.gnome.org/jrb/crosswords
 [online-sources]: https://yourealwaysbe.github.io/forkyz/
