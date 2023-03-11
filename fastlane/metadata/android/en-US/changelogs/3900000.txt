@@ -1,0 +1,8 @@
+- Improved accessibility: clue/box announcements via TalkBack or text-to-speech.
+- Support more puzzle styling (colours, dots/dashes, blocks).
+- Support more IPuz style features (plus some relaxations like HTML colours).
+- Support JPZ "clue" cells, move citations to completion message.
+- Support dashed bars in RCI Jeux imports, plus more French puzzles (thanks slock83).
+- Fix cleanup bug for completed puzzles.
+- Display intro on first run, add completion data to puzzle info.
+- Changelog in release notes in help.
