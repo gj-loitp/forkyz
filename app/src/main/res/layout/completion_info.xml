@@ -1,17 +1,9 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <TextView
-        android:id="@+id/puzzle_completed_msg"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/puzzle_completed"
-        android:lineSpacingMultiplier="1.2"
-        android:paddingBottom="?dialogPreferredPadding"
-    />
-
     <TableLayout
         android:id="@+id/stats_table"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="?dialogPreferredPadding"
     >
         <TableRow
             android:layout_width="wrap_content"
@@ -103,4 +95,13 @@
             />
         </TableRow>
     </TableLayout>
+
+    <TextView
+        android:id="@+id/puzzle_completed_msg"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/puzzle_completed"
+        android:lineSpacingMultiplier="1.2"
+        android:paddingBottom="?dialogPreferredPadding"
+    />
 </merge>
