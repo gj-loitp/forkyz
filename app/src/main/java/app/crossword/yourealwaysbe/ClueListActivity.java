@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import app.crossword.yourealwaysbe.forkyz.R;
 import app.crossword.yourealwaysbe.puz.Box;
@@ -100,8 +102,21 @@ public class ClueListActivity extends PuzzleActivity
                 launchClueNotes(getBoard().getClueID());
             }
         });
+        ViewCompat.replaceAccessibilityAction(
+            boardView,
+            AccessibilityActionCompat.ACTION_LONG_CLICK,
+            getText(R.string.open_clue_notes),
+            null
+        );
 
         this.clueTabs = this.findViewById(R.id.clueListClueTabs);
+
+        this.clueTabs.setOnClueLongClickDescription(
+            getString(R.string.open_clue_notes)
+        );
+        this.clueTabs.setOnClueClickDescription(
+            getString(R.string.select_clue)
+        );
 
         ForkyzKeyboard keyboard = (ForkyzKeyboard) findViewById(R.id.keyboard);
         keyboardManager = new KeyboardManager(this, keyboard, boardView);

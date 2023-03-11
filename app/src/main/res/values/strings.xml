@@ -78,6 +78,12 @@
     <string name="disable_notifications_button">Disable</string>
     <string name="android_app_settings_button">Settings</string>
 
+    <!-- play page -->
+    <string name="open_clue_list">Open clue list</string>
+    <string name="toggle_clue_tabs">Show/hide clues under grid</string>
+    <string name="open_clue_notes">Open clue notes page</string>
+    <string name="select_clue">Select clue</string>
+
     <!-- clues list -->
     <string name="current_word">Current word</string>
     <string name="clue_word">The grid word for the clue</string>
@@ -92,6 +98,11 @@
     <string name="transfer_overwrite_warning">Transferring the response conflicts with existing entries. Overwrite anyway?</string>
     <string name="flagClue">Flag clue</string>
     <string name="player_notes">Puzzle Notes</string>
+    <string name="transfer_board_to_scratch_or_anagram">Transfer board contents to scratch or anagram</string>
+    <string name="transfer_scratch_to_notes">Transfer scratch contents to free notes</string>
+    <string name="transfer_scratch_to_board">Transfer scratch contents to board</string>
+    <string name="shuffle_anagram_source">Shuffle anagram source letters</string>
+    <string name="transfer_anagram_solution_to_board">Transfer anagram solution to board</string>
 
     <!-- clue formats -->
     <string name="clue_format_short_no_dir">%1$s. %2$s</string>

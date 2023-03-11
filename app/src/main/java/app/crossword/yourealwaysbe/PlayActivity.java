@@ -23,6 +23,8 @@ import android.view.ViewTreeObserver;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -148,6 +150,16 @@ public class PlayActivity extends PuzzleActivity
         this.boardView = (BoardEditView) this.findViewById(R.id.board);
         this.clueTabs = this.findViewById(R.id.playClueTab);
 
+        this.clueTabs.setOnClueLongClickDescription(
+            getString(R.string.open_clue_notes)
+        );
+        this.clueTabs.setOnClueClickDescription(
+            getString(R.string.select_clue)
+        );
+        this.clueTabs.setOnBarLongClickDescription(
+            getString(R.string.toggle_clue_tabs)
+        );
+
         ForkyzKeyboard keyboardView
             = (ForkyzKeyboard) this.findViewById(R.id.keyboard);
         keyboardView.setSpecialKeyListener(
@@ -194,12 +206,24 @@ public class PlayActivity extends PuzzleActivity
                     }
                 }
             });
+            ViewCompat.replaceAccessibilityAction(
+                this.clue,
+                AccessibilityActionCompat.ACTION_CLICK,
+                getText(R.string.toggle_clue_tabs),
+                null
+            );
             this.clue.setOnLongClickListener(new OnLongClickListener() {
                 public boolean onLongClick(View arg0) {
                     PlayActivity.this.launchClueList();
                     return true;
                 }
             });
+            ViewCompat.replaceAccessibilityAction(
+                this.clue,
+                AccessibilityActionCompat.ACTION_LONG_CLICK,
+                getText(R.string.open_clue_list),
+                null
+            );
         }
 
         this.registerForContextMenu(boardView);
@@ -215,6 +239,12 @@ public class PlayActivity extends PuzzleActivity
                 launchClueNotes(board.getClueID());
             }
         });
+        ViewCompat.replaceAccessibilityAction(
+            boardView,
+            AccessibilityActionCompat.ACTION_LONG_CLICK,
+            getText(R.string.open_clue_notes),
+            null
+        );
 
         // constrain to 1:1 if clueTabs is showing
         // or half of screen if acrostic

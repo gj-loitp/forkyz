@@ -20,6 +20,8 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -154,6 +156,13 @@ public class NotesActivity extends PuzzleActivity {
                 }
             }
         });
+        ViewCompat.replaceAccessibilityAction(
+            boardView,
+            AccessibilityActionCompat.ACTION_LONG_CLICK,
+            getText(R.string.transfer_board_to_scratch_or_anagram),
+            null
+        );
+
         boardView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
@@ -181,6 +190,13 @@ public class NotesActivity extends PuzzleActivity {
                 return true;
             }
         });
+        ViewCompat.replaceAccessibilityAction(
+            notesBox,
+            AccessibilityActionCompat.ACTION_LONG_CLICK,
+            getText(R.string.transfer_scratch_to_notes),
+            null
+        );
+
         notesBox.setOnFocusChangeListener(
             new View.OnFocusChangeListener() {
                 @Override
@@ -214,6 +230,12 @@ public class NotesActivity extends PuzzleActivity {
                 }
             }
         );
+        ViewCompat.replaceAccessibilityAction(
+            scratchView,
+            AccessibilityActionCompat.ACTION_LONG_CLICK,
+            getText(R.string.transfer_scratch_to_board),
+            null
+        );
 
         anagramSourceView = (BoardEditText) this.findViewById(R.id.anagramSource);
         anagramSolView = (BoardEditText) this.findViewById(R.id.anagramSolution);
@@ -242,6 +264,12 @@ public class NotesActivity extends PuzzleActivity {
                 }
             }
         );
+        ViewCompat.replaceAccessibilityAction(
+            anagramSourceView,
+            AccessibilityActionCompat.ACTION_LONG_CLICK,
+            getText(R.string.shuffle_anagram_source),
+            null
+        );
 
         anagramSolView.setContextMenuListener(
             new ScrollingImageView.ClickListener() {
@@ -259,6 +287,12 @@ public class NotesActivity extends PuzzleActivity {
                     }
                 }
             }
+        );
+        ViewCompat.replaceAccessibilityAction(
+            anagramSolView,
+            AccessibilityActionCompat.ACTION_LONG_CLICK,
+            getText(R.string.transfer_anagram_solution_to_board),
+            null
         );
 
         flagClue = (CheckBox) findViewById(R.id.flagClue);

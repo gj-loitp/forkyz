@@ -27,6 +27,8 @@ import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import androidx.core.text.HtmlCompat;
 import androidx.core.view.GestureDetectorCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -62,6 +64,10 @@ public class ClueTabs extends LinearLayout
     private List<String> listNames = new ArrayList<>();
     private boolean showWords = false;
     private float maxWordScale = 0.9F;
+    private String onClueClickDescription = null;
+    private String onClueLongClickDescription = null;
+    private String onBarLongClickDescription = null;
+    private String onClueBoardClickDescription = null;
 
     public static interface ClueTabsListener {
         /**
@@ -128,6 +134,22 @@ public class ClueTabs extends LinearLayout
     public ClueTabs(Context context, AttributeSet as) {
         super(context, as);
         LayoutInflater.from(context).inflate(R.layout.clue_tabs, this);
+    }
+
+    public void setOnClueClickDescription(String description) {
+        this.onClueClickDescription = description;
+    }
+
+    public void setOnClueLongClickDescription(String description) {
+        this.onClueLongClickDescription = description;
+    }
+
+    public void setOnBarLongClickDescription(String description) {
+        this.onBarLongClickDescription = description;
+    }
+
+    public void setOnClueBoardClickDescription(String description) {
+        this.onClueBoardClickDescription = description;
     }
 
     /**
@@ -197,13 +219,22 @@ public class ClueTabs extends LinearLayout
 
         LinearLayout tabStrip = (LinearLayout) tabLayout.getChildAt(0);
         for (int i = 0; i < tabStrip.getChildCount(); i++) {
-            tabStrip.getChildAt(i).setOnLongClickListener(new View.OnLongClickListener() {
+            View view = tabStrip.getChildAt(i);
+            view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     ClueTabs.this.notifyListenersTabsBarLongClick();
                     return true;
                 }
             });
+            if (onBarLongClickDescription != null) {
+                ViewCompat.replaceAccessibilityAction(
+                    view,
+                    AccessibilityActionCompat.ACTION_LONG_CLICK,
+                    onBarLongClickDescription,
+                    null
+                );
+            }
         }
     }
 
@@ -652,6 +683,14 @@ public class ClueTabs extends LinearLayout
                     ClueTabs.this.notifyListenersClueClick(clue);
                 }
             });
+            if (onClueClickDescription != null) {
+                ViewCompat.replaceAccessibilityAction(
+                    view,
+                    AccessibilityActionCompat.ACTION_CLICK,
+                    onClueClickDescription,
+                    null
+                );
+            }
 
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -660,6 +699,14 @@ public class ClueTabs extends LinearLayout
                     return true;
                 }
             });
+            if (onClueLongClickDescription != null) {
+                ViewCompat.replaceAccessibilityAction(
+                    view,
+                    AccessibilityActionCompat.ACTION_LONG_CLICK,
+                    onClueLongClickDescription,
+                    null
+                );
+            }
 
             // assume gone unless proven otherwise
             this.boardView.setVisibility(View.GONE);
@@ -679,6 +726,22 @@ public class ClueTabs extends LinearLayout
                     ClueTabs.this.notifyListenersClueLongClick(clue);
                 }
             });
+            if (onClueBoardClickDescription != null) {
+                ViewCompat.replaceAccessibilityAction(
+                    boardView,
+                    AccessibilityActionCompat.ACTION_CLICK,
+                    onClueBoardClickDescription,
+                    null
+                );
+            }
+            if (onClueLongClickDescription != null) {
+                ViewCompat.replaceAccessibilityAction(
+                    boardView,
+                    AccessibilityActionCompat.ACTION_LONG_CLICK,
+                    onClueLongClickDescription,
+                    null
+                );
+            }
         }
 
         /**
