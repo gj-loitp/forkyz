@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -19,6 +20,7 @@
         android:layout_height="wrap_content"
         android:text="@string/puzzle_title"
         android:gravity="center_horizontal"
+        tools:ignore="UnusedAttribute"
         android:accessibilityHeading="true"
     />
 
@@ -82,6 +84,7 @@
                 android:text="@string/introduction"
                 android:paddingTop="?dialogPreferredPadding"
                 android:textStyle="bold"
+                tools:ignore="UnusedAttribute"
                 android:accessibilityHeading="true"
             />
             <TextView
@@ -99,6 +102,7 @@
                 android:text="@string/notes"
                 android:paddingTop="?dialogPreferredPadding"
                 android:textStyle="bold"
+                tools:ignore="UnusedAttribute"
                 android:accessibilityHeading="true"
             />
             <TextView
@@ -116,6 +120,7 @@
                 android:text="@string/completed"
                 android:paddingTop="?dialogPreferredPadding"
                 android:textStyle="bold"
+                tools:ignore="UnusedAttribute"
                 android:accessibilityHeading="true"
             />
             <!-- padding for when the title is hidden -->
