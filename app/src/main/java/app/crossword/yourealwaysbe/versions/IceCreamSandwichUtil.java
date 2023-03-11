@@ -16,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StatFs;
+import android.speech.tts.TextToSpeech;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -259,5 +260,11 @@ public class IceCreamSandwichUtil implements AndroidVersionUtils {
     @Override
     public void invalidateInput(InputMethodManager imm, View view) {
         imm.restartInput(view);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void speak(TextToSpeech tts, CharSequence text) {
+        tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null);
     }
 }

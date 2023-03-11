@@ -13,6 +13,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -158,4 +159,9 @@ public interface AndroidVersionUtils {
      * Call invalidateInput or restartInput as available
      */
     void invalidateInput(InputMethodManager imm, View view);
+
+    /**
+     * Call right version of tts speak
+     */
+    void speak(TextToSpeech tts, CharSequence text);
 }

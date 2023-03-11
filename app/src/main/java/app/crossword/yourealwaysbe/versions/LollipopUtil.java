@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.speech.tts.TextToSpeech;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocumentTree;
@@ -22,6 +23,8 @@ public class LollipopUtil extends KitKatUtil {
 
     private static final String PREF_LEGACY_BACKGROUND_DOWNLOAD
         = "backgroundDownload";
+
+    private int speechReqCount = 0;
 
     @Override
     public void migrateLegacyBackgroundDownloads(SharedPreferences prefs) {
@@ -72,6 +75,14 @@ public class LollipopUtil extends KitKatUtil {
                     uriConsumer.accept(uri);
                 }
             }
+        );
+    }
+
+    @Override
+    public void speak(TextToSpeech tts, CharSequence text) {
+        tts.speak(
+            text, TextToSpeech.QUEUE_FLUSH, null,
+            "ForkyzSpeak_" + (speechReqCount++)
         );
     }
 }

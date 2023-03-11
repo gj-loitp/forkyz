@@ -80,7 +80,6 @@ public abstract class PuzzleActivity
     private View announceClueButton;
     private TextToSpeech ttsService = null;
     private boolean ttsReady = false;
-    private int speechReqCount = 0;
 
     private Runnable updateTimeTask = new Runnable() {
         public void run() {
@@ -806,10 +805,7 @@ public abstract class PuzzleActivity
                 );
                 t.show();
             } else {
-                ttsService.speak(
-                    text, TextToSpeech.QUEUE_FLUSH, null,
-                    "ReadGame_" + (speechReqCount++)
-                );
+                utils.speak(ttsService, text);
             }
         }
     }
