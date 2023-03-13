@@ -43,6 +43,7 @@ The majority of the links on this page come from [Michael F. Gill
 * [Lexicon Devil][lexicon-devil] -- by Richard D. Allen.
 * [Mad Dog Cryptics][mad-dog-cryptics] -- by Terry Brennan.
 * [Mokelfish][mokelfish-puzzles] -- "Multi-part variety word and logic puzzles by Michael F. Gill"
+* [Nathan Curtis][nathan-curtis] -- a variety of puzzles via Patreon, free and via subscription.
 * [Neville Fogarty][neville-fogarty].
 * [Out of Left Field][outofleftfield] -- former The Nation crossword compilers Joshua Kosman and Henri Picciotto now releasing cryptics via Patreon.
 * [Outside the Box Puzzles][outside-the-box] -- subscription required, puzzles available in JPZ, untested.
@@ -93,6 +94,7 @@ The majority of the links on this page come from [Michael F. Gill
 [lexicon-devil]: http://www.lexicondevil.live/
 [mad-dog-cryptics]: https://maddogcryptics.com/
 [mokelfish-puzzles]: https://bbtp.net/puzzle/
+[nathan-curtis]: https://www.patreon.com/nathancurtis
 [neville-fogarty]: https://nevillefogarty.wordpress.com/
 [outofleftfield]: http://www.leftfieldcryptics.com/
 [outside-the-box]: https://www.joonpahk.com/blog/2021/04/12/year-6-variety-puzzle-16-starting-square-hint/
