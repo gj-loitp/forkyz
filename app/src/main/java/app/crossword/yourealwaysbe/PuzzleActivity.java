@@ -1,5 +1,7 @@
 package app.crossword.yourealwaysbe;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -22,11 +24,13 @@ import androidx.core.app.ShareCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityViewCommand;
 import androidx.fragment.app.DialogFragment;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.jg.wordstonumbers.WordsToNumbersUtil;
 
 import app.crossword.yourealwaysbe.forkyz.ForkyzApplication;
 import app.crossword.yourealwaysbe.forkyz.R;
+import app.crossword.yourealwaysbe.net.ChatGPTHelp;
 import app.crossword.yourealwaysbe.puz.Box;
 import app.crossword.yourealwaysbe.puz.Clue;
 import app.crossword.yourealwaysbe.puz.ClueID;
@@ -71,6 +75,8 @@ public abstract class PuzzleActivity
     private static final String PREF_ALWAYS_ANNOUNCE_BOX
         = "alwaysAnnounceBox";
 
+    private static final String HELP_RESPONSE_TEXT = "helpResponse";
+
     private boolean firstPlay = false;
     private ImaginaryTimer timer;
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -110,6 +116,12 @@ public abstract class PuzzleActivity
             MenuItem open = menu.findItem(R.id.puzzle_menu_open_share_url);
             open.setVisible(false);
             open.setEnabled(false);
+        }
+
+        if (!ChatGPTHelp.isEnabled(this)) {
+            MenuItem help = menu.findItem(R.id.puzzle_menu_ask_chat_gpt);
+            help.setVisible(false);
+            help.setEnabled(false);
         }
 
         return true;
@@ -175,6 +187,8 @@ public abstract class PuzzleActivity
             sharePuzzle(true);
         } else if (id == R.id.puzzle_menu_open_share_url) {
             openShareUrl();
+        } else if (id == R.id.puzzle_menu_ask_chat_gpt) {
+            requestHelpForCurrentClue();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -332,6 +346,30 @@ public abstract class PuzzleActivity
     protected void launchPuzzleNotes() {
         Intent i = new Intent(this, NotesActivity.class);
         this.startActivity(i);
+    }
+
+    protected void requestHelpForCurrentClue() {
+        if (!utils.hasNetworkConnection(this)) {
+            Toast t = Toast.makeText(
+                this,
+                R.string.help_query_but_no_active_network,
+                Toast.LENGTH_LONG
+            );
+            t.show();
+        } else {
+            ChatGPTHelp helper = new ChatGPTHelp();
+            helper.requestHelpForCurrentClue(
+                this,
+                getBoard(),
+                (String response) -> {
+                    HelpResponseDialog dialog = new HelpResponseDialog();
+                    Bundle args = new Bundle();
+                    args.putString(HELP_RESPONSE_TEXT, response);
+                    dialog.setArguments(args);
+                    dialog.show(getSupportFragmentManager(), "HelpResponseDialog");
+                }
+            );
+        }
     }
 
     private void specialEntry() {
@@ -807,6 +845,27 @@ public abstract class PuzzleActivity
             } else {
                 utils.speak(ttsService, text);
             }
+        }
+    }
+
+    public static class HelpResponseDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Activity activity = getActivity();
+
+            String response = getArguments().getString(HELP_RESPONSE_TEXT);
+            if (response == null)
+                response = activity.getString(R.string.help_query_failed);
+
+            MaterialAlertDialogBuilder builder
+                = new MaterialAlertDialogBuilder(activity);
+
+            builder.setTitle(
+                activity.getString(R.string.help_query_response_title)
+            ).setMessage(response)
+                .setPositiveButton(R.string.ok, null);
+
+            return builder.create();
         }
     }
 }

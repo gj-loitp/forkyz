@@ -69,4 +69,16 @@
         android:summary="@string/enter_changes_direction_desc"
         android:key="enterChangesDirection"
     />
+
+    <androidx.preference.EditTextPreference
+        android:title="@string/chat_gpt_api_key"
+        android:summary="@string/chat_gpt_api_key_desc"
+        android:dialogTitle="@string/chat_gpt_api_key"
+        android:dialogMessage="@string/chat_gpt_api_key_message"
+        android:inputType="text"
+        android:singleLine="true"
+        android:selectAllOnFocus="true"
+        android:key="chatGPTAPIKey"
+    />
+
 </androidx.preference.PreferenceScreen>

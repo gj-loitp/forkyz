@@ -16,6 +16,10 @@
         android:title="@string/special_entry"
     />
     <item
+        android:id="@+id/puzzle_menu_ask_chat_gpt"
+        android:title="@string/help_query_chat_gpt"
+    />
+    <item
         android:id="@+id/clue_list_menu_show_words"
         android:title="@string/show_all_words_clue_list"
         android:checkable="true"

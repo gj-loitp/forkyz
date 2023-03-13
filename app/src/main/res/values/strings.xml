@@ -569,4 +569,17 @@
     <string name="announce_clue_always_desc">Always announce clues on change, not just when an accessibility service is active.</string>
     <string name="announce_box_always">Always announce boxes</string>
     <string name="announce_box_always_desc">Always announce box contents on change, not just when an accessibility service is active.</string>
+
+    <!-- Ask AI for Help -->
+    <string name="help_query_solution_and_response">Give me a hint for the crossword clue \"%1$s\". So far my answer is \"%2$s\". The solution is \"%3$s\", but don\'t tell me that.</string>
+    <string name="help_query_just_response">Give me a hint for the crossword clue \"%1$s\". So far my answer is \"%2$s\".</string>
+    <string name="help_query_just_solution">Give me a hint for the crossword clue \"%1$s\". The solution is \"%2$s\", but don\'t tell me that.</string>
+    <string name="help_query_just_clue">Give me a hint for the crossword clue \"%1$s\".</string>
+    <string name="help_query_failed">Help query failed. Please check your network connection and API key in settings.</string>
+    <string name="help_query_response_title">ChatGPT Help Response</string>
+    <string name="help_query_chat_gpt">Ask ChatGPT for Help"</string>
+    <string name="help_query_but_no_active_network">Please enable a network connection to contact ChatGPT.</string>
+    <string name="chat_gpt_api_key">ChatGPT API Key</string>
+    <string name="chat_gpt_api_key_desc">You need an API key to use ChatGPT help. You can get an API Key from your Open AI account settings.</string>
+    <string name="chat_gpt_api_key_message">ChatGPT is an external network service run by OpenAI requiring a network connection. Its responses are not filtered by Forkyz and may be misleading, give away the answer, or be otherwise problematic. Use at your own risk.</string>
 </resources>
