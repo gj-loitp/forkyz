@@ -1174,11 +1174,11 @@ public class BrowseActivity extends ForkyzActivity {
         }
     }
 
-    public class StoragePermissionDialog extends DialogFragment {
-        public static final String RESULT_CODE_KEY = "resultCode";
-
+    public static class StoragePermissionDialog extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            BrowseActivity activity = (BrowseActivity) getActivity();
+
             MaterialAlertDialogBuilder builder
                 = new MaterialAlertDialogBuilder(getActivity());
 
@@ -1191,7 +1191,7 @@ public class BrowseActivity extends ForkyzActivity {
                         public void onClick(
                             DialogInterface dialogInterface, int i
                         ) {
-                            requestWritePermission();
+                            activity.requestWritePermission();
                         }
                     }
                 );
