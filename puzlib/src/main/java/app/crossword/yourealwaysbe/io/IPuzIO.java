@@ -763,7 +763,12 @@ public class IPuzIO implements PuzzleParser {
                     rowCells.get(col), block, empty
                 );
 
-                if (value !=  null) {
+                if (value !=  null && !value.isEmpty()) {
+                    if (boxes[row][col] == null) {
+                        boxes[row][col] = new Box();
+                        boxes[row][col].setBlock(true);
+                    }
+
                     if (isSolution)
                         boxes[row][col].setSolution(value);
                     else
