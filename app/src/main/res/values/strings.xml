@@ -8,6 +8,7 @@
     <string name="reveal_puzzle">Reveal Entire Puzzle</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="ok">OK</string>
+    <string name="close">Close</string>
     <string name="cancel">Cancel</string>
     <string name="elapsed_time">Elapsed Time: %1$s</string>
     <string name="preview">Preview</string>
@@ -77,6 +78,9 @@
     <string name="notifications_denied_msg">Download notifications are denied in Android settings. Would you like to disable download notifications in the Forkyz download settings? If you would like to keep notifications, please enable notifications for Forkyz in the Android settings.</string>
     <string name="disable_notifications_button">Disable</string>
     <string name="android_app_settings_button">Settings</string>
+    <string name="new_version_title">Welcome to Forkyz Version %1$s</string>
+    <string name="new_version_message">A list of changes is available in the release notes in settings.</string>
+    <string name="view_release_notes">View Changes</string>
 
     <!-- play page -->
     <string name="open_clue_list">Open clue list</string>

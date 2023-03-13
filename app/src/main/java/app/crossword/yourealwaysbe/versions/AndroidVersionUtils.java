@@ -164,4 +164,9 @@ public interface AndroidVersionUtils {
      * Call right version of tts speak
      */
     void speak(TextToSpeech tts, CharSequence text);
+
+    /**
+     * Get the current application version name
+     */
+    String getApplicationVersionName(Context context);
 }

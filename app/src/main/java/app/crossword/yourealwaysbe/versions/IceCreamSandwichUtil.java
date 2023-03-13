@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -266,5 +268,17 @@ public class IceCreamSandwichUtil implements AndroidVersionUtils {
     @SuppressWarnings("deprecation")
     public void speak(TextToSpeech tts, CharSequence text) {
         tts.speak(text.toString(), TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public String getApplicationVersionName(Context context) {
+        try {
+            PackageInfo info = context.getPackageManager()
+                .getPackageInfo(context.getPackageName(), 0);
+            return info.versionName;
+        } catch (NameNotFoundException e) {
+            return null;
+        }
     }
 }

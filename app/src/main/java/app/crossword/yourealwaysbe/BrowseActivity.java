@@ -2,6 +2,7 @@ package app.crossword.yourealwaysbe;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -54,6 +55,7 @@ import app.crossword.yourealwaysbe.util.files.Accessor;
 import app.crossword.yourealwaysbe.util.files.DirHandle;
 import app.crossword.yourealwaysbe.util.files.PuzHandle;
 import app.crossword.yourealwaysbe.util.files.PuzMetaFile;
+import app.crossword.yourealwaysbe.versions.AndroidVersionUtils;
 import app.crossword.yourealwaysbe.view.CircleProgressBar;
 import app.crossword.yourealwaysbe.view.recycler.RemovableRecyclerViewAdapter;
 import app.crossword.yourealwaysbe.view.recycler.SeparatedRecyclerViewAdapter;
@@ -66,6 +68,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -93,7 +96,10 @@ public class BrowseActivity extends ForkyzActivity {
     private static final String BROWSER_CLOSE_TASK_ID
         = "app.crossword.yourealwaysbe.BROWSER_CLOSE_TASK_ID";
 
-    private static final int REQUEST_WRITE_STORAGE = 1002;
+    /**
+     * Store the last know version so we can say hello on new versions
+     */
+    private static final String PREF_LAST_SEEN_VERSION = "lastSeenVersion";
 
     // allow import of all docs (parser will take care of detecting if it's a
     // puzzle that's recognised)
@@ -469,6 +475,8 @@ public class BrowseActivity extends ForkyzActivity {
         // populated properly inside onResume or with puzzle list
         // observer
         setPuzzleListAdapter(buildEmptyList(), false);
+
+        checkNewVersion();
 
         // If this was started by a file open
         Intent intent = getIntent();
@@ -906,6 +914,22 @@ public class BrowseActivity extends ForkyzActivity {
         );
     }
 
+    private void checkNewVersion() {
+        String currentVersion = utils.getApplicationVersionName(this);
+        String lastSeenVersion = prefs.getString(PREF_LAST_SEEN_VERSION, null);
+
+        if (!Objects.equals(currentVersion, lastSeenVersion)) {
+            DialogFragment dialog = new NewVersionDialog();
+            dialog.show(
+                getSupportFragmentManager(), "NewVersionDialog"
+            );
+        }
+
+        prefs.edit()
+            .putString(PREF_LAST_SEEN_VERSION, currentVersion)
+            .apply();
+    }
+
     private class FileAdapter
             extends RemovableRecyclerViewAdapter<FileViewHolder> {
         final DateTimeFormatter df
@@ -1171,6 +1195,40 @@ public class BrowseActivity extends ForkyzActivity {
                         }
                     }
                 );
+
+            return builder.create();
+        }
+    }
+
+    public static class NewVersionDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Activity activity = getActivity();
+
+            String versionName
+                = AndroidVersionUtils.Factory.getInstance()
+                    .getApplicationVersionName(activity);
+            String title
+                = getString(R.string.new_version_title, versionName);
+
+            MaterialAlertDialogBuilder builder
+                = new MaterialAlertDialogBuilder(activity);
+
+            builder.setTitle(title)
+                .setMessage(R.string.new_version_message)
+                // again with apologies to material guidelines
+                .setPositiveButton(
+                    R.string.view_release_notes,
+                    (dialogInterface, i) -> {
+                        Intent intent = new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("file:///android_asset/release.html"),
+                            activity,
+                            HTMLActivity.class
+                        );
+                        activity.startActivity(intent);
+                    }
+                ).setNegativeButton(R.string.close, null);
 
             return builder.create();
         }
