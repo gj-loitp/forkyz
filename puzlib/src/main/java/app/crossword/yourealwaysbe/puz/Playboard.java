@@ -33,6 +33,10 @@ public class Playboard implements Serializable {
     private int lastFoundZoneIndex = -1;
     // Zone for the cells without clues attached
     private Zone detachedCellsZone;
+    // to toggle between selecting zone and single cell
+    // false so toggled to true the first time the detached cells are
+    // selected
+    private boolean selectDetachedZone = true;
 
     private Set<PlayboardListener> listeners = WeakSet.buildSet();
     private Set<PlayboardListener> pendingListenerRemovals = WeakSet.buildSet();
@@ -163,7 +167,16 @@ public class Playboard implements Serializable {
 
     public Word getCurrentWord() {
         Word word = getClueWord(getClueID());
-        return (word == null) ? new Word(getDetachedCellsZone()) : word;
+        if (word != null)
+            return word;
+
+        if (selectDetachedZone) {
+            return new Word(getDetachedCellsZone());
+        } else {
+            Zone zone = new Zone();
+            zone.addPosition(getHighlightLetter());
+            return new Word(zone);
+        }
     }
 
     /**
@@ -236,9 +249,18 @@ public class Playboard implements Serializable {
 
                 puzzle.setPosition(highlightLetter);
 
-                // toggle if not part of current clue
-                Zone zone = getZone(getClueID());
-                if (zone == null || !zone.hasPosition(highlightLetter)) {
+                // if box is part of a clue, only toggle if it's not
+                // part of the current clue (i.e. toggle to the right
+                // clue selection)
+                // else it's not part of a clue (detached), so only
+                // toggle if there we're moving from a non-detached cell
+                // to a detached one.
+                if (box.isPartOfClues()) {
+                    Zone zone = w.getZone();
+                    if (zone == null || !zone.hasPosition(highlightLetter)) {
+                        toggleSelection();
+                    }
+                } else if (getClueID() != null) {
                     toggleSelection();
                 }
             }
@@ -1208,6 +1230,15 @@ public class Playboard implements Serializable {
             );
     }
 
+    /**
+     * Toggle the board selection
+     *
+     * This is more like choose the appropriate direction. If the
+     * current position is in the current clue, change to the next
+     * direction. If the current position isn't in the current clue,
+     * update the clue/direction to contain the current position. Favour
+     * the current direction first.
+     */
     public Word toggleSelection() {
         Word w = this.getCurrentWord();
 
@@ -1220,7 +1251,13 @@ public class Playboard implements Serializable {
         NavigableSet<ClueID> boxClues = box.getIsPartOfClues();
 
         if (boxClues.isEmpty()) {
-            changed = w.getClueID() != null;
+            // if is a detached cell, toggle between selecting all
+            // detached cells and just this single cell. Only toggle if
+            // we were previously in a detached cell, else keep the
+            // current detached "direction".
+            changed = true;
+            if (getClueID() == null)
+                selectDetachedZone = !selectDetachedZone;
             puzzle.setCurrentClueID(null);
         } else {
             ClueID curCid = getClueID();
