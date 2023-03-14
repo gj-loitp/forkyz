@@ -118,7 +118,10 @@ public abstract class PuzzleActivity
             open.setEnabled(false);
         }
 
-        if (!ChatGPTHelp.isEnabled(this)) {
+        Playboard board = getBoard();
+        Clue clue = board == null ? null : board.getClue();
+
+        if (!ChatGPTHelp.isEnabled(this) || clue == null) {
             MenuItem help = menu.findItem(R.id.puzzle_menu_ask_chat_gpt);
             help.setVisible(false);
             help.setEnabled(false);
@@ -166,6 +169,7 @@ public abstract class PuzzleActivity
     public void onPlayboardChange(PlayboardChanges changes) {
         handleChangeTimer();
         handleChangeAccessibility(changes);
+        handleChangeChatGPT(changes);
     }
 
     @Override
@@ -847,6 +851,19 @@ public abstract class PuzzleActivity
             }
         }
     }
+
+    private void handleChangeChatGPT(PlayboardChanges changes) {
+        if (!ChatGPTHelp.isEnabled(this))
+            return;
+
+        boolean newWord = !Objects.equals(
+            changes.getPreviousWord(), changes.getCurrentWord()
+        );
+
+        if (newWord)
+            invalidateOptionsMenu();
+    }
+
 
     public static class HelpResponseDialog extends DialogFragment {
         @Override
