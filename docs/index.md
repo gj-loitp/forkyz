@@ -41,6 +41,7 @@ The majority of the links on this page come from [Michael F. Gill
 * [Keglar's Cryptics][keglar] -- homepage of Ron Sweet, block puzzles compatible with Forkyz.
 * [Knotty Grids][knotty-grids] -- by Adam Simon Levine.
 * [Lexicon Devil][lexicon-devil] -- by Richard D. Allen.
+* [Luckystreak XWords][luckystreak] -- modern/Gen-Z crosswords from Ada Nicolle. Subscription puzzles also via [Patreon][luckyxwords].
 * [Mad Dog Cryptics][mad-dog-cryptics] -- by Terry Brennan.
 * [Mokelfish][mokelfish-puzzles] -- "Multi-part variety word and logic puzzles by Michael F. Gill"
 * [Nathan Curtis][nathan-curtis] -- a variety of puzzles via Patreon, free and via subscription.
@@ -92,6 +93,8 @@ The majority of the links on this page come from [Michael F. Gill
 [keglar]: https://kegler.gitlab.io/
 [knotty-grids]: https://knottygrids.blogspot.com/
 [lexicon-devil]: http://www.lexicondevil.live/
+[luckystreak]: https://luckyxwords.blogspot.com/
+[luckyxwords]: https://www.patreon.com/luckyxwords
 [mad-dog-cryptics]: https://maddogcryptics.com/
 [mokelfish-puzzles]: https://bbtp.net/puzzle/
 [nathan-curtis]: https://www.patreon.com/nathancurtis
