@@ -749,6 +749,7 @@ public class NotesActivity extends PuzzleActivity {
         registerVoiceCommandLetter();
         registerVoiceCommandClear();
         registerVoiceCommandAnnounceClue();
+        registerVoiceCommandClueHelp();
 
         registerVoiceCommand(new VoiceCommand(
             getString(R.string.command_left),

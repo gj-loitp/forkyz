@@ -977,6 +977,7 @@ public class PlayActivity extends PuzzleActivity
         registerVoiceCommandNumber();
         registerVoiceCommandClear();
         registerVoiceCommandAnnounceClue();
+        registerVoiceCommandClueHelp();
 
         registerVoiceCommand(new VoiceCommand(
             getString(R.string.command_delete),

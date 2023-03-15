@@ -118,10 +118,7 @@ public abstract class PuzzleActivity
             open.setEnabled(false);
         }
 
-        Playboard board = getBoard();
-        Clue clue = board == null ? null : board.getClue();
-
-        if (!ChatGPTHelp.isEnabled(this) || clue == null) {
+        if (!canRequestHelpForCurrentClue()) {
             MenuItem help = menu.findItem(R.id.puzzle_menu_ask_chat_gpt);
             help.setVisible(false);
             help.setEnabled(false);
@@ -352,7 +349,13 @@ public abstract class PuzzleActivity
         this.startActivity(i);
     }
 
-    protected void requestHelpForCurrentClue() {
+    private boolean canRequestHelpForCurrentClue() {
+        Playboard board = getBoard();
+        Clue clue = board == null ? null : board.getClue();
+        return ChatGPTHelp.isEnabled(this) && clue != null;
+    }
+
+    private void requestHelpForCurrentClue() {
         if (!utils.hasNetworkConnection(this)) {
             Toast t = Toast.makeText(
                 this,
@@ -360,7 +363,7 @@ public abstract class PuzzleActivity
                 Toast.LENGTH_LONG
             );
             t.show();
-        } else {
+        } else if (canRequestHelpForCurrentClue()) {
             ChatGPTHelp helper = new ChatGPTHelp();
             helper.requestHelpForCurrentClue(
                 this,
@@ -563,6 +566,16 @@ public abstract class PuzzleActivity
         registerVoiceCommand(new VoiceCommand(
             getString(R.string.command_announce_clue),
             args -> { announceClue(false); }
+        ));
+    }
+
+    /**
+     * Prepared command for announcing current clue
+     */
+    protected void registerVoiceCommandClueHelp() {
+        registerVoiceCommand(new VoiceCommand(
+            getString(R.string.command_current_clue_help),
+            args -> { requestHelpForCurrentClue(); }
         ));
     }
 
