@@ -795,9 +795,8 @@ public class PlayboardRenderer {
         PaintProfile profile = getProfile();
         int boxSize = profile.getBoxSize();
         int textOffset = profile.getTextOffset();
-        TextPaint letterText = profile.getLetterText(box, inCurrentWord);
+        TextPaint thisLetter = profile.getLetterText(box, inCurrentWord);
 
-        TextPaint thisLetter = letterText;
         String letterString = box.isBlank()
             ? null
             : box.getResponse();
@@ -814,12 +813,11 @@ public class PlayboardRenderer {
         }
 
         if (letterString.length() > 1) {
-            letterText.setTextSize(getIdealTextSize(
-                letterString, letterText, boxSize
-            ));
+            thisLetter = getIdealTextSize(letterString, thisLetter, boxSize);
         }
 
-        int yoffset = boxSize - textOffset - getTotalHeight(letterText);
+        int yoffset
+            = boxSize - textOffset - getTotalHeight(thisLetter);
         drawText(
             canvas,
             letterString,
@@ -1005,17 +1003,22 @@ public class PlayboardRenderer {
      *
      * See how much space it would be, recommend a smaller version if
      * needed.
+     *
+     * Returns the text paint with the right size, may or may not be the
+     * original style passed
      */
-    private static int getIdealTextSize(
+    private static TextPaint getIdealTextSize(
         CharSequence text, TextPaint style, int width
     ) {
         float desiredWidth = StaticLayout.getDesiredWidth(text, style);
         float styleSize = style.getTextSize();
         if (desiredWidth > width) {
-
-            return (int) ((width / desiredWidth) * styleSize);
+            int newSize = (int) ((width / desiredWidth) * styleSize);
+            TextPaint newStyle = new TextPaint(style);
+            newStyle.setTextSize(newSize);
+            return newStyle;
         } else {
-            return (int) styleSize;
+            return style;
         }
     }
 
