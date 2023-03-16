@@ -1,5 +1,12 @@
 # Forkyz Changelog
 
+## Version 40
+
+- Add "ask Chat GPT for help" (configure in interaction settings).
+- Welcome users to new versions, with link to release notes.
+- For cells not attached to clues, toggle between selecting the cell and all detached cells.
+- Add Nathan Curtis and Luckystreak XWords to online sources page.
+
 ## Version 39
 
 - Improved accessibility: clue/box announcements via TalkBack or text-to-speech.
