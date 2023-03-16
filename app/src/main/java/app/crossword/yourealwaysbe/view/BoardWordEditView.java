@@ -50,6 +50,8 @@ public class BoardWordEditView extends BoardEditView {
      */
     public void setIncognitoMode(boolean incognitoMode) {
         if (this.incognitoMode != incognitoMode) {
+            this.incognitoMode = incognitoMode;
+
             ViewGroup.LayoutParams params = getLayoutParams();
             if (incognitoMode) {
                 setBitmap(null);
@@ -57,10 +59,10 @@ public class BoardWordEditView extends BoardEditView {
                 params.height = 1;
             } else {
                 params.height = originalHeight;
+                scheduleRenderToViewOnRedraw();
             }
-            setLayoutParams(params);
 
-            this.incognitoMode = incognitoMode;
+            setLayoutParams(params);
         }
     }
 
@@ -186,15 +188,7 @@ public class BoardWordEditView extends BoardEditView {
             return;
 
         // do after layout pass (has no effect during pass)
-        getViewTreeObserver().addOnPreDrawListener(
-            new ViewTreeObserver.OnPreDrawListener() {
-                public boolean onPreDraw() {
-                    getViewTreeObserver().removeOnPreDrawListener(this);
-                    renderToView();
-                    return true;
-                }
-            }
-        );
+        scheduleRenderToViewOnRedraw();
     }
 
     @Override
@@ -309,6 +303,18 @@ public class BoardWordEditView extends BoardEditView {
         // if the scale doesn't change).
         fitToView(true);
         render(true);
+    }
+
+    private void scheduleRenderToViewOnRedraw() {
+        getViewTreeObserver().addOnPreDrawListener(
+            new ViewTreeObserver.OnPreDrawListener() {
+                public boolean onPreDraw() {
+                    getViewTreeObserver().removeOnPreDrawListener(this);
+                    renderToView();
+                    return true;
+                }
+            }
+        );
     }
 
     private boolean redrawNeeded(
