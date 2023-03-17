@@ -43,7 +43,11 @@ with open(release_file, "w") as release_file:
         release_file.write("<ul>\n")
         with open(file) as changelog:
             for line in changelog:
-                release_file.write(f"<li>{line[2:]}</li>\n")
+                if line.startswith("-"):
+                    line = line[1:]
+                line = line.strip()
+                if len(line) > 0:
+                    release_file.write(f"<li>{line}</li>\n")
         release_file.write("</ul>\n")
 
     release_file.write("""
