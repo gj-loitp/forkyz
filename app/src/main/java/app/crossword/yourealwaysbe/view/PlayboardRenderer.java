@@ -1013,7 +1013,8 @@ public class PlayboardRenderer {
         float desiredWidth = StaticLayout.getDesiredWidth(text, style);
         float styleSize = style.getTextSize();
         if (desiredWidth > width) {
-            int newSize = (int) ((width / desiredWidth) * styleSize);
+            // -1 needed else on rare occasions overruns lines
+            int newSize = (int) ((width / desiredWidth) * styleSize) - 1;
             TextPaint newStyle = new TextPaint(style);
             newStyle.setTextSize(newSize);
             return newStyle;
