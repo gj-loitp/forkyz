@@ -54,6 +54,10 @@ public class IPuzIOTest {
         return IPuzIOTest.class.getResourceAsStream("/acrostic.ipuz");
     }
 
+    public static InputStream getTestPuzzleShapesInputStream() {
+        return IPuzIOTest.class.getResourceAsStream("/shapes.ipuz");
+    }
+
     public static void assertIsTestPuzzle1(Puzzle puz) throws Exception {
         assertEquals(puz.getKind(), Puzzle.Kind.CROSSWORD);
 
@@ -277,6 +281,30 @@ public class IPuzIOTest {
         Zone zoneQuote = quote.getClueByIndex(0).getZone();
         assertEquals(zoneQuote.size(), 13);
         assertEquals(zoneQuote.getPosition(5), new Position(1, 1));
+    }
+
+    public static void assertIsTestPuzzleShapes(Puzzle puz) throws Exception {
+        Box[][] boxes = puz.getBoxes();
+
+        assertEquals(boxes[0][0].getShape(), Box.Shape.CIRCLE);
+        assertEquals(boxes[0][1].getShape(), Box.Shape.ARROW_LEFT);
+        assertEquals(boxes[0][2].getShape(), Box.Shape.ARROW_RIGHT);
+        assertEquals(boxes[0][3].getShape(), Box.Shape.ARROW_UP);
+        assertEquals(boxes[0][4].getShape(), Box.Shape.ARROW_DOWN);
+        assertEquals(boxes[0][5].getShape(), Box.Shape.TRIANGLE_LEFT);
+        assertEquals(boxes[0][6].getShape(), Box.Shape.TRIANGLE_RIGHT);
+        assertEquals(boxes[0][7].getShape(), Box.Shape.TRIANGLE_UP);
+        assertEquals(boxes[0][8].getShape(), Box.Shape.TRIANGLE_DOWN);
+        assertEquals(boxes[0][9].getShape(), Box.Shape.DIAMOND);
+
+        assertEquals(boxes[1][0].getShape(), Box.Shape.CLUB);
+        assertEquals(boxes[1][1].getShape(), Box.Shape.HEART);
+        assertEquals(boxes[1][2].getShape(), Box.Shape.SPADE);
+        assertEquals(boxes[1][3].getShape(), Box.Shape.STAR);
+        assertEquals(boxes[1][4].getShape(), Box.Shape.SQUARE);
+        assertEquals(boxes[1][5].getShape(), Box.Shape.RHOMBUS);
+        assertEquals(boxes[1][6].getShape(), Box.Shape.FORWARD_SLASH);
+        assertEquals(boxes[1][7].getShape(), Box.Shape.BACK_SLASH);
     }
 
     /**
@@ -625,5 +653,30 @@ public class IPuzIOTest {
             assertEquals(puz, puz2);
         }
     }
+
+    @Test
+    public void testIPuzShapeReadWrite() throws Exception {
+        try (InputStream is = getTestPuzzleShapesInputStream()) {
+            Puzzle puz = IPuzIO.readPuzzle(is);
+
+            assertIsTestPuzzleShapes(puz);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IPuzIO.writePuzzle(puz, baos);
+            baos.close();
+
+            ByteArrayInputStream bais
+                = new ByteArrayInputStream(baos.toByteArray());
+
+            Puzzle puz2 = IPuzIO.readPuzzle(bais);
+
+            // bit of a hack because "" is read back as null
+            puz.setNotes(null);
+
+            assertEquals(puz, puz2);
+        }
+    }
+
+
 }
 

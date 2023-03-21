@@ -1,0 +1,31 @@
+{
+    "version": "http://ipuz.org/v2",
+    "kind": [ "http://ipuz.org/crossword#1" ],
+    "title": "Test shapes",
+    "dimensions": { "width": 10, "height": 2 },
+    "puzzle": [
+        [
+          { "style": { "shapebg": "circle" } },
+          { "style": { "shapebg": "arrow-left" } },
+          { "style": { "shapebg": "arrow-right" } },
+          { "style": { "shapebg": "arrow-up" } },
+          { "style": { "shapebg": "arrow-down" } },
+          { "style": { "shapebg": "triangle-left" } },
+          { "style": { "shapebg": "triangle-right" } },
+          { "style": { "shapebg": "triangle-up" } },
+          { "style": { "shapebg": "triangle-down" } },
+          { "style": { "shapebg": "diamond" } }
+        ], [
+          { "style": { "shapebg": "club" } },
+          { "style": { "shapebg": "heart" } },
+          { "style": { "shapebg": "spade" } },
+          { "style": { "shapebg": "star" } },
+          { "style": { "shapebg": "square" } },
+          { "style": { "shapebg": "rhombus" } },
+          { "style": { "shapebg": "/" } },
+          { "style": { "shapebg": "\\" } },
+          { "style": { "shapebg": "X" } },
+          "#"
+        ]
+    ],
+}

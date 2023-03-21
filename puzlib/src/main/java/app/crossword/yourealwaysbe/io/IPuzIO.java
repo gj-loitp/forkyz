@@ -13,10 +13,12 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -110,7 +112,51 @@ public class IPuzIO implements PuzzleParser {
     private static final String FIELD_BARRED_DOTTED = "dotted";
     private static final String FIELD_HIGHLIGHT = "highlight";
 
-    private static final String SHAPE_BG_CIRCLE = "circle";
+    private static final Map<String, Box.Shape> SHAPE_BGS = new HashMap<>();
+    static {
+        SHAPE_BGS.put("circle", Box.Shape.CIRCLE);
+        SHAPE_BGS.put("arrowleft", Box.Shape.ARROW_LEFT);
+        SHAPE_BGS.put("arrowright", Box.Shape.ARROW_RIGHT);
+        SHAPE_BGS.put("arrowup", Box.Shape.ARROW_UP);
+        SHAPE_BGS.put("arrowdown", Box.Shape.ARROW_DOWN);
+        SHAPE_BGS.put("triangleleft", Box.Shape.TRIANGLE_LEFT);
+        SHAPE_BGS.put("triangleright", Box.Shape.TRIANGLE_RIGHT);
+        SHAPE_BGS.put("triangleup", Box.Shape.TRIANGLE_UP);
+        SHAPE_BGS.put("triangledown", Box.Shape.TRIANGLE_DOWN);
+        SHAPE_BGS.put("diamond", Box.Shape.DIAMOND);
+        SHAPE_BGS.put("club", Box.Shape.CLUB);
+        SHAPE_BGS.put("heart", Box.Shape.HEART);
+        SHAPE_BGS.put("spade", Box.Shape.SPADE);
+        SHAPE_BGS.put("star", Box.Shape.STAR);
+        SHAPE_BGS.put("square", Box.Shape.SQUARE);
+        SHAPE_BGS.put("rhombus", Box.Shape.RHOMBUS);
+        SHAPE_BGS.put("/", Box.Shape.FORWARD_SLASH);
+        SHAPE_BGS.put("\\", Box.Shape.BACK_SLASH);
+        SHAPE_BGS.put("x", Box.Shape.X);
+    }
+    private static final Map<Box.Shape, String> SHAPE_BGS_REV = new HashMap<>();
+    static {
+        SHAPE_BGS_REV.put(Box.Shape.CIRCLE, "circle");
+        SHAPE_BGS_REV.put(Box.Shape.ARROW_LEFT, "arrow-left");
+        SHAPE_BGS_REV.put(Box.Shape.ARROW_RIGHT, "arrow-right");
+        SHAPE_BGS_REV.put(Box.Shape.ARROW_UP, "arrow-up");
+        SHAPE_BGS_REV.put(Box.Shape.ARROW_DOWN, "arrow-down");
+        SHAPE_BGS_REV.put(Box.Shape.TRIANGLE_LEFT, "triangle-left");
+        SHAPE_BGS_REV.put(Box.Shape.TRIANGLE_RIGHT, "triangle-right");
+        SHAPE_BGS_REV.put(Box.Shape.TRIANGLE_UP, "triangle-up");
+        SHAPE_BGS_REV.put(Box.Shape.TRIANGLE_DOWN, "triangle-down");
+        SHAPE_BGS_REV.put(Box.Shape.DIAMOND, "diamond");
+        SHAPE_BGS_REV.put(Box.Shape.CLUB, "club");
+        SHAPE_BGS_REV.put(Box.Shape.HEART, "heart");
+        SHAPE_BGS_REV.put(Box.Shape.SPADE, "spade");
+        SHAPE_BGS_REV.put(Box.Shape.STAR, "star");
+        SHAPE_BGS_REV.put(Box.Shape.SQUARE, "square");
+        SHAPE_BGS_REV.put(Box.Shape.RHOMBUS, "rhombus");
+        SHAPE_BGS_REV.put(Box.Shape.FORWARD_SLASH, "/");
+        SHAPE_BGS_REV.put(Box.Shape.BACK_SLASH, "\\");
+        SHAPE_BGS_REV.put(Box.Shape.X, "X");
+    }
+
     private static final char BARRED_TOP = 'T';
     private static final char BARRED_BOTTOM = 'B';
     private static final char BARRED_LEFT = 'L';
@@ -523,7 +569,7 @@ public class IPuzIO implements PuzzleParser {
         Object cell, String block, String empty, JSONObject namedStyles
     )
             throws IPuzFormatException {
-        if (cell == null || JSONObject.NULL.equals(cell)) {
+        if (isJSONNull(cell)) {
             return null;
         } else if (cell instanceof JSONObject) {
             JSONObject json = (JSONObject) cell;
@@ -555,10 +601,6 @@ public class IPuzIO implements PuzzleParser {
             }
 
             if (style != null) {
-                if (SHAPE_BG_CIRCLE.equals(style.optString(FIELD_SHAPE_BG))) {
-                    box.setShape(Box.Shape.CIRCLE);
-                    hasData = true;
-                }
                 String label = style.optString(FIELD_LABEL);
                 if (label != null && !label.isEmpty()) {
                     box.setInitialValue(label);
@@ -566,6 +608,7 @@ public class IPuzIO implements PuzzleParser {
                     hasData = true;
                 }
 
+                hasData |= getShapeFromStyleObj(style, box);
                 hasData |= getColorsFromStyleObj(style, box);
                 hasData |= getBarredFromStyleObj(style, box);
                 hasData |= getMarksFromStyleObj(style, box);
@@ -594,6 +637,29 @@ public class IPuzIO implements PuzzleParser {
                     "Unrecognised cell in puzzle: " + cell
                 );
             }
+        }
+    }
+
+    /**
+     * Read the shape field and set in box
+     *
+     * Returns true if a recognised shape was found
+     */
+    private static boolean getShapeFromStyleObj(JSONObject style, Box box) {
+        String shape = style.optString(FIELD_SHAPE_BG);
+        if (shape == null)
+            return false;
+
+        // make lenient by removing all non alpha characters except /
+        // and \ which are defined shapes
+        shape = shape.replaceAll("[^\\w/\\\\]", "").toLowerCase();
+
+        Box.Shape boxShape = SHAPE_BGS.get(shape);
+        if (boxShape != null) {
+            box.setShape(boxShape);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -790,7 +856,7 @@ public class IPuzIO implements PuzzleParser {
     private static String getCrosswordValueFromObj(
         Object cell, String block, String empty
     ) throws IPuzFormatException {
-        if (cell == null || JSONObject.NULL.equals(cell)) {
+        if (isJSONNull(cell)) {
             return null;
         } else if (cell instanceof JSONArray) {
             JSONArray values = (JSONArray) cell;
@@ -832,9 +898,14 @@ public class IPuzIO implements PuzzleParser {
 
         int coordBase = getCoordBase(puzJson);
 
-        JSONObject clues = puzJson.getJSONObject(FIELD_CLUES);
+        JSONObject clues = puzJson.optJSONObject(FIELD_CLUES);
+        if (isJSONNull(clues))
+            return;
 
         JSONArray names = clues.names();
+        if (names == null)
+            return;
+
         for (int i = 0; i < names.length(); i++) {
             String listName = names.getString(i);
             addClues(
@@ -870,26 +941,28 @@ public class IPuzIO implements PuzzleParser {
             int width = dimensions.getInt(FIELD_WIDTH);
             int height = dimensions.getInt(FIELD_HEIGHT);
 
-            JSONObject clues = puzJson.getJSONObject(FIELD_CLUES);
-            JSONArray names = clues.names();
-            for (int i = 0; i < names.length(); i++) {
-                String listName = names.getString(i);
-                JSONArray clueList = clues.getJSONArray(listName);
-                for (int j = 0; j < clueList.length(); j++) {
-                    Object clueObj = clueList.get(j);
-                    if (clueObj instanceof JSONObject) {
-                        JSONObject clueJson = (JSONObject) clueObj;
-                        JSONArray cells
-                            = clueJson.optJSONArray(FIELD_CLUE_CELLS);
-                        if (cells != null) {
-                            for (int k = 0; k < cells.length(); k++) {
-                                JSONArray cell = cells.getJSONArray(k);
-                                int row = cell.getInt(1);
-                                if (row >= height)
-                                    return 1;
-                                int col = cell.getInt(0);
-                                if (col >= width)
-                                    return 1;
+            JSONObject clues = puzJson.optJSONObject(FIELD_CLUES);
+            if (!isJSONNull(clues)) {
+                JSONArray names = clues.names();
+                for (int i = 0; i < names.length(); i++) {
+                    String listName = names.getString(i);
+                    JSONArray clueList = clues.getJSONArray(listName);
+                    for (int j = 0; j < clueList.length(); j++) {
+                        Object clueObj = clueList.get(j);
+                        if (clueObj instanceof JSONObject) {
+                            JSONObject clueJson = (JSONObject) clueObj;
+                            JSONArray cells
+                                = clueJson.optJSONArray(FIELD_CLUE_CELLS);
+                            if (cells != null) {
+                                for (int k = 0; k < cells.length(); k++) {
+                                    JSONArray cell = cells.getJSONArray(k);
+                                    int row = cell.getInt(1);
+                                    if (row >= height)
+                                        return 1;
+                                    int col = cell.getInt(0);
+                                    if (col >= width)
+                                        return 1;
+                                }
                             }
                         }
                     }
@@ -1208,7 +1281,7 @@ public class IPuzIO implements PuzzleParser {
             builder.setPinnedClueID(pinnedClueID);
 
         JSONObject playData = puzJson.optJSONObject(FIELD_EXT_PLAY_DATA);
-        if (playData != null && !JSONObject.NULL.equals(playData))
+        if (!isJSONNull(playData))
             readPlayData(playData, builder);
     }
 
@@ -1472,9 +1545,7 @@ public class IPuzIO implements PuzzleParser {
      */
     private static ClueID decodeClueID(JSONObject cid, PuzzleBuilder builder)
             throws IPuzFormatException {
-        if (cid == null)
-            return null;
-        if (JSONObject.NULL.equals(cid))
+        if (isJSONNull(cid))
             return null;
 
         // Version 3
@@ -1806,8 +1877,9 @@ public class IPuzIO implements PuzzleParser {
         writer.key(FIELD_STYLE)
             .object();
 
-        if (box.getShape() == Box.Shape.CIRCLE) {
-            writer.key(FIELD_SHAPE_BG).value(SHAPE_BG_CIRCLE);
+        String shape = SHAPE_BGS_REV.get(box.getShape());
+        if (shape != null) {
+            writer.key(FIELD_SHAPE_BG).value(shape);
         }
 
         // i say blocks have labels rather than values
@@ -2454,6 +2526,10 @@ public class IPuzIO implements PuzzleParser {
         if (value == null || value.isEmpty())
             return null;
         return value;
+    }
+
+    private static boolean isJSONNull(Object obj) {
+        return obj == null || JSONObject.NULL.equals(obj);
     }
 
     /**
