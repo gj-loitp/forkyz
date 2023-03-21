@@ -321,7 +321,7 @@ public class IO implements PuzzleParser {
                 if ((gextInfo & GEXT_SQUARE_CIRCLED) != 0) {
                     Box box = builder.getBox(x, y);
                     if (!Box.isBlock(box))
-                        box.setCircled(true);
+                        box.setShape(Box.Shape.CIRCLE);
                 }
             }
         }
@@ -898,7 +898,8 @@ public class IO implements PuzzleParser {
     private static void writeGEXT(
         DataOutputStream dos, Puzzle puz
     ) throws IOException {
-        if (!puz.hasCircled())
+        // approximate all shapes as circles
+        if (!puz.hasShaped())
             return;
 
         int width = puz.getWidth();
@@ -912,7 +913,7 @@ public class IO implements PuzzleParser {
             for (int col = 0; col < boxes[row].length; col++) {
                 Box box = boxes[row][col];
                 boolean supportedCircle
-                    = !Box.isBlock(box) && box.isCircled();
+                    = !Box.isBlock(box) && box.hasShape();
                 if (supportedCircle) {
                     gextSection[(width * row) + col] = GEXT_SQUARE_CIRCLED;
                 }

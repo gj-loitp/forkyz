@@ -777,7 +777,7 @@ public class PlayboardRenderer {
         int boxSize = getBoxSize();
 
         // Draw circle
-        if (box.isCircled()) {
+        if (box.getShape() == Box.Shape.CIRCLE) {
             canvas.drawCircle(
                 x + (boxSize / 2) + 0.5F,
                 y + (boxSize / 2) + 0.5F,

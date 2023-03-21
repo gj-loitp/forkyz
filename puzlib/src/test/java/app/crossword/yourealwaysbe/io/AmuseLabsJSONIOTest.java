@@ -41,10 +41,10 @@ public class AmuseLabsJSONIOTest {
         assertEquals(boxes[0][0].getSolution(), "A");
         assertEquals(boxes[5][3].getSolution(), "B");
 
-        assertTrue(boxes[10][3].isCircled());
-        assertTrue(boxes[7][6].isCircled());
-        assertFalse(boxes[3][7].isCircled());
-        assertFalse(boxes[5][9].isCircled());
+        assertEquals(boxes[10][3].getShape(), Box.Shape.CIRCLE);
+        assertEquals(boxes[7][6].getShape(), Box.Shape.CIRCLE);
+        assertFalse(boxes[3][7].hasShape());
+        assertFalse(boxes[5][9].hasShape());
 
         ClueList acrossClues = puz.getClues("Across");
         ClueList downClues = puz.getClues("Down");

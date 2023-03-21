@@ -556,7 +556,7 @@ public class IPuzIO implements PuzzleParser {
 
             if (style != null) {
                 if (SHAPE_BG_CIRCLE.equals(style.optString(FIELD_SHAPE_BG))) {
-                    box.setCircled(true);
+                    box.setShape(Box.Shape.CIRCLE);
                     hasData = true;
                 }
                 String label = style.optString(FIELD_LABEL);
@@ -1788,7 +1788,7 @@ public class IPuzIO implements PuzzleParser {
     }
 
     private static boolean isCellWithStyle(Box box) {
-        return box.isCircled()
+        return box.hasShape()
             || box.hasBars()
             || box.hasColor()
             || box.hasTextColor()
@@ -1806,7 +1806,7 @@ public class IPuzIO implements PuzzleParser {
         writer.key(FIELD_STYLE)
             .object();
 
-        if (box.isCircled()) {
+        if (box.getShape() == Box.Shape.CIRCLE) {
             writer.key(FIELD_SHAPE_BG).value(SHAPE_BG_CIRCLE);
         }
 

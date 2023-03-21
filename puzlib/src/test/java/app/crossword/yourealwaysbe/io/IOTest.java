@@ -196,7 +196,10 @@ public class IOTest {
                     InputStream is2 = new FileInputStream(tmp)
                 ) {
                     puz = IO.loadNative(is2);
-                    assertTrue(puz.getBoxes()[2][2].isCircled());
+                    assertEquals(
+                        puz.getBoxes()[2][2].getShape(),
+                        Box.Shape.CIRCLE
+                    );
                 }
             }
         }

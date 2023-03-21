@@ -15,7 +15,6 @@ public class Box implements Serializable {
     private boolean block = false;
     private String responder;
     private boolean cheated;
-    private boolean circled;
     private String initialValue;
     private String response = BLANK;
     private String solution = null;
@@ -29,6 +28,14 @@ public class Box implements Serializable {
     private Bar barBottom = Bar.NONE;
     private Bar barLeft = Bar.NONE;
     private Bar barRight = Bar.NONE;
+
+    public enum Shape {
+        CIRCLE, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, ARROW_DOWN, TRIANGLE_LEFT,
+        TRIANGLE_RIGHT, TRIANGLE_UP, TRIANGLE_DOWN, DIAMOND, CLUB,
+        HEART, SPADE, STAR, SQUARE, RHOMBUS, FORWARD_SLASH, BACK_SLASH,
+        X
+    };
+    private Shape shape;
 
     // 3x3 grid of small text marks
     private String[][] marks = null;
@@ -65,7 +72,7 @@ public class Box implements Serializable {
             return false;
         }
 
-        if (isCircled() != other.isCircled()) {
+        if (!Objects.equals(getShape(), other.getShape())) {
             return false;
         }
 
@@ -137,7 +144,7 @@ public class Box implements Serializable {
         result = (prime * result) + cluePositions.hashCode();
         result = (prime * result) + (isCheated() ? 1231 : 1237);
         result = (prime * result) + Objects.hash(getClueNumber());
-        result = (prime * result) + (isCircled() ? 1231 : 1237);
+        result = (prime * result) + Objects.hash(getShape());
         result = (prime * result) + Objects.hash(
             getBarTop(), getBarBottom(), getBarLeft(), getBarRight()
         );
@@ -219,18 +226,16 @@ public class Box implements Serializable {
         this.cheated = cheated;
     }
 
-    /**
-     * @return if the box is circled
-     */
-    public boolean isCircled() {
-        return circled;
+    public boolean hasShape() {
+        return shape != null;
     }
 
-    /**
-     * @param circled the circled to set
-     */
-    public void setCircled(boolean circled) {
-        this.circled = circled;
+    public Shape getShape() {
+        return this.shape;
+    }
+
+    public void setShape(Shape shape) {
+        this.shape = shape;
     }
 
     public boolean hasInitialValue() {

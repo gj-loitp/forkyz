@@ -293,7 +293,7 @@ public class JPZIO implements PuzzleParser {
                     String shape
                         = attributes.getValue("background-shape");
                     if ("circle".equalsIgnoreCase(shape)) {
-                        box.setCircled(true);
+                        box.setShape(Box.Shape.CIRCLE);
                         hasData = true;
                     }
 

@@ -642,16 +642,16 @@ public class Puzzle implements Serializable{
     }
 
     /**
-     * Returns true if some box is circled
+     * Returns true if some box has a shape
      */
-    public boolean hasCircled() {
+    public boolean hasShaped() {
         if (boxes == null)
             return false;
 
         for (int row = 0; row < boxes.length; row++) {
             for (int col = 0; col < boxes[row].length; col++) {
                 Box box = boxes[row][col];
-                if (box != null && box.isCircled())
+                if (box != null && box.hasShape())
                     return true;
             }
         }

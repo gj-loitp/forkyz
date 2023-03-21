@@ -149,7 +149,7 @@ public class AmuseLabsJSONIO implements PuzzleParser {
                     if (boxes[row][col] == null) {
                         boxes[row][col] = new Box();
                     }
-                    boxes[row][col].setCircled(true);
+                    boxes[row][col].setShape(Box.Shape.CIRCLE);
                 }
             }
         }

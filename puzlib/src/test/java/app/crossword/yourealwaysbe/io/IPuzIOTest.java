@@ -73,11 +73,11 @@ public class IPuzIOTest {
 
         assertEquals(boxes[0][0].getClueNumber(), "1");
         assertEquals(boxes[0][1].getClueNumber(), "2");
-        assertFalse(boxes[0][1].isCircled());
+        assertFalse(boxes[0][1].hasShape());
         assertTrue(Box.isBlock(boxes[0][2]));
         assertEquals(boxes[1][0].getClueNumber(), "3");
         assertEquals(boxes[1][0].getResponse(), "A");
-        assertTrue(boxes[1][0].isCircled());
+        assertEquals(boxes[1][0].getShape(), Box.Shape.CIRCLE);
 
         assertTrue(boxes[0][0].isBlank());
         assertEquals(boxes[0][1].getResponse(), "B");
@@ -125,8 +125,8 @@ public class IPuzIOTest {
         assertEquals(boxes[10][1].getSolution(), "R");
         assertEquals(boxes[1][10].getSolution(), "W");
 
-        assertTrue(boxes[1][2].isCircled());
-        assertFalse(boxes[2][1].isCircled());
+        assertEquals(boxes[1][2].getShape(), Box.Shape.CIRCLE);
+        assertFalse(boxes[2][1].hasShape());
 
         ClueList acrossClues = puz.getClues("Across");
         ClueList downClues = puz.getClues("Down");

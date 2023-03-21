@@ -111,7 +111,8 @@ public class BrainsOnlyIO implements PuzzleParser {
                     if (c != '#'){
                         Box b = new Box();
                         b.setSolution(c);
-                        b.setCircled(nextCircled);
+                        if (nextCircled)
+                            b.setShape(Box.Shape.CIRCLE);
                         boxes[down][across] = b;
                     }
 
