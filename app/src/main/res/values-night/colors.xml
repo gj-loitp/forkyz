@@ -39,6 +39,8 @@
     <color name="cheatedColor">#553333</color>
     <color name="boardLetterColor">#aaa</color>
     <color name="boardNoteColor">#80aaaaaa</color>
+    <color name="boardShapeColor">#555</color>
+    <color name="blockShapeColor">#444</color>
     <color name="flagColor">@color/errorColor</color>
 
     <color name="screenFade">#77333333</color>

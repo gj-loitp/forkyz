@@ -543,7 +543,7 @@ public class PlayboardRenderer {
                 drawBoxFlags(canvas, x, y, box);
             }
 
-            drawBoxCircle(canvas, x, y, box, inCurrentWord);
+            drawBoxShape(canvas, x, y, box, inCurrentWord);
 
             if (box.isBlank()) {
                 if (suppressNotesLists != null) {
@@ -771,19 +771,248 @@ public class PlayboardRenderer {
         }
     }
 
-    private void drawBoxCircle(
+    private void drawBoxShape(
         Canvas canvas, int x, int y, Box box, boolean inCurrentWord
     ) {
-        int boxSize = getBoxSize();
+        if (!box.hasShape())
+            return;
 
-        // Draw circle
-        if (box.getShape() == Box.Shape.CIRCLE) {
+        int boxSize = getBoxSize();
+        PaintProfile profile = getProfile();
+        Paint paint = profile.getShape(box, inCurrentWord);
+        int off = profile.getShapeStrokeWidth();
+
+        Path path;
+
+        switch(box.getShape()) {
+        case CIRCLE:
             canvas.drawCircle(
-                x + (boxSize / 2) + 0.5F,
-                y + (boxSize / 2) + 0.5F,
-                (boxSize / 2) - 1.5F,
-                getProfile().getShape(box, inCurrentWord)
+                x + boxSize / 2, y + boxSize / 2, boxSize / 2 - off, paint
             );
+            break;
+        case ARROW_LEFT:
+            path = new Path();
+            path.moveTo(x + boxSize - off, y + boxSize / 2);
+            path.lineTo(x + off, y + boxSize / 2);
+            path.lineTo(x + boxSize / 4, y + boxSize / 4);
+            path.moveTo(x + off, y + boxSize / 2);
+            path.lineTo(x + boxSize / 4, y + 3 * boxSize / 4);
+            canvas.drawPath(path, paint);
+            break;
+        case ARROW_RIGHT:
+            path = new Path();
+            path.moveTo(x + off, y + boxSize / 2);
+            path.lineTo(x + boxSize - off, y + boxSize / 2);
+            path.lineTo(x + 3 * boxSize / 4, y + boxSize / 4);
+            path.moveTo(x + boxSize - off, y + boxSize / 2);
+            path.lineTo(x + 3 * boxSize / 4, y + 3 * boxSize / 4);
+            canvas.drawPath(path, paint);
+            break;
+        case ARROW_UP:
+            path = new Path();
+            path.moveTo(x + boxSize / 2, y + boxSize - off);
+            path.lineTo(x + boxSize / 2, y + off);
+            path.lineTo(x + boxSize / 4, y + boxSize / 4);
+            path.moveTo(x + boxSize / 2, y + off);
+            path.lineTo(x + 3 * boxSize / 4, y + boxSize / 4);
+            canvas.drawPath(path, paint);
+            break;
+        case ARROW_DOWN:
+            path = new Path();
+            path.moveTo(x + boxSize / 2, y + off);
+            path.lineTo(x + boxSize / 2, y + boxSize - off);
+            path.lineTo(x + boxSize / 4, y + 3 * boxSize / 4);
+            path.moveTo(x + boxSize / 2, y + boxSize - off);
+            path.lineTo(x + 3 * boxSize / 4, y + 3 * boxSize / 4);
+            canvas.drawPath(path, paint);
+            break;
+        case TRIANGLE_LEFT:
+            path = new Path();
+            path.moveTo(x + boxSize - off, y + boxSize / 2);
+            path.lineTo(x + off, y + off);
+            path.lineTo(x + off, y + boxSize - off);
+            path.close();
+            canvas.drawPath(path, paint);
+            break;
+        case TRIANGLE_RIGHT:
+            path = new Path();
+            path.moveTo(x + off, y + boxSize / 2);
+            path.lineTo(x + boxSize - off, y + off);
+            path.lineTo(x + boxSize - off, y + boxSize - off);
+            path.close();
+            canvas.drawPath(path, paint);
+            break;
+        case TRIANGLE_UP:
+            path = new Path();
+            path.moveTo(x + boxSize / 2, y + boxSize - off);
+            path.lineTo(x + off, y + off);
+            path.lineTo(x + boxSize - off, y + off);
+            path.close();
+            canvas.drawPath(path, paint);
+            break;
+        case TRIANGLE_DOWN:
+            path = new Path();
+            path.moveTo(x + boxSize / 2, y + off);
+            path.lineTo(x + off, y + boxSize - off);
+            path.lineTo(x + boxSize - off, y + boxSize - off);
+            path.close();
+            canvas.drawPath(path, paint);
+            break;
+        case DIAMOND:
+            path = new Path();
+            path.moveTo(x + boxSize / 2, y + off);
+            path.lineTo(x + boxSize - off, y + boxSize / 2);
+            path.lineTo(x + boxSize / 2, y + boxSize - off);
+            path.lineTo(x + off, y + boxSize / 2);
+            path.close();
+            canvas.drawPath(path, paint);
+            break;
+        case CLUB:
+            path = new Path();
+            path.moveTo(x + boxSize / 2, y + 3 * boxSize / 5);
+            path.quadTo(
+                x + off, y + boxSize - off,
+                x + off, y + boxSize / 2
+            );
+            path.quadTo(
+                x + off, y + boxSize / 5,
+                x + 2 * boxSize / 5, y + 2 * boxSize / 5
+            );
+            path.quadTo(
+                x + off, y + off,
+                x + boxSize / 2, y + off
+            );
+            path.quadTo(
+                x + boxSize - off, y + off,
+                x + 3 * boxSize / 5, y + 2 * boxSize / 5
+            );
+            path.quadTo(
+                x + boxSize - off, y + boxSize / 5,
+                x + boxSize - off, y + boxSize / 2
+            );
+            path.quadTo(
+                x + boxSize - off, y + boxSize - off,
+                x + boxSize / 2, y + 3 * boxSize / 5
+            );
+            path.quadTo(
+                x + boxSize / 2, y + 4 * boxSize / 5,
+                x + 3 * boxSize / 4, y + boxSize - off
+            );
+            path.lineTo(
+                x + boxSize / 4, y + boxSize - off
+            );
+            path.quadTo(
+                x + boxSize / 2, y + 4 * boxSize / 5,
+                x + boxSize / 2, y + 3 * boxSize / 5
+            );
+            canvas.drawPath(path, paint);
+            break;
+        case HEART:
+            path = new Path();
+            path.moveTo(x + boxSize / 2, y + boxSize / 4);
+            path.cubicTo(
+                x + boxSize / 2, y + off,
+                x + off, y + off,
+                x + off, y + boxSize / 3
+            );
+            path.cubicTo(
+                x + off, y + boxSize / 2,
+                x + boxSize / 2, y + 2 * boxSize / 3,
+                x + boxSize / 2, y + boxSize - off
+            );
+            path.cubicTo(
+                x + boxSize / 2, y + 2 * boxSize / 3,
+                x + boxSize - off, y + boxSize / 2,
+                x + boxSize - off, y + boxSize / 3
+            );
+            path.cubicTo(
+                x + boxSize - off, y + off,
+                x + boxSize / 2, y + off,
+                x + boxSize / 2, y + boxSize / 4
+            );
+            canvas.drawPath(path, paint);
+            break;
+        case SPADE:
+            path = new Path();
+            path.moveTo(x + boxSize / 2, y + 3 * boxSize / 5);
+            path.cubicTo(
+                x + boxSize / 2, y + 4 * boxSize / 5,
+                x + off, y + 4 * boxSize / 5,
+                x + off, y + 3 * boxSize / 5
+            );
+            path.cubicTo(
+                x + off, y + boxSize / 2,
+                x + boxSize / 2, y + boxSize / 3,
+                x + boxSize / 2, y + off
+            );
+            path.cubicTo(
+                x + boxSize / 2, y + boxSize / 3,
+                x + boxSize - off, y + boxSize / 2,
+                x + boxSize - off, y + 3 * boxSize / 5
+            );
+            path.cubicTo(
+                x + boxSize - off, y + 4 * boxSize / 5,
+                x + boxSize / 2, y + 4 * boxSize / 5,
+                x + boxSize / 2, y + 3 * boxSize / 5
+            );
+            path.quadTo(
+                x + boxSize / 2, y + 4 * boxSize / 5,
+                x + 2 * boxSize / 3, y + boxSize - off
+            );
+            path.lineTo(x + boxSize / 3, y + boxSize - off);
+            path.quadTo(
+                x + boxSize / 2, y + 4 * boxSize / 5,
+                x + boxSize / 2, y + 3 * boxSize / 5
+            );
+            canvas.drawPath(path, paint);
+            break;
+        case STAR:
+            path = new Path();
+            path.moveTo(x + off, y + 2 * boxSize / 5);
+            path.lineTo(x + 2 * boxSize / 5, y + 2 * boxSize / 5);
+            path.lineTo(x + boxSize / 2, y + off);
+            path.lineTo(x + 3 * boxSize / 5, y + 2 * boxSize / 5);
+            path.lineTo(x + boxSize - off, y + 2 * boxSize / 5);
+            path.lineTo(x + 7 * boxSize / 10, y + 3 * boxSize / 5);
+            path.lineTo(x + 4 * boxSize / 5, y + boxSize - off);
+            path.lineTo(x + boxSize / 2, y + 7 * boxSize / 10);
+            path.lineTo(x + boxSize / 5, y + boxSize - off);
+            path.lineTo(x + 3 * boxSize / 10, y + 3 * boxSize / 5);
+            path.close();
+            canvas.drawPath(path, paint);
+            break;
+        case SQUARE:
+            canvas.drawRect(
+                x + off, y + off, x + boxSize - off, y + boxSize - off, paint
+            );
+            break;
+        case RHOMBUS:
+            path = new Path();
+            path.moveTo(x + 2 * boxSize / 5, y + off);
+            path.lineTo(x + boxSize - off, y + off);
+            path.lineTo(x + 3 * boxSize / 5, y + boxSize - off);
+            path.lineTo(x + off, y + boxSize - off);
+            path.close();
+            canvas.drawPath(path, paint);
+            break;
+        case FORWARD_SLASH:
+            canvas.drawLine(
+                x + off, y + off, x + boxSize - off, y + boxSize - off, paint
+            );
+            break;
+        case BACK_SLASH:
+            canvas.drawLine(
+                x + off, y + boxSize - off, x + boxSize - off, y + off, paint
+            );
+            break;
+        case X:
+            canvas.drawLine(
+                x + off, y + off, x + boxSize - off, y + boxSize - off, paint
+            );
+            canvas.drawLine(
+                x + off, y + boxSize - off, x + boxSize - off, y + off, paint
+            );
+            break;
         }
     }
 
@@ -1339,6 +1568,7 @@ public class PlayboardRenderer {
         private int barSize = boxSize / 12;
         private int numberOffset = barSize;
         private int textOffset = boxSize / 30;
+        private int shapeStrokeWidth = Math.max(1, boxSize / 15);
 
         public PaintProfile(Context context, float scale, float dpi) {
             int blockColor
@@ -1363,6 +1593,10 @@ public class PlayboardRenderer {
             int flagColor = ContextCompat.getColor(context, R.color.flagColor);
             int onBlockColor
                 = ContextCompat.getColor(context, R.color.onBlockColor);
+            int boardShapeColor
+                = ContextCompat.getColor(context, R.color.boardShapeColor);
+            int blockShapeColor
+                = ContextCompat.getColor(context, R.color.blockShapeColor);
 
             outline.setColor(blockColor);
             outline.setStrokeWidth(2.0F);
@@ -1415,13 +1649,15 @@ public class PlayboardRenderer {
             blockLetterText.setAntiAlias(true);
             blockLetterText.setTypeface(Typeface.SANS_SERIF);
 
-            shape.setColor(boardLetterColor);
+            shape.setColor(boardShapeColor);
             shape.setAntiAlias(true);
             shape.setStyle(Style.STROKE);
+            shape.setStrokeJoin(Paint.Join.ROUND);
 
-            blockShape.setColor(onBlockColor);
+            blockShape.setColor(blockShapeColor);
             blockShape.setAntiAlias(true);
             blockShape.setStyle(Style.STROKE);
+            blockShape.setStrokeJoin(Paint.Join.ROUND);
 
             currentWordHighlight.setColor(currentWordHighlightColor);
             currentLetterHighlight.setColor(currentLetterHighlightColor);
@@ -1560,6 +1796,7 @@ public class PlayboardRenderer {
         public int getBarSize() { return barSize; }
         public int getNumberOffset() { return numberOffset; }
         public int getTextOffset() { return textOffset; }
+        public int getShapeStrokeWidth() { return shapeStrokeWidth; }
 
         public void setScale(float scale, float dpi) {
             boxSize = calcBoxSize(scale, dpi);
@@ -1570,6 +1807,7 @@ public class PlayboardRenderer {
             barSize = boxSize / 12;
             numberOffset = barSize;
             textOffset = boxSize / 30;
+            shapeStrokeWidth = Math.max(1, boxSize / 15);
 
             numberText.setTextSize(numberTextSize);
             blockNumberText.setTextSize(numberTextSize);
@@ -1583,6 +1821,9 @@ public class PlayboardRenderer {
             blockNoteText.setTextSize(noteTextSize);
             miniNoteText.setTextSize(miniNoteTextSize);
             blockMiniNoteText.setTextSize(miniNoteTextSize);
+
+            shape.setStrokeWidth(shapeStrokeWidth);
+            blockShape.setStrokeWidth(shapeStrokeWidth);
 
             bar.setStrokeWidth(barSize);
             barDashed.setStrokeWidth(barSize);

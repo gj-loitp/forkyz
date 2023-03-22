@@ -34,6 +34,8 @@
     <color name="cheatedColor">#FFE0E0</color>
     <color name="boardLetterColor">#000</color>
     <color name="boardNoteColor">#60000000</color>
+    <color name="boardShapeColor">#aaa</color>
+    <color name="blockShapeColor">#555</color>
     <color name="blockColor">#000</color>
     <color name="onBlockColor">#fff</color>
     <color name="errorColor">#f00</color>
