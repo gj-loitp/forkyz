@@ -534,6 +534,8 @@ public class PlayboardRenderer {
                 canvas, box, row, col, r, highlight, inCurrentWord
             );
 
+            drawBoxShape(canvas, x, y, box, inCurrentWord);
+
             // Bars before clue numbers to avoid obfuscating
             if (fullBoard)
                 drawBoxBars(canvas, x, y, box);
@@ -542,8 +544,6 @@ public class PlayboardRenderer {
             if (fullBoard) {
                 drawBoxFlags(canvas, x, y, box);
             }
-
-            drawBoxShape(canvas, x, y, box, inCurrentWord);
 
             if (box.isBlank()) {
                 if (suppressNotesLists != null) {
