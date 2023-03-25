@@ -647,20 +647,31 @@ public class IPuzIO implements PuzzleParser {
      */
     private static boolean getShapeFromStyleObj(JSONObject style, Box box) {
         String shape = style.optString(FIELD_SHAPE_BG);
-        if (shape == null)
-            return false;
-
-        // make lenient by removing all non alpha characters except /
-        // and \ which are defined shapes
-        shape = shape.replaceAll("[^\\w/\\\\]", "").toLowerCase();
-
-        Box.Shape boxShape = SHAPE_BGS.get(shape);
+        Box.Shape boxShape = getShape(shape);
         if (boxShape != null) {
             box.setShape(boxShape);
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Get Box.Shape from text description
+     *
+     * Uses known IPuz values, with a bit of leniency in punctuation
+     *
+     * @return null if not recognised
+     */
+    public static Box.Shape getShape(String name) {
+        if (name == null)
+            return null;
+
+        // make lenient by removing all non alpha characters except /
+        // and \ which are defined shapes
+        name = name.replaceAll("[^\\w/\\\\]", "").toLowerCase();
+
+        return SHAPE_BGS.get(name);
     }
 
     /**

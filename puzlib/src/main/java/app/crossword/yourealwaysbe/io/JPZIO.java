@@ -295,6 +295,13 @@ public class JPZIO implements PuzzleParser {
                     if ("circle".equalsIgnoreCase(shape)) {
                         box.setShape(Box.Shape.CIRCLE);
                         hasData = true;
+                    } else {
+                        // see if it's an IPuz value why not
+                        Box.Shape boxShape = IPuzIO.getShape(shape);
+                        if (boxShape != null) {
+                            box.setShape(boxShape);
+                            hasData = true;
+                        }
                     }
 
                     String color
