@@ -235,6 +235,8 @@
     <string name="keyboard_use_native_desc">Use system soft input method. Still a bit experimental.</string>
     <string name="theme_preference">Theme</string>
     <string name="theme_preference_desc">Select application theme (requires restart).</string>
+    <string name="random_clue_on_shake">Random Clue on Shake</string>
+    <string name="random_clue_on_shake_desc">Jump to a random unfilled clue when shake detected in main puzzle activity.</string>
 
     <!-- preferences download -->
     <string name="auto_downloaders">Automatic Download Sources</string>

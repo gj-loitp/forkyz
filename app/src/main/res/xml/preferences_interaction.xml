@@ -70,6 +70,13 @@
         android:key="enterChangesDirection"
     />
 
+    <androidx.preference.CheckBoxPreference
+        android:title="@string/random_clue_on_shake"
+        android:defaultValue="false"
+        android:summary="@string/random_clue_on_shake_desc"
+        android:key="randomClueOnShake"
+    />
+
     <androidx.preference.EditTextPreference
         android:title="@string/chat_gpt_api_key"
         android:summary="@string/chat_gpt_api_key_desc"

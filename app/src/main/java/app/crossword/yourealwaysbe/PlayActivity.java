@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,10 +30,13 @@ import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import com.squareup.seismic.ShakeDetector;
+
 import app.crossword.yourealwaysbe.forkyz.ForkyzApplication;
 import app.crossword.yourealwaysbe.forkyz.R;
 import app.crossword.yourealwaysbe.puz.Box;
 import app.crossword.yourealwaysbe.puz.Clue;
+import app.crossword.yourealwaysbe.puz.ClueID;
 import app.crossword.yourealwaysbe.puz.MovementStrategy;
 import app.crossword.yourealwaysbe.puz.Playboard.PlayboardChanges;
 import app.crossword.yourealwaysbe.puz.Playboard.Word;
@@ -48,12 +52,16 @@ import app.crossword.yourealwaysbe.view.ForkyzKeyboard;
 import app.crossword.yourealwaysbe.view.PuzzleInfoDialogs;
 import app.crossword.yourealwaysbe.view.ScrollingImageView.ScaleListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.logging.Logger;
 
 public class PlayActivity extends PuzzleActivity
                           implements Playboard.PlayboardListener,
-                                     ClueTabs.ClueTabsListener {
+                                     ClueTabs.ClueTabsListener,
+                                     ShakeDetector.Listener {
     private static final Logger LOG = Logger.getLogger("app.crossword.yourealwaysbe");
     private static final float BOARD_DIM_RATIO = 1.0F;
     private static final float ACROSTIC_BOARD_HEIGHT_RATIO_MIN = 0.25F;
@@ -65,6 +73,7 @@ public class PlayActivity extends PuzzleActivity
     private static final String PREF_SHOW_ERRORS_CURSOR = "showErrorsCursor";
     public static final String SHOW_TIMER = "showTimer";
     public static final String SCALE = "scale";
+    private static final String PREF_RANDOM_CLUE_ON_SHAKE = "randomClueOnShake";
 
     private ClueTabs clueTabs;
     private ConstraintLayout constraintLayout;
@@ -74,6 +83,7 @@ public class PlayActivity extends PuzzleActivity
     private BoardEditView boardView;
     private TextView clue;
     private boolean hasInitialValues = false;
+    private ShakeDetector shakeDetector = null;
 
     private Runnable fitToScreenTask = new Runnable() {
         @Override
@@ -106,7 +116,6 @@ public class PlayActivity extends PuzzleActivity
         setContentView(R.layout.play);
 
         super.onCreate(savedInstanceState);
-
 
         utils.holographic(this);
         utils.finishOnHomeButton(this);
@@ -748,6 +757,8 @@ public class PlayActivity extends PuzzleActivity
             clueTabs.removeListener(this);
             clueTabs.unlistenBoard();
         }
+
+        pauseShakeDetection();
     }
 
     @Override
@@ -764,13 +775,13 @@ public class PlayActivity extends PuzzleActivity
         }
 
         setVoiceButtonVisibility();
-
         registerBoard();
 
         if (keyboardManager != null)
             keyboardManager.onResume();
 
         handleFirstPlay();
+        resumeShakeDetection();
     }
 
     private void registerBoard() {
@@ -833,6 +844,12 @@ public class PlayActivity extends PuzzleActivity
         hasInitialValues = puz.hasInitialValueCells();
         // always invalidate as anything in puzzle could have changed
         invalidateOptionsMenu();
+    }
+
+    @Override
+    public void hearShake() {
+        if (isRandomClueOnShake())
+            pickRandomUnfilledClue();
     }
 
     @Override
@@ -1118,6 +1135,51 @@ public class PlayActivity extends PuzzleActivity
 
         DialogFragment dialog = new PuzzleInfoDialogs.Intro();
         dialog.show(getSupportFragmentManager(), "PuzzleInfoDialogs.Intro");
+    }
+
+    private boolean isRandomClueOnShake() {
+        return prefs.getBoolean(PREF_RANDOM_CLUE_ON_SHAKE, false);
+    }
+
+    private void resumeShakeDetection() {
+        if (!isRandomClueOnShake())
+            return;
+
+        if (shakeDetector == null) {
+            shakeDetector = new ShakeDetector(this);
+        }
+
+        shakeDetector.start((SensorManager) getSystemService(SENSOR_SERVICE));
+    }
+
+    private void pauseShakeDetection() {
+        if (shakeDetector != null)
+            shakeDetector.stop();
+    }
+
+    private void pickRandomUnfilledClue() {
+        Playboard board = getBoard();
+        Puzzle puz = getPuzzle();
+        if (board == null || puz == null)
+            return;
+
+        ClueID currentID = board.getClueID();
+
+        List<Clue> unfilledClues = new ArrayList<>();
+        for (Clue clue : puz.getAllClues()) {
+            ClueID cid = clue.getClueID();
+            boolean current = Objects.equals(currentID, cid);
+
+            if (!current && !board.isFilledClueID(clue.getClueID()))
+                unfilledClues.add(clue);
+        }
+
+        if (unfilledClues.size() > 0) {
+            // bit inefficient, but saves a field
+            Random rand = new Random();
+            int idx = rand.nextInt(unfilledClues.size());
+            board.jumpToClue(unfilledClues.get(idx));
+        }
     }
 
     public static class RevealPuzzleDialog extends DialogFragment {

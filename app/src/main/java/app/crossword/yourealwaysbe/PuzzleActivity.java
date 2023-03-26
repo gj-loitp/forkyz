@@ -877,7 +877,6 @@ public abstract class PuzzleActivity
             invalidateOptionsMenu();
     }
 
-
     public static class HelpResponseDialog extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
