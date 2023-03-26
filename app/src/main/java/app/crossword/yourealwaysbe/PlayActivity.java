@@ -1056,6 +1056,10 @@ public class PlayActivity extends PuzzleActivity
                     launchClueNotes(board.getClueID());
             }
         ));
+        registerVoiceCommand(new VoiceCommand(
+            getString(R.string.command_jump_random),
+            args -> { pickRandomUnfilledClue(); }
+        ));
     }
 
     private void onLeftKey() {
