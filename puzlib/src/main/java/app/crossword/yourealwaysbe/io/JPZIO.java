@@ -227,6 +227,8 @@ public class JPZIO implements PuzzleParser {
         };
 
         private DefaultHandler inGrid = new DefaultHandler() {
+            private Position inCellPosition = null;
+
             @Override
             public void startElement(String nsURI,
                                      String strippedName,
@@ -245,9 +247,24 @@ public class JPZIO implements PuzzleParser {
                         JPZXMLParser.this.boxes = new Box[height][width];
                     } else if (name.equalsIgnoreCase("cell")) {
                         parseCell(attributes);
+                    } else if (name.equalsIgnoreCase("arrow")) {
+                        parseArrow(attributes);
                     }
                 } catch (NumberFormatException e) {
                     LOG.severe("Could not read JPZ XML cell data: " + e);
+                }
+            }
+
+            @Override
+            public void endElement(String nsURI,
+                                   String strippedName,
+                                   String tagName) throws SAXException {
+                strippedName = strippedName.trim();
+                String name = strippedName.length() == 0
+                    ? tagName.trim() : strippedName;
+
+                if (name.equalsIgnoreCase("cell")) {
+                    inCellPosition = null;
                 }
             }
 
@@ -259,6 +276,7 @@ public class JPZIO implements PuzzleParser {
                     0 <= x && x < JPZXMLParser.this.getWidth()
                     && 0 <= y && y < JPZXMLParser.this.getHeight()
                 ) {
+                    inCellPosition = new Position(y, x);
                     Box box = new Box();
 
                     // keep track of whether the cell is interesting
@@ -349,6 +367,41 @@ public class JPZIO implements PuzzleParser {
                     if (!box.isBlock() || hasData)
                         JPZXMLParser.this.boxes[y][x] = box;
                 }
+            }
+
+            private void parseArrow(Attributes attributes) {
+                if (inCellPosition == null)
+                    return;
+
+                // only interpret "to" field which gives arrow direction
+                // i don't quite understand the "from" field
+                String to = attributes.getValue("to");
+                if (to == null)
+                    return;
+
+                to = to.trim();
+
+                Box.Shape arrowShape = null;
+                if (to.equalsIgnoreCase("left"))
+                    arrowShape = Box.Shape.ARROW_LEFT;
+                else if (to.equalsIgnoreCase("right"))
+                    arrowShape = Box.Shape.ARROW_RIGHT;
+                else if (to.equalsIgnoreCase("top"))
+                    arrowShape = Box.Shape.ARROW_UP;
+                else if (to.equalsIgnoreCase("bottom"))
+                    arrowShape = Box.Shape.ARROW_DOWN;
+
+                if (arrowShape == null)
+                    return;
+
+                int row = inCellPosition.getRow();
+                int col = inCellPosition.getCol();
+                if (boxes[row][col] == null) {
+                    boxes[row][col] = new Box();
+                    boxes[row][col].setBlock(true);
+                }
+
+                boxes[row][col].setShape(arrowShape);
             }
         };
 

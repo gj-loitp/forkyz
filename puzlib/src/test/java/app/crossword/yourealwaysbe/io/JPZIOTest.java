@@ -69,6 +69,16 @@ public class JPZIOTest {
         assertTrue(boxes[7][2].isBarredLeft());
         assertFalse(boxes[7][2].isBarredRight());
 
+        assertEquals(boxes[2][0].getShape(), Box.Shape.ARROW_LEFT);
+        assertFalse(boxes[2][0].isBlock());
+        assertEquals(boxes[3][0].getShape(), Box.Shape.ARROW_RIGHT);
+        assertTrue(boxes[3][0].isBlock());
+        assertEquals(boxes[4][0].getShape(), Box.Shape.ARROW_UP);
+        assertTrue(boxes[4][0].isBlock());
+        assertEquals(boxes[5][0].getShape(), Box.Shape.ARROW_DOWN);
+        assertFalse(boxes[5][0].isBlock());
+        assertFalse(boxes[6][0].hasShape());
+
         ClueList acrossClues = puz.getClues(ACROSS_CLUES);
         ClueList downClues = puz.getClues(DOWN_CLUES);
 
