@@ -187,6 +187,9 @@ public class AbstractDateDownloader extends AbstractDownloader {
         LocalDate date,
         Map<String, String> headers
     ){
+        if (date == null)
+            return null;
+
         try {
             String sourceUrl = getSourceUrl(date);
             if (sourceUrl == null)
@@ -291,7 +294,8 @@ public class AbstractDateDownloader extends AbstractDownloader {
             ? startDate
             : until;
 
-        for (int i = 0; i <= 7; i++) {
+        int lenWindow = getLatestDateWindow();
+        for (int i = 0; i <= lenWindow; i++) {
             LocalDate tryDate = startDate.plusDays(-i);
             if (isAvailable(tryDate))
                 return tryDate;
@@ -299,6 +303,15 @@ public class AbstractDateDownloader extends AbstractDownloader {
 
         // should never happen unless puzzle not available on any days
         return null;
+    }
+
+    /**
+     * How far back in time to look when searching for latest puzzle
+     *
+     * Default is 7 days, but subclasses may want to vary.
+     */
+    protected int getLatestDateWindow() {
+        return 7;
     }
 
     /**

@@ -21,12 +21,16 @@ public class AbstractRCIJeuxMFJDateDownloader extends AbstractDateDownloader {
     private String sourceUrlFormat;
     private int baseCWNumber;
     private LocalDate baseDate;
+    private int daysBetween;
 
     /**
      * Construct an Abstract downloader
      *
      * Note, sourceUrlFormat is not a date format pattern, it should
      * have a %d for the crossword number.
+     *
+     * daysBetween is the number of days between each puzzle (e.g. 1 for daily,
+     * 14 for fortnightly)
      */
     protected AbstractRCIJeuxMFJDateDownloader(
         String internalName,
@@ -37,7 +41,8 @@ public class AbstractRCIJeuxMFJDateDownloader extends AbstractDateDownloader {
         String sourceUrlFormat,
         String shareUrlFormatPattern,
         int baseCWNumber,
-        LocalDate baseDate
+        LocalDate baseDate,
+        int daysBetween
     ) {
         super(
             internalName,
@@ -52,6 +57,12 @@ public class AbstractRCIJeuxMFJDateDownloader extends AbstractDateDownloader {
         this.sourceUrlFormat = sourceUrlFormat;
         this.baseDate = baseDate;
         this.baseCWNumber = baseCWNumber;
+        this.daysBetween = daysBetween;
+    }
+
+    @Override
+    protected int getLatestDateWindow() {
+        return Math.max(super.getLatestDateWindow(), daysBetween);
     }
 
     @Override
@@ -62,8 +73,19 @@ public class AbstractRCIJeuxMFJDateDownloader extends AbstractDateDownloader {
     @Override
     protected String getSourceUrl(LocalDate date) {
         long cwNumber = getCrosswordNumber(date);
+        System.out.println(String.format(Locale.US, this.sourceUrlFormat, cwNumber));
         return String.format(Locale.US, this.sourceUrlFormat, cwNumber);
     }
+
+    @Override
+    public boolean isAvailable(LocalDate date) {
+        if (!super.isAvailable(date))
+            return false;
+
+        // only available on daysBetween days since base date
+        return getDaysDelta(date) % daysBetween == 0;
+    }
+
 
     @Override
     protected Puzzle download(
@@ -78,13 +100,18 @@ public class AbstractRCIJeuxMFJDateDownloader extends AbstractDateDownloader {
     }
 
     private long getCrosswordNumber(LocalDate date) {
+        long delta = Math.floorDiv(getDaysDelta(date), daysBetween);
+        return this.baseCWNumber + delta;
+    }
+
+    /**
+     * Get number of days between base date and argument
+     */
+    private long getDaysDelta(LocalDate date) {
         Duration diff = Duration.between(
             this.baseDate.atStartOfDay(), date.atStartOfDay()
         );
-        long delta = Math.floorDiv(
-            getDownloadDates().length* (int)diff.toDays(), 7
-        );
-        return this.baseCWNumber + delta;
+        return diff.toDays();
     }
 
     private String getCrosswordTitle(LocalDate date) {

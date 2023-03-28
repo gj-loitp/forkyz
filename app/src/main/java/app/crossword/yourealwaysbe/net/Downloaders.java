@@ -484,7 +484,8 @@ public class Downloaders {
                     + "mflechesg_2_%d.mfj",
                 "'https://www.notretemps.com/jeux/jeux-en-ligne/mots-fleches-geants/force-2/'",
                 256,
-                LocalDate.of(2023,3,4)
+                LocalDate.of(2023,3,4),
+                14
             ));
         }
 
@@ -499,7 +500,8 @@ public class Downloaders {
                         + "mfleches_1_%d.mfj",
                 "'https://www.leparisien.fr/jeux/mots-fleches/'",
                 2536,
-                LocalDate.of(2022, 6, 21)
+                LocalDate.of(2022, 6, 21),
+                1
             ));
         }
 
@@ -514,7 +516,8 @@ public class Downloaders {
                         + "mfleches_2_%d.mfj",
                 "'https://www.leparisien.fr/jeux/mots-fleches/force-2/'",
                 2536,
-                LocalDate.of(2022, 6, 21)
+                LocalDate.of(2022, 6, 21),
+                1
             ));
         }
 
@@ -529,7 +532,8 @@ public class Downloaders {
                         + "mfleches_3_%d.mfj",
                 "'https://www.leparisien.fr/jeux/mots-fleches/force-3/'",
                 300,
-                LocalDate.of(2023, 3, 4)
+                LocalDate.of(2023, 3, 4),
+                1
             ));
         }
 
@@ -544,7 +548,8 @@ public class Downloaders {
                         + "mfleches_4_%d.mfj",
                 "'https://www.leparisien.fr/jeux/mots-fleches/force-4/'",
                 300,
-                LocalDate.of(2023, 3, 4)
+                LocalDate.of(2023, 3, 4),
+                1
             ));
         }
 
