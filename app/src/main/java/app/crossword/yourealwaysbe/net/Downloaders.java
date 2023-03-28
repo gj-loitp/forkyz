@@ -473,22 +473,6 @@ public class Downloaders {
             ));
         }
 
-        if (prefs.getBoolean("downloadNotreTempsGeant2", true)) {
-            downloaders.add(new AbstractRCIJeuxMFJDateDownloader(
-                "notretempsgeant2",
-                context.getString(R.string.notretempsgeant2),
-                Downloader.DATE_SATURDAY,
-                Duration.ofHours(1), // by experiment
-                "https://www.notretemps.com/",
-                "https://www.rcijeux.fr/drupal_game/notretemps/mflechesg/grids/"
-                    + "mflechesg_2_%d.mfj",
-                "'https://www.notretemps.com/jeux/jeux-en-ligne/mots-fleches-geants/force-2/'",
-                256,
-                LocalDate.of(2023,3,4),
-                14
-            ));
-        }
-
         if (prefs.getBoolean("downloadLeParisienF1", true)) {
             downloaders.add(new AbstractRCIJeuxMFJDateDownloader(
                 "leparisienf1",

@@ -298,8 +298,6 @@
     <string name="hamburger_abendblatt_daily_desc">Daily crossword in German</string>
     <string name="vingminutes">(FR) 20 Minutes</string>
     <string name="vingminutes_desc">Daily crossword in French, Level 2</string>
-    <string name="notretempsgeant2">(FR) Notre Temps Geant Force 2</string>
-    <string name="notretempsgeant2_desc">Update every other Saturday, giant crossword in French, level 2</string>
     <string name="le_parisien_daily_f1">(FR) Le Parisien Force 1</string>
     <string name="le_parisien_daily_f1_desc">Daily crossword in French, level 1</string>
     <string name="le_parisien_daily_f2">(FR) Le Parisien Force 2</string>
