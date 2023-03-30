@@ -1,0 +1,3 @@
+- Support background shapes in IPuz spec (both IPuz and JPZ import).
+- Jump to random clue via shake (interaction settings) or voice ("jump").
+- Remove Notre Temps Geant Force 2 downloader (not a regular puzzle).

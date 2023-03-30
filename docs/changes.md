@@ -1,5 +1,11 @@
 # Forkyz Changelog
 
+## Version 41
+
+- Support background shapes in IPuz spec (both IPuz and JPZ import).
+- Jump to random clue via shake (interaction settings) or voice ("jump").
+- Remove Notre Temps Geant Force 2 downloader (not a regular puzzle).
+
 ## Version 40
 
 - Add "ask Chat GPT for help" (configure in interaction settings).
