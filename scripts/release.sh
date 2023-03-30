@@ -8,9 +8,11 @@ if test (count $argv) -lt 1
 end
 
 set forkyz_version $argv[1]
-echo $forkyz_version
 
-nvim fastlane/metadata/android/en-US/changelogs/{$forkyz_version}00000.txt
+set changelog fastlane/metadata/android/en-US/changelogs/{$forkyz_version}00000.txt
+
+nvim $changelog
+git add $changelog
 python scripts/make_release_notes.py
 nvim app/src/main/AndroidManifest.xml
 
