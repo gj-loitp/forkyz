@@ -1,5 +1,8 @@
-apply plugin: 'com.android.application'
-apply plugin: 'checkstyle'
+
+plugins {
+    id 'com.android.application'
+    id 'checkstyle'
+}
 
 check.dependsOn 'checkstyle'
 
@@ -10,10 +13,6 @@ task checkstyle(type: Checkstyle) {
     exclude '**/build/**'
 
     classpath = files()
-}
-
-repositories {
-    google()
 }
 
 android {
@@ -113,7 +112,7 @@ dependencies {
     implementation 'androidx.activity:activity:1.4.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.fragment:fragment:1.4.1'
+    implementation 'androidx.fragment:fragment:1.5.1'
     // refrain from preferences version 1.2.0 since it causes Kotlin conflicts
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'

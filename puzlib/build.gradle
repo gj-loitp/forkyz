@@ -1,18 +1,11 @@
-apply plugin: 'checkstyle'
-apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'com.github.johnrengelman.shadow'
+
+plugins {
+    id 'checkstyle'
+    id 'java'
+    id 'com.github.johnrengelman.shadow'
+}
 
 group 'app.crossword.yourealwaysbe'
-
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
-    }
-}
 
 test { useJUnitPlatform() }
 
