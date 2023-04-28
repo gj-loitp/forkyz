@@ -33,6 +33,8 @@ public class BoxInputConnection extends BaseInputConnection {
     private View targetView;
     private BoxInputListener listener;
     private int updateExtractedTextToken = -1;
+    private int batchEditNestingDepth = 0;
+    private String pendingResponse = null;
 
     public interface BoxInputListener {
         default void onNewResponse(String response) { }
@@ -101,6 +103,59 @@ public class BoxInputConnection extends BaseInputConnection {
         utils.invalidateInput(imm, targetView);
     }
 
+    @Override
+    public boolean beginBatchEdit() {
+        batchEditNestingDepth += 1;
+        return true;
+    }
+
+    @Override
+    public boolean endBatchEdit() {
+        if (batchEditNestingDepth > 0)
+            batchEditNestingDepth -= 1;
+
+        if (isBatchEdit()) {
+            return true;
+        } else {
+            if (pendingResponse != null) {
+                // need to reset pending as some connections call
+                // begin/endBatchEdit during an update, so
+                // pendingResponse needs to be cleared before updating
+                // else infinite loop
+                String savedPendingResponse = pendingResponse;
+                pendingResponse = null;
+                updateListenerWithResponse(savedPendingResponse);
+            }
+            return false;
+        }
+    }
+
+    private boolean isBatchEdit() {
+        return batchEditNestingDepth > 0;
+    }
+
+    /**
+     * Register an update to response with listener
+     *
+     * If in a batch edit, the response will be delayed until batch
+     * done. Subsequent updates will overwrite previous pending.
+     */
+    private void updateListenerWithResponse(String response) {
+        if (isBatchEdit()) {
+            pendingResponse = response;
+        } else {
+            if (listener != null) {
+                // if removing characters, delete
+                if (response.isEmpty()) {
+                    listener.onDeleteResponse();
+                } else {
+                    // give whole response so emojis work
+                    listener.onNewResponse(response);
+                }
+            }
+        }
+    }
+
     private InputMethodManager getInputMethodManager() {
         return (InputMethodManager) targetView
             .getContext()
@@ -167,15 +222,7 @@ public class BoxInputConnection extends BaseInputConnection {
             int st, int en, CharSequence source, int start, int end
         ) {
             spannable.replace(st, en, source, start, end);
-            if (listener != null) {
-                // if removing characters, delete
-                if (spannable.length() == 0) {
-                    listener.onDeleteResponse();
-                } else {
-                    // give whole response so emojis work
-                    listener.onNewResponse(spannable.toString());
-                }
-            }
+            updateListenerWithResponse(spannable.toString());
             return this;
         }
 
