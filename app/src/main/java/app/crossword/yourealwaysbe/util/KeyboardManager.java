@@ -40,8 +40,21 @@ public class KeyboardManager {
      * Needs getView method to get access to the actual view.
      */
     public interface ManageableView {
-        void setNativeInput(boolean nativeInput);
+        /**
+         * Indicates view should be in native input mode
+         *
+         * @return true if this is a change from previous mode
+         */
+        boolean setNativeInput(boolean nativeInput);
+
+        /**
+         * The view that is manageable (usually this)
+         */
         View getView();
+
+        /**
+         * Create an input connection for the built-in Forkyz keyboard
+         */
         InputConnection onCreateForkyzInputConnection(EditorInfo ei);
     }
 
@@ -73,14 +86,13 @@ public class KeyboardManager {
 
     /**
      * Call this from the activities onResume method
-     *
-     * @param currentView is the view the keyboard should be showing
-     * for if it's always show
      */
     public void onResume() {
         setHideRowVisibility();
 
-        if (isNativeKeyboard())
+        boolean isNativeKeyboard = isNativeKeyboard();
+
+        if (isNativeKeyboard)
             keyboardView.setVisibility(View.GONE);
 
         setSoftInputLayout();
@@ -118,14 +130,16 @@ public class KeyboardManager {
             return;
 
         boolean isNativeKeyboard = isNativeKeyboard();
-        manageableView.setNativeInput(isNativeKeyboard);
+        boolean nativeChanged = manageableView.setNativeInput(isNativeKeyboard);
 
         if (
             getKeyboardMode() != KeyboardMode.NEVER_SHOW
             && view.requestFocus()
         ) {
             if (isNativeKeyboard) {
-                InputMethodManager imm = getIntputMethodManager();
+                InputMethodManager imm = getInputMethodManager();
+                if (nativeChanged)
+                    imm.restartInput(view);
                 imm.showSoftInput(view, 0);
                 keyboardView.setVisibility(View.GONE);
             } else {
@@ -171,7 +185,7 @@ public class KeyboardManager {
                     // turn off native input if can
                     if (focus instanceof ManageableView)
                         ((ManageableView) focus).setNativeInput(false);
-                    InputMethodManager imm = getIntputMethodManager();
+                    InputMethodManager imm = getInputMethodManager();
                     imm.hideSoftInputFromWindow(focus.getWindowToken(), 0);
                 }
             } else {
@@ -192,7 +206,7 @@ public class KeyboardManager {
             if (gainFocus) {
                 hideKeyboard(true);
             } else {
-                InputMethodManager imm = getIntputMethodManager();
+                InputMethodManager imm = getInputMethodManager();
                 if (imm != null) {
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
@@ -297,7 +311,7 @@ public class KeyboardManager {
         );
     }
 
-    private InputMethodManager getIntputMethodManager() {
+    private InputMethodManager getInputMethodManager() {
         return (InputMethodManager)
             activity.getSystemService(Context.INPUT_METHOD_SERVICE);
     }

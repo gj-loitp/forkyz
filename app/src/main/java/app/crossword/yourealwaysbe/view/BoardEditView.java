@@ -224,8 +224,10 @@ public abstract class BoardEditView
     }
 
     @Override
-    public void setNativeInput(boolean nativeInput) {
+    public boolean setNativeInput(boolean nativeInput) {
+        boolean changed = this.nativeInput != nativeInput;
         this.nativeInput = nativeInput;
+        return changed;
     }
 
     @Override
@@ -241,13 +243,17 @@ public abstract class BoardEditView
     // Set input type to be raw keys if a keyboard is used
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        currentInputConnection = new BoxInputConnection(
-            this,
-            getCurrentResponse(),
-            this
-        );
-        currentInputConnection.setOutAttrs(outAttrs);
-        return currentInputConnection;
+        if (onCheckIsTextEditor()) {
+            currentInputConnection = new BoxInputConnection(
+                this,
+                getCurrentResponse(),
+                this
+            );
+            currentInputConnection.setOutAttrs(outAttrs);
+            return currentInputConnection;
+        } else {
+            return null;
+        }
     }
 
     @Override
