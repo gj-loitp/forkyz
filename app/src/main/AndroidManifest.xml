@@ -128,6 +128,7 @@
                 <data android:mimeType="text/plain" />
                 <data android:mimeType="text/xml" />
                 <data android:mimeType="application/zip" />
+                <data android:mimeType="application/json" />
             </intent-filter>
         </activity>
         <provider
