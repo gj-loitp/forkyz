@@ -277,16 +277,13 @@ public class PuzzleBuilder {
     public PuzzleBuilder addAcrossClue(
         String listName, String number, String label, String hint
     ) {
-        Position start = getNumberPositions().get(number);
-        if (start == null) {
-            throw new IllegalArgumentException(
-                "Can't add clue " + number + " to board: "
-                + "the number is not in the boxes."
-            );
-        }
-
-        Zone zone = PuzzleUtils.getAcrossZone(puzzle, start);
         int index = getNextClueIndex(listName);
+        Zone zone = null;
+
+        Position start = getNumberPositions().get(number);
+        if (start != null) {
+            zone = PuzzleUtils.getAcrossZone(puzzle, start);
+        }
 
         puzzle.addClue(new Clue(listName, index, number, label, hint, zone));
 
@@ -310,18 +307,17 @@ public class PuzzleBuilder {
     public PuzzleBuilder addDownClue(
         String listName, String number, String label, String hint
     ) {
+        int index = getNextClueIndex(listName);
+        Zone zone = null;
+
         Position start = getNumberPositions().get(number);
-        if (start == null) {
-            throw new IllegalArgumentException(
-                "Can't add clue " + number + " to board: "
-                + "the number is not in the boxes."
-            );
+        if (start != null) {
+            zone = PuzzleUtils.getDownZone(puzzle, start);
         }
 
-        Zone zone = PuzzleUtils.getDownZone(puzzle, start);
-        int index = getNextClueIndex(listName);
-
-        puzzle.addClue(new Clue(listName, index, number, label, hint, zone));
+        puzzle.addClue(
+            new Clue(listName, index, number, label, hint, zone)
+        );
 
         return this;
     }
