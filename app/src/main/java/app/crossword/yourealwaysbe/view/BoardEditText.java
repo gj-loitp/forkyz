@@ -325,28 +325,24 @@ public class BoardEditText
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_DPAD_LEFT:
-        case KeyEvent.KEYCODE_DPAD_RIGHT:
-        case KeyEvent.KEYCODE_DEL:
-        case KeyEvent.KEYCODE_SPACE:
-            return true;
-
-        default:
-            char c = Character.toUpperCase(event.getDisplayLabel());
-            if (boxes != null && isAcceptableCharacterResponse(c))
-                return true;
-        }
-
-        return super.onKeyUp(keyCode, event);
+        boolean handled = isHandledKey(keyCode, event);
+        if (!handled)
+            return super.onKeyDown(keyCode, event);
+        return true;
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_MENU:
-            return false;
+        boolean handled = isHandledKey(keyCode, event);
+        if (!handled)
+            return super.onKeyUp(keyCode, event);
 
+        int cancelled = event.getFlags()
+            & (KeyEvent.FLAG_CANCELED | KeyEvent.FLAG_CANCELED_LONG_PRESS);
+        if (cancelled > 0)
+            return true;
+
+        switch (keyCode) {
         case KeyEvent.KEYCODE_DPAD_LEFT: {
                 int col = getSelectedCol();
                 if (col > 0) {
@@ -380,7 +376,7 @@ public class BoardEditText
             return true;
         }
 
-        return super.onKeyUp(keyCode, event);
+        return true;
     }
 
     @Override
@@ -610,5 +606,27 @@ public class BoardEditText
             if (0 <= pos && pos < changes.length)
                 changes[pos] = true;
         }
+    }
+
+    /**
+     * Is a handled key event
+     *
+     * Should match onKeyUp/Down
+     */
+    private boolean isHandledKey(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_DPAD_LEFT:
+        case KeyEvent.KEYCODE_DPAD_RIGHT:
+        case KeyEvent.KEYCODE_DEL:
+        case KeyEvent.KEYCODE_SPACE:
+            return true;
+
+        default:
+            char c = Character.toUpperCase(event.getDisplayLabel());
+            if (boxes != null && isAcceptableCharacterResponse(c))
+                return true;
+        }
+
+        return false;
     }
 }

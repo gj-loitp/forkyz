@@ -200,30 +200,23 @@ public class ClueListActivity extends PuzzleActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // for parity with onKeyUp
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_BACK:
-        case KeyEvent.KEYCODE_ESCAPE:
-        case KeyEvent.KEYCODE_DPAD_UP:
-        case KeyEvent.KEYCODE_DPAD_DOWN:
-        case KeyEvent.KEYCODE_DPAD_LEFT:
-        case KeyEvent.KEYCODE_DPAD_RIGHT:
-        case KeyEvent.KEYCODE_DEL:
-        case KeyEvent.KEYCODE_SPACE:
-            return true;
-        case KeyEvent.KEYCODE_VOLUME_DOWN:
-            return isVolumeDownActivatesVoicePref();
-        }
-
-        char c = Character.toUpperCase(event.getDisplayLabel());
-        if (Character.isLetterOrDigit(c))
-            return true;
-
-        return super.onKeyDown(keyCode, event);
+        boolean handled = isHandledKey(keyCode, event);
+        if (!handled)
+            return super.onKeyDown(keyCode, event);
+        return true;
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        boolean handled = isHandledKey(keyCode, event);
+        if (!handled)
+            return super.onKeyUp(keyCode, event);
+
+        int cancelled = event.getFlags()
+            & (KeyEvent.FLAG_CANCELED | KeyEvent.FLAG_CANCELED_LONG_PRESS);
+        if (cancelled > 0)
+            return true;
+
         switch (keyCode) {
         case KeyEvent.KEYCODE_BACK:
         case KeyEvent.KEYCODE_ESCAPE:
@@ -278,11 +271,10 @@ public class ClueListActivity extends PuzzleActivity
                     || Box.isBlock(board.getBoxes()[row][col])) {
                 board.setHighlightLetter(last);
             }
-
             return true;
         }
 
-        return super.onKeyUp(keyCode, event);
+        return true;
     }
 
     @Override
@@ -624,5 +616,32 @@ public class ClueListActivity extends PuzzleActivity
                 board.jumpToClue(clue);
             displayKeyboard(old);
         }
+    }
+
+    /**
+     * Is a key event we handle
+     *
+     * Should match onKeyUp/Down
+     */
+    private boolean isHandledKey(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_BACK:
+        case KeyEvent.KEYCODE_ESCAPE:
+        case KeyEvent.KEYCODE_DPAD_UP:
+        case KeyEvent.KEYCODE_DPAD_DOWN:
+        case KeyEvent.KEYCODE_DPAD_LEFT:
+        case KeyEvent.KEYCODE_DPAD_RIGHT:
+        case KeyEvent.KEYCODE_DEL:
+        case KeyEvent.KEYCODE_SPACE:
+            return true;
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            return isVolumeDownActivatesVoicePref();
+        }
+
+        char c = Character.toUpperCase(event.getDisplayLabel());
+        if (Character.isLetterOrDigit(c))
+            return true;
+
+        return false;
     }
 }

@@ -439,34 +439,35 @@ public class PlayActivity extends PuzzleActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_BACK:
-        case KeyEvent.KEYCODE_ESCAPE:
-        case KeyEvent.KEYCODE_SEARCH:
-        case KeyEvent.KEYCODE_DPAD_UP:
-        case KeyEvent.KEYCODE_DPAD_DOWN:
-        case KeyEvent.KEYCODE_DPAD_LEFT:
-        case KeyEvent.KEYCODE_DPAD_RIGHT:
-        case KeyEvent.KEYCODE_DPAD_CENTER:
-        case KeyEvent.KEYCODE_SPACE:
-        case KeyEvent.KEYCODE_ENTER:
-        case KeyEvent.KEYCODE_DEL:
-            return true;
-        case KeyEvent.KEYCODE_VOLUME_DOWN:
-            return isVolumeDownActivatesVoicePref();
-        }
+        System.out.println("FORKYZ: onKeyDown " + keyCode + " / " + event + " / " + event.getFlags());
 
-        char c = Character.toUpperCase(event.getDisplayLabel());
-        if (Character.isLetterOrDigit(c))
-            return true;
-
-        return super.onKeyDown(keyCode, event);
+        boolean handled = isHandledKey(keyCode, event);
+        if (!handled)
+            return super.onKeyDown(keyCode, event);
+        return true;
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        int flags = event.getFlags();
+        System.out.println(
+            "FORKYZ: onKeyUp " + keyCode + " / " + event + " / " + flags
+            + " cancelled " + (flags & KeyEvent.FLAG_CANCELED)
+            + " long cancelled " + (flags & KeyEvent.FLAG_CANCELED_LONG_PRESS)
+            + " soft " + (flags & KeyEvent.FLAG_SOFT_KEYBOARD)
+            + " virt hard " + (flags & KeyEvent.FLAG_VIRTUAL_HARD_KEY)
+            + " fallback " + (flags & KeyEvent.FLAG_FALLBACK)
+            + " editor " + (flags & KeyEvent.FLAG_EDITOR_ACTION)
+        );
 
-        boolean handled = false;
+        boolean handled = isHandledKey(keyCode, event);
+        if (!handled)
+            return super.onKeyUp(keyCode, event);
+
+        int cancelled = event.getFlags()
+            & (KeyEvent.FLAG_CANCELED | KeyEvent.FLAG_CANCELED_LONG_PRESS);
+        if (cancelled > 0)
+            return true;
 
         // handle back separately as it we shouldn't block a keyboard
         // hide because of it
@@ -475,7 +476,6 @@ public class PlayActivity extends PuzzleActivity
             if (!keyboardManager.handleBackKey()) {
                 this.finish();
             }
-            handled = true;
         }
 
         keyboardManager.pushBlockHide();
@@ -484,32 +484,26 @@ public class PlayActivity extends PuzzleActivity
             switch (keyCode) {
                 case KeyEvent.KEYCODE_SEARCH:
                     getBoard().nextWord();
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_DPAD_DOWN:
                     onDownKey();
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_DPAD_UP:
                     onUpKey();
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                     onLeftKey();
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
                     onRightKey();
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_DPAD_CENTER:
                     getBoard().toggleSelection();
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_SPACE:
@@ -520,7 +514,6 @@ public class PlayActivity extends PuzzleActivity
                     } else {
                         getBoard().playLetter(' ');
                     }
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_ENTER:
@@ -529,40 +522,33 @@ public class PlayActivity extends PuzzleActivity
                     } else {
                         getBoard().nextWord();
                     }
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_DEL:
                     onDeleteKey();
-                    handled = true;
                     break;
 
                 case KeyEvent.KEYCODE_VOLUME_DOWN:
                     if (isVolumeDownActivatesVoicePref()) {
                         launchVoiceInput();
-                        handled = true;
                     }
                     break;
             }
 
             char c = Character.toUpperCase(event.getDisplayLabel());
 
-            if (!handled && Character.isLetterOrDigit(c)) {
+            if (Character.isLetterOrDigit(c)) {
                 if (isScratchMode()) {
                     getBoard().playScratchLetter(c);
                 } else {
                     getBoard().playLetter(c);
                 }
-                handled = true;
             }
         }
 
-        if (!handled)
-            handled = super.onKeyUp(keyCode, event);
-
         keyboardManager.popBlockHide();
 
-        return handled;
+        return true;
     }
 
     @Override
@@ -1184,6 +1170,36 @@ public class PlayActivity extends PuzzleActivity
             int idx = rand.nextInt(unfilledClues.size());
             board.jumpToClue(unfilledClues.get(idx));
         }
+    }
+
+    /**
+     * Is a key we'll handle
+     *
+     * Should match onKeyUp and onKeyDown
+     */
+    private boolean isHandledKey(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_BACK:
+        case KeyEvent.KEYCODE_ESCAPE:
+        case KeyEvent.KEYCODE_SEARCH:
+        case KeyEvent.KEYCODE_DPAD_UP:
+        case KeyEvent.KEYCODE_DPAD_DOWN:
+        case KeyEvent.KEYCODE_DPAD_LEFT:
+        case KeyEvent.KEYCODE_DPAD_RIGHT:
+        case KeyEvent.KEYCODE_DPAD_CENTER:
+        case KeyEvent.KEYCODE_SPACE:
+        case KeyEvent.KEYCODE_ENTER:
+        case KeyEvent.KEYCODE_DEL:
+            return true;
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            return isVolumeDownActivatesVoicePref();
+        }
+
+        char c = Character.toUpperCase(event.getDisplayLabel());
+        if (Character.isLetterOrDigit(c))
+            return true;
+
+        return false;
     }
 
     public static class RevealPuzzleDialog extends DialogFragment {

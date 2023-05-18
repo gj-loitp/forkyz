@@ -321,18 +321,22 @@ public class NotesActivity extends PuzzleActivity {
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // for parity with onKeyUp
-        switch (keyCode) {
-        case KeyEvent.KEYCODE_BACK:
-        case KeyEvent.KEYCODE_ESCAPE:
-            return true;
-        case KeyEvent.KEYCODE_VOLUME_DOWN:
-            return isVolumeDownActivatesVoicePref();
-        }
-        return super.onKeyDown(keyCode, event);
+        boolean handled = isHandledKey(keyCode, event);
+        if (!handled)
+            return super.onKeyDown(keyCode, event);
+        return true;
     }
 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        boolean handled = isHandledKey(keyCode, event);
+        if (!handled)
+            return super.onKeyUp(keyCode, event);
+
+        int cancelled = event.getFlags()
+            & (KeyEvent.FLAG_CANCELED | KeyEvent.FLAG_CANCELED_LONG_PRESS);
+        if (cancelled > 0)
+            return true;
+
         switch (keyCode) {
         case KeyEvent.KEYCODE_BACK:
         case KeyEvent.KEYCODE_ESCAPE:
@@ -344,7 +348,8 @@ public class NotesActivity extends PuzzleActivity {
                 return true;
             }
         }
-        return super.onKeyUp(keyCode, event);
+
+        return true;
     }
 
     public void onPause() {
@@ -956,5 +961,21 @@ public class NotesActivity extends PuzzleActivity {
             puz.setNote(clue, note);
             puz.flagClue(clue, flagClue.isChecked());
         }
+    }
+
+    /**
+     * Is a key we handle
+     *
+     * Should match onKeyUp/Down
+     */
+    private boolean isHandledKey(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_BACK:
+        case KeyEvent.KEYCODE_ESCAPE:
+            return true;
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            return isVolumeDownActivatesVoicePref();
+        }
+        return false;
     }
 }
