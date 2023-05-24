@@ -503,6 +503,7 @@ public class BrowseActivity extends ForkyzActivity {
 
     @Override
     protected void onDestroy() {
+        unregisterReceiver(closeActionReceiver);
         super.onDestroy();
     }
 
