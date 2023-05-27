@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ActionMode;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.IntentCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -478,12 +479,16 @@ public class BrowseActivity extends ForkyzActivity {
 
         checkNewVersion();
 
-        // If this was started by a file open
+        // If this was started by a file open or a share
         Intent intent = getIntent();
         String action = intent.getAction();
         if (Intent.ACTION_VIEW.equals(action)) {
             // loaded by onResume
             setPendingImport(intent.getData());
+        } else if (Intent.ACTION_SEND.equals(action)) {
+            setPendingImport(IntentCompat.getParcelableExtra(
+                intent, Intent.EXTRA_STREAM, Uri.class
+            ));
         }
     }
 
