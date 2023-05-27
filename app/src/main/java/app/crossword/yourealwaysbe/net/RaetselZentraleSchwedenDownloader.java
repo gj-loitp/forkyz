@@ -35,7 +35,7 @@ public class RaetselZentraleSchwedenDownloader
         extends AbstractDateDownloader {
 
     private static final String ID_URL_FORMAT
-        = "https://raetsel.raetselzentrale.de/l/%s/schwede/";
+        = "https://raetsel.raetselzentrale.de/l/%s/schwede";
     private static final String JSON_URL_FORMAT
         = "https://raetsel.raetselzentrale.de/api/r/%s";
 
