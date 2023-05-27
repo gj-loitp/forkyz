@@ -103,7 +103,7 @@ public class BackgroundDownloadManager {
         getWorkManager()
             .enqueueUniquePeriodicWork(
                 DOWNLOAD_WORK_NAME,
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 request
             );
     }

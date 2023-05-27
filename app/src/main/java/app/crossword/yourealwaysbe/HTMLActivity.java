@@ -7,8 +7,6 @@ import androidx.appcompat.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import androidx.webkit.WebSettingsCompat;
-import androidx.webkit.WebViewFeature;
 
 import app.crossword.yourealwaysbe.forkyz.R;
 import app.crossword.yourealwaysbe.versions.AndroidVersionUtils;
@@ -48,13 +46,6 @@ public class HTMLActivity extends ForkyzActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        WebView webview = (WebView) this.findViewById(R.id.webkit);
-        if(WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) &&
-           nightMode.isNightMode()) {
-            WebSettingsCompat.setForceDark(webview.getSettings(),
-                                           WebSettingsCompat.FORCE_DARK_ON);
-        }
     }
 
     @Override
