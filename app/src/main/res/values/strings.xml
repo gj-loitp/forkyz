@@ -30,8 +30,11 @@
 
     <!-- imports -->
     <string name="import_fallback_source">Import</string>
+    <string name="imports_title">Puzzle Import(s)</string>
     <string name="import_success">Puzzle(s) imported</string>
     <string name="import_failure">Some imports failed</string>
+    <string name="import_success_long">The selected puzzles were imported into Forkyz.</string>
+    <string name="import_failure_long">Some puzzles were not imported into Forkyz.</string>
 
     <!-- permissions -->
     <string name="perm_read_desc">Requested on older devices to read saved puzzles.</string>

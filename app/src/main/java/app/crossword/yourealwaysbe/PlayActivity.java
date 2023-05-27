@@ -439,8 +439,6 @@ public class PlayActivity extends PuzzleActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        System.out.println("FORKYZ: onKeyDown " + keyCode + " / " + event + " / " + event.getFlags());
-
         boolean handled = isHandledKey(keyCode, event);
         if (!handled)
             return super.onKeyDown(keyCode, event);
@@ -450,15 +448,6 @@ public class PlayActivity extends PuzzleActivity
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         int flags = event.getFlags();
-        System.out.println(
-            "FORKYZ: onKeyUp " + keyCode + " / " + event + " / " + flags
-            + " cancelled " + (flags & KeyEvent.FLAG_CANCELED)
-            + " long cancelled " + (flags & KeyEvent.FLAG_CANCELED_LONG_PRESS)
-            + " soft " + (flags & KeyEvent.FLAG_SOFT_KEYBOARD)
-            + " virt hard " + (flags & KeyEvent.FLAG_VIRTUAL_HARD_KEY)
-            + " fallback " + (flags & KeyEvent.FLAG_FALLBACK)
-            + " editor " + (flags & KeyEvent.FLAG_EDITOR_ACTION)
-        );
 
         boolean handled = isHandledKey(keyCode, event);
         if (!handled)

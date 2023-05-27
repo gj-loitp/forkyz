@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
 import android.content.ContentResolver;
@@ -324,28 +325,32 @@ public class BrowseActivityViewModel extends ViewModel {
 
     /**
      * Import file from uri to crosswords folder
-     *
-     * Triggers refresh of puzzle list if crosswords folder is currently
-     * shown in the case that the import succeeds or forceReload is true.
      */
-    public void importURI(Uri uri, boolean forceReload) {
-        importURIs(Collections.singletonList(uri), forceReload);
+    public void importURI(
+        Uri uri,
+        boolean forceReload,
+        BiConsumer<Boolean, Boolean> callback
+    ) {
+        importURIs(Collections.singletonList(uri), forceReload, callback);
     }
 
     /**
      * Import files from uri to crosswords folder
      *
-     * Triggers refresh of puzzle list if crosswords folder is currently
-     * shown in the case that the import succeeds or forceReload is set
+     * callback when finished, arguments are someFailed and someSucceeded
      */
-    public void importURIs(List<Uri> uris, boolean forceReload) {
+    public void importURIs(
+        List<Uri> uris,
+        boolean forceReload,
+        BiConsumer<Boolean, Boolean> callback
+    ) {
         threadWithUILock(() -> {
             ForkyzApplication application = ForkyzApplication.getInstance();
             ContentResolver resolver = application.getContentResolver();
 
             boolean someFailed = false;
             boolean someSucceeded = false;
-            boolean needsFullReload = forceReload;
+            boolean needsReload = forceReload;
 
             for (Uri uri : uris) {
                 if (uri == null)
@@ -356,33 +361,25 @@ public class BrowseActivityViewModel extends ViewModel {
                 someFailed |= (ph == null);
                 someSucceeded |= (ph != null);
 
-                if (!getIsViewArchive() && ph != null && !needsFullReload) {
+                if (!getIsViewArchive() && ph != null && !needsReload) {
                     try {
                         PuzMetaFile pm = getFileHandler().loadPuzMetaFile(ph);
                         addPuzzleToList(pm);
                     } catch (IOException e) {
                         // fall back to full reload
-                        needsFullReload = true;
+                        needsReload = true;
                     }
                 }
             }
 
-            if (needsFullReload)
+            if (needsReload)
                 startLoadFiles();
 
-            if (someSucceeded || someFailed) {
-                final boolean finalSomeFailed = someFailed;
-
-                handler.post(() -> {
-                    String msg = application.getString(
-                        finalSomeFailed
-                            ? R.string.import_failure
-                            : R.string.import_success
-                    );
-                    Toast t = Toast.makeText(application, msg, Toast.LENGTH_SHORT);
-                    t.show();
-                });
-            }
+            final boolean finalSomeFailed = someFailed;
+            final boolean finalSomeSucceeded = someSucceeded;
+            handler.post(() -> {
+                callback.accept(finalSomeFailed, finalSomeSucceeded);
+            });
         });
     }
 
@@ -435,8 +432,11 @@ public class BrowseActivityViewModel extends ViewModel {
      * Don't add the same file twice!
      */
     private void addPuzzleToList(PuzMetaFile puzMeta) {
-        puzzleFiles.getValue().add(new MutableLiveData<>(puzMeta));
-        puzzleFiles.postValue(puzzleFiles.getValue());
+        List<MutableLiveData<PuzMetaFile>> files = puzzleFiles.getValue();
+        if (files != null) {
+            files.add(new MutableLiveData<>(puzMeta));
+            puzzleFiles.postValue(files);
+        }
     }
 
     /**

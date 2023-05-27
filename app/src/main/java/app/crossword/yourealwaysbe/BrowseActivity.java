@@ -102,6 +102,11 @@ public class BrowseActivity extends ForkyzActivity {
      */
     private static final String PREF_LAST_SEEN_VERSION = "lastSeenVersion";
 
+    /**
+     * So the imports complete dialog knows if there was success or not
+     */
+    private static final String IMPORT_SUCCESS = "importSuccess";
+
     // allow import of all docs (parser will take care of detecting if it's a
     // puzzle that's recognised)
     private static final String IMPORT_MIME_TYPE =  "*/*";
@@ -121,8 +126,9 @@ public class BrowseActivity extends ForkyzActivity {
                 int otherTaskId
                     = intent.getIntExtra(BROWSER_CLOSE_TASK_ID, myTaskId);
 
-                if (myTaskId != otherTaskId)
+                if (myTaskId != otherTaskId) {
                     utils.finishAndRemoveTask(BrowseActivity.this);
+                }
             }
         }
     };
@@ -526,7 +532,7 @@ public class BrowseActivity extends ForkyzActivity {
             if (hasPendingImport()) {
                 Uri importUri = getPendingImport();
                 clearPendingImport();
-                onImportURI(importUri, true);
+                onImportURIAndFinish(importUri);
 
                 // won't be triggered by import if archive is shown
                 if (model.getIsViewArchive())
@@ -839,16 +845,36 @@ public class BrowseActivity extends ForkyzActivity {
      * Import from URIs, does not force reload
      */
     private void onImportURIs(List<Uri> uris) {
-        if (uris != null)
-            model.importURIs(uris, false);
+        if (uris != null) {
+            model.importURIs(uris, false, (someFailed, someSucceeded) -> {
+                if (someSucceeded || someFailed) {
+                    String msg = getString(
+                        someFailed
+                            ? R.string.import_failure
+                            : R.string.import_success
+                    );
+                    Toast t = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+                    t.show();
+                }
+            });
+        }
     }
 
     /**
      * Import from URI, force reload of puz list if asked
      */
-    private void onImportURI(Uri uri, boolean forceReload) {
-        if (uri != null)
-            model.importURI(uri, forceReload);
+    private void onImportURIAndFinish(Uri uri) {
+        if (uri != null) {
+            model.importURI(uri, true, (someFailed, someSucceeded) -> {
+                ImportedNowFinishDialog dialog = new ImportedNowFinishDialog();
+                Bundle args = new Bundle();
+                args.putBoolean(IMPORT_SUCCESS, !someFailed);
+                dialog.setArguments(args);
+                dialog.show(
+                    getSupportFragmentManager(), "ImportedNowFinishDialog"
+                );
+            });
+        }
     }
 
     private boolean hasPendingImport() {
@@ -1239,4 +1265,38 @@ public class BrowseActivity extends ForkyzActivity {
             return builder.create();
         }
     }
+
+    public static class ImportedNowFinishDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            BrowseActivity activity = (BrowseActivity) getActivity();
+
+            Bundle args = getArguments();
+            boolean success = false;
+            if (args != null)
+                success = args.getBoolean(IMPORT_SUCCESS, false);
+
+            MaterialAlertDialogBuilder builder
+                = new MaterialAlertDialogBuilder(getActivity());
+
+            int message = success
+                ? R.string.import_success_long
+                : R.string.import_failure_long;
+
+            builder.setTitle(R.string.imports_title)
+                .setMessage(message)
+                .setPositiveButton(
+                    android.R.string.ok,
+                    (di, i) -> { activity.finish(); }
+                );
+
+            return builder.create();
+        }
+
+        @Override
+        public void onCancel(DialogInterface di) {
+            getActivity().finish();
+        }
+    }
+
 }
