@@ -150,7 +150,6 @@ public class ClueListActivity extends PuzzleActivity
         clueTabs.setBoard(board);
         clueTabs.addListener(this);
         clueTabs.listenBoard();
-        clueTabs.refresh();
 
         keyboardManager.onResume();
 

@@ -803,7 +803,6 @@ public class PlayActivity extends PuzzleActivity
             clueTabs.setPage(prefs.getInt(CLUE_TABS_PAGE, 0));
             clueTabs.addListener(this);
             clueTabs.listenBoard();
-            clueTabs.refresh();
         }
 
         board.setSkipCompletedLetters(

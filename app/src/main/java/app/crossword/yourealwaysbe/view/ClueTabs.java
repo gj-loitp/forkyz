@@ -291,16 +291,6 @@ public class ClueTabs extends LinearLayout
         this.forceSnap = forceSnap;
     }
 
-    /**
-     * Refresh view to match current board state
-     */
-    @SuppressLint("NotifyDataSetChanged")
-    public void refresh() {
-        // make sure up to date with board
-        if (viewPager != null)
-            viewPager.getAdapter().notifyDataSetChanged();
-    }
-
     public void addListener(ClueTabsListener listener) {
         listeners.add(listener);
     }
@@ -346,6 +336,15 @@ public class ClueTabs extends LinearLayout
             return;
 
         viewPager.setCurrentItem(listIndex);
+    }
+
+    /**
+     * Full refresh of view
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    private void refresh() {
+        if (viewPager != null)
+            viewPager.getAdapter().notifyDataSetChanged();
     }
 
     private boolean isSnapToClue() {
