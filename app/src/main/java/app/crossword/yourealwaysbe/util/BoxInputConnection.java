@@ -106,14 +106,11 @@ public class BoxInputConnection extends BaseInputConnection {
     @Override
     public boolean beginBatchEdit() {
         batchEditNestingDepth += 1;
-        System.out.println("FORKYZ: begin batch " + batchEditNestingDepth);
         return true;
     }
 
     @Override
     public boolean endBatchEdit() {
-        System.out.println("FORKYZ: end batch " + batchEditNestingDepth);
-
         if (batchEditNestingDepth > 0)
             batchEditNestingDepth -= 1;
 
@@ -145,10 +142,8 @@ public class BoxInputConnection extends BaseInputConnection {
      */
     private void updateListenerWithResponse(String response) {
         if (isBatchEdit()) {
-            System.out.println("FORKYZ: pending '" + response + "'");
             pendingResponse = response;
         } else {
-            System.out.println("FORKYZ: sending '" + response + "'");
             if (listener != null) {
                 // if removing characters, delete
                 if (response.isEmpty()) {
@@ -226,11 +221,6 @@ public class BoxInputConnection extends BaseInputConnection {
         public Editable replace(
             int st, int en, CharSequence source, int start, int end
         ) {
-            System.out.println("FORKYZ: replace "
-                    + st + " / " + en
-                    + " .. " + source + " .. "
-                    + start + " / " + end
-                );
             spannable.replace(st, en, source, start, end);
             updateListenerWithResponse(spannable.toString());
             return this;
