@@ -23,6 +23,7 @@ public class Playboard implements Serializable {
     private List<String> sortedClueListNames = new ArrayList<>();
     private boolean showErrorsGrid;
     private boolean showErrorsCursor;
+    private boolean showErrorsClue;
     private boolean skipCompletedLetters;
     private boolean preserveCorrectLettersInShowErrors;
     private boolean dontDeleteCrossing;
@@ -375,6 +376,18 @@ public class Playboard implements Serializable {
     }
 
     /**
+     * Show errors for filled in clues
+     */
+    public void setShowErrorsClue(boolean showErrors) {
+        boolean changed = (this.showErrorsClue != showErrors);
+        this.showErrorsClue = showErrors;
+        if (changed) {
+            flagUnusualZoneChange(getCurrentZone());
+            notifyChange();
+        }
+    }
+
+    /**
      * Toggle show errors across the grid
      */
     public void toggleShowErrorsGrid() {
@@ -392,6 +405,13 @@ public class Playboard implements Serializable {
     }
 
     /**
+     * Toggle show errors for filled clues
+     */
+    public void toggleShowErrorsClue() {
+        setShowErrorsClue(!isShowErrorsClue());
+    }
+
+    /**
      * Is showing errors across the whole grid
      */
     public boolean isShowErrorsGrid() {
@@ -406,10 +426,19 @@ public class Playboard implements Serializable {
     }
 
     /**
-     * Is showing errors either or cursor or grid
+     * Is showing errors for filled clues
+     */
+    public boolean isShowErrorsClue() {
+        return this.showErrorsClue;
+    }
+
+    /**
+     * Is showing errors in some form
      */
     public boolean isShowErrors() {
-        return isShowErrorsGrid() || isShowErrorsCursor();
+        return isShowErrorsGrid()
+            || isShowErrorsCursor()
+            || isShowErrorsClue();
     }
 
     public void setSkipCompletedLetters(boolean skipCompletedLetters) {
@@ -435,6 +464,30 @@ public class Playboard implements Serializable {
 
         for (Position pos : zone) {
             if (boxes[pos.getRow()][pos.getCol()].isBlank())
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * If the clue has been filled in correctly
+     *
+     * Only false if there is an error in there somewhere
+     */
+    public boolean isCorrectClueID(ClueID clueID) {
+        Zone zone = getZone(clueID);
+
+        if(zone == null || zone.isEmpty())
+            return true;
+
+        Box[][] boxes = getBoxes();
+
+        for (Position pos : zone) {
+            Box box = boxes[pos.getRow()][pos.getCol()];
+            boolean error = !box.isBlank()
+                && !Objects.equals(box.getResponse(), box.getSolution());
+            if (error)
                 return false;
         }
 
