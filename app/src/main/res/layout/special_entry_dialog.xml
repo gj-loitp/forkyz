@@ -19,19 +19,18 @@
         android:layout_height="wrap_content"
         android:text="@string/enter_special_desc"
     />
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:hint="@string/special_character"
+        android:layout_marginTop="?dialogPreferredPadding"
     >
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/special_entry_edit_box"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_special"
-            android:inputType="textNoSuggestions"
-            android:gravity="center"
-            android:importantForAutofill="no"
+            android:inputType="text"
+            android:autofillHints=".AUTOFILL_HINT_NOT_APPLICABLE"
         />
-    </LinearLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>
