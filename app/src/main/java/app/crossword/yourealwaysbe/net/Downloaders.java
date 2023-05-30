@@ -1,5 +1,6 @@
 package app.crossword.yourealwaysbe.net;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -54,6 +55,9 @@ public class Downloaders {
     private boolean suppressSummaryMessages;
     private boolean suppressIndividualMessages;
     private SharedPreferences prefs;
+
+    private AndroidVersionUtils utils
+        = AndroidVersionUtils.Factory.getInstance();
 
     /**
      * Create a downloader instance that does not notify
@@ -191,9 +195,7 @@ public class Downloaders {
     }
 
     private void download(Map<Downloader, LocalDate> puzzlesToDownload) {
-        boolean hasConnection =
-            AndroidVersionUtils.Factory.getInstance()
-                .hasNetworkConnection(context);
+        boolean hasConnection = utils.hasNetworkConnection(context);
 
         if (!hasConnection) {
             notifyNoConnection();
@@ -268,6 +270,7 @@ public class Downloaders {
      *
      * Only saves if we don't already have it.
      */
+    @SuppressLint("MissingPermission") // canNotify does check
     private Downloader.DownloadResult downloadPuzzle(
         Downloader d,
         LocalDate date,
@@ -317,6 +320,7 @@ public class Downloaders {
         return result;
     }
 
+    @SuppressLint("MissingPermission") // canNotify does check
     private void postDownloadedGeneral(
         Boolean somethingDownloaded, Boolean somethingFailed
     ) {
@@ -337,11 +341,12 @@ public class Downloaders {
             .setWhen(System.currentTimeMillis())
             .build();
 
-        if (this.notificationManager != null) {
+        if (canNotify()) {
             this.notificationManager.notify(0, not);
         }
     }
 
+    @SuppressLint("MissingPermission") // canNotify does check
     private void postDownloadedNotification(
         int i, String name, Downloader.DownloadResult result
     ) {
@@ -363,7 +368,7 @@ public class Downloaders {
             .setWhen(System.currentTimeMillis())
             .build();
 
-        if (this.notificationManager != null) {
+        if (canNotify()) {
             this.notificationManager.notify(i, not);
         }
     }
@@ -701,18 +706,24 @@ public class Downloaders {
         }
     }
 
-    private boolean isNotifyingSummary() {
+    private boolean canNotify() {
         return notificationManager != null
+            && utils.hasPostNotificationsPermission(context);
+    }
+
+    private boolean isNotifyingSummary() {
+        return canNotify()
             && notificationManager.areNotificationsEnabled()
             && !suppressSummaryMessages;
     }
 
     private boolean isNotifyingIndividual() {
-        return notificationManager != null
+        return canNotify()
             && notificationManager.areNotificationsEnabled()
             && !suppressIndividualMessages;
     }
 
+    @SuppressLint("MissingPermission") // canNotify does check
     private void notifyNoConnection() {
         if (!isNotifyingSummary())
             return;
@@ -727,7 +738,7 @@ public class Downloaders {
             .setWhen(System.currentTimeMillis())
             .build();
 
-        if (this.notificationManager != null) {
+        if (canNotify()) {
             this.notificationManager.notify(0, not);
         }
     }
@@ -738,9 +749,7 @@ public class Downloaders {
     private PendingIntent getContentIntent() {
         Intent notificationIntent = new Intent(context, BrowseActivity.class);
         return PendingIntent.getActivity(
-            context, 0, notificationIntent,
-            AndroidVersionUtils
-                .Factory.getInstance().immutablePendingIntentFlag()
+            context, 0, notificationIntent, utils.immutablePendingIntentFlag()
         );
     }
 }

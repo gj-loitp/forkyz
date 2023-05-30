@@ -241,6 +241,11 @@ public class IceCreamSandwichUtil implements AndroidVersionUtils {
     }
 
     @Override
+    public boolean hasPostNotificationsPermission(Context context) {
+        return true;
+    }
+
+    @Override
     public void requestPostNotifications(
         ActivityResultLauncher<String> launcher
     ) {

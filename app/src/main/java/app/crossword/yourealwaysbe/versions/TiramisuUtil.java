@@ -10,12 +10,14 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PackageManager.PackageInfoFlags;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 @TargetApi(Build.VERSION_CODES.TIRAMISU)
 public class TiramisuUtil extends RUtil {
@@ -23,6 +25,13 @@ public class TiramisuUtil extends RUtil {
     public <T extends Serializable>
     T getSerializable(Bundle bundle, String key, Class<T> klass) {
         return bundle.getSerializable(key, klass);
+    }
+
+    @Override
+    public boolean hasPostNotificationsPermission(Context context) {
+        return ContextCompat.checkSelfPermission(
+            context, android.Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override

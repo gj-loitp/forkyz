@@ -137,6 +137,11 @@ public interface AndroidVersionUtils {
     getSerializable(Bundle bundle, String key, Class<T> klass);
 
     /**
+     * Has POST_NOTIFICATIONS permission or is not on an API that needs it
+     */
+    boolean hasPostNotificationsPermission(Context context);
+
+    /**
      * Request POST_NOTIFICATIONS on devices that have it
      *
      * Else, ignore
