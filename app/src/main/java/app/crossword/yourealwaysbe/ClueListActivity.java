@@ -26,6 +26,7 @@ import app.crossword.yourealwaysbe.util.KeyboardManager;
 import app.crossword.yourealwaysbe.util.VoiceCommands.VoiceCommand;
 import app.crossword.yourealwaysbe.view.BoardEditView.BoardClickListener;
 import app.crossword.yourealwaysbe.view.BoardWordEditView;
+import app.crossword.yourealwaysbe.view.ClueEditDialog;
 import app.crossword.yourealwaysbe.view.ClueTabs;
 import app.crossword.yourealwaysbe.view.ForkyzKeyboard;
 
@@ -53,6 +54,9 @@ public class ClueListActivity extends PuzzleActivity
             return true;
         } else if (id == R.id.clue_list_menu_show_words) {
             toggleShowWords();
+            return true;
+        } else if (id == R.id.clue_list_menu_edit_clue) {
+            editClue();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -642,5 +646,10 @@ public class ClueListActivity extends PuzzleActivity
             return true;
 
         return false;
+    }
+
+    private void editClue() {
+        ClueEditDialog dialog = new ClueEditDialog();
+        dialog.show(getSupportFragmentManager(), "ClueEditDialog");
     }
 }

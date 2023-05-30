@@ -104,6 +104,14 @@ public class Clue implements Serializable {
             getClueID(), getClueNumber(), getLabel(), getHint(), getZone()
         );
     }
+
+    void setClueNumber(String number) {
+        this.number = number;
+    }
+
+    void setHint(String hint) {
+        this.hint = (hint == null) ? "" : hint;
+    }
 }
 
 

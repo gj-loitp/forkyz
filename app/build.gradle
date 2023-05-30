@@ -23,6 +23,8 @@ android {
     if (new File(propsPath).exists())
         props.load(new FileInputStream(propsPath))
 
+    dataBinding.enabled = true
+
     compileSdkVersion 33
 
     lintOptions {

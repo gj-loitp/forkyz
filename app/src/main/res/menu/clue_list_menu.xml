@@ -25,6 +25,10 @@
         android:checkable="true"
     />
     <item
+        android:id="@+id/clue_list_menu_edit_clue"
+        android:title="@string/edit_clue"
+    />
+    <item
         android:id="@+id/puzzle_menu_share"
         android:icon="@android:drawable/ic_menu_share"
         android:title="@string/share"

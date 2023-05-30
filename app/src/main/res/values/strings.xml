@@ -94,6 +94,8 @@
     <!-- clues list -->
     <string name="current_word">Current word</string>
     <string name="clue_word">The grid word for the clue</string>
+    <string name="clue_hint">Clue Hint</string>
+    <string name="edit_clue">Edit Clue</string>
 
     <!-- notes page -->
     <string name="anagram_source_lab">Anagram remaining letters</string>

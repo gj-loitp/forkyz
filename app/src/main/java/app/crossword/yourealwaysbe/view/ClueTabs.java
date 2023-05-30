@@ -754,7 +754,7 @@ public class ClueTabs extends LinearLayout
             } else {
                 Playboard board = ClueTabs.this.board;
 
-                clueView.setText(HtmlCompat.fromHtml(getClueText(clue), 0));
+                setClueText();
 
                 if (board != null)
                     board.addListener(this);
@@ -800,6 +800,13 @@ public class ClueTabs extends LinearLayout
 
             if (refresh)
                 setStyle();
+
+            if (changes.getEditedClueIDs().contains(thisClueID))
+                setClueText();
+        }
+
+        private void setClueText() {
+            clueView.setText(HtmlCompat.fromHtml(getClueText(clue), 0));
         }
 
         private void setStyle() {
