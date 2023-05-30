@@ -71,6 +71,7 @@ public class PlayActivity extends PuzzleActivity
     private static final String CLUE_TABS_PAGE = "playActivityClueTabsPage";
     private static final String PREF_SHOW_ERRORS_GRID = "showErrors";
     private static final String PREF_SHOW_ERRORS_CURSOR = "showErrorsCursor";
+    private static final String PREF_SHOW_ERRORS_CLUE = "showErrorsClue";
     public static final String SHOW_TIMER = "showTimer";
     public static final String SCALE = "scale";
     private static final String PREF_RANDOM_CLUE_ON_SHAKE = "randomClueOnShake";
@@ -413,8 +414,11 @@ public class PlayActivity extends PuzzleActivity
             = this.prefs.getBoolean(PREF_SHOW_ERRORS_GRID, false);
         boolean showErrorsCursor
             = this.prefs.getBoolean(PREF_SHOW_ERRORS_CURSOR, false);
+        boolean showErrorsClue
+            = this.prefs.getBoolean(PREF_SHOW_ERRORS_CLUE, false);
 
-        int showErrorsTitle = (showErrorsGrid || showErrorsCursor)
+        int showErrorsTitle =
+            (showErrorsGrid || showErrorsCursor || showErrorsClue)
             ? R.string.showing_errors
             : R.string.show_errors;
 
@@ -425,6 +429,8 @@ public class PlayActivity extends PuzzleActivity
             .setChecked(showErrorsGrid);
         menu.findItem(R.id.play_menu_show_errors_cursor)
             .setChecked(showErrorsCursor);
+        menu.findItem(R.id.play_menu_show_errors_clue)
+            .setChecked(showErrorsClue);
 
         Box box = (board == null) ? null : board.getCurrentBox();
         boolean hasInitial = !Box.isBlock(box) && box.hasInitialValue();
@@ -577,6 +583,13 @@ public class PlayActivity extends PuzzleActivity
                 getBoard().toggleShowErrorsGrid();
                 this.prefs.edit().putBoolean(
                     PREF_SHOW_ERRORS_GRID, getBoard().isShowErrorsGrid()
+                ).apply();
+                invalidateOptionsMenu();
+                return true;
+            } else if (id == R.id.play_menu_show_errors_clue) {
+                getBoard().toggleShowErrorsClue();
+                this.prefs.edit().putBoolean(
+                    PREF_SHOW_ERRORS_CLUE, getBoard().isShowErrorsClue()
                 ).apply();
                 invalidateOptionsMenu();
                 return true;
@@ -776,17 +789,7 @@ public class PlayActivity extends PuzzleActivity
             neverNull(puz.getCopyright())
         ));
 
-        boolean showErrorsGrid
-            = this.prefs.getBoolean(PREF_SHOW_ERRORS_GRID, false);
-        if (board.isShowErrorsGrid() != showErrorsGrid) {
-            board.toggleShowErrorsGrid();
-        }
-
-        boolean showErrorsCursor
-            = this.prefs.getBoolean(PREF_SHOW_ERRORS_CURSOR, false);
-        if (board.isShowErrorsCursor() != showErrorsCursor) {
-            board.toggleShowErrorsCursor();
-        }
+        syncShowErrors();
 
         if (boardView != null) {
             boardView.setBoard(board);
@@ -864,6 +867,30 @@ public class PlayActivity extends PuzzleActivity
             } else {
                 keyboardManager.hideKeyboard();
             }
+        }
+    }
+
+    private void syncShowErrors() {
+        Playboard board = getBoard();
+        if (board == null)
+            return;
+
+        boolean showErrorsGrid
+            = this.prefs.getBoolean(PREF_SHOW_ERRORS_GRID, false);
+        if (board.isShowErrorsGrid() != showErrorsGrid) {
+            board.toggleShowErrorsGrid();
+        }
+
+        boolean showErrorsCursor
+            = this.prefs.getBoolean(PREF_SHOW_ERRORS_CURSOR, false);
+        if (board.isShowErrorsCursor() != showErrorsCursor) {
+            board.toggleShowErrorsCursor();
+        }
+
+        boolean showErrorsClue
+            = this.prefs.getBoolean(PREF_SHOW_ERRORS_CLUE, false);
+        if (board.isShowErrorsClue() != showErrorsClue) {
+            board.toggleShowErrorsClue();
         }
     }
 

@@ -63,6 +63,11 @@
                 android:checkable="true"
             />
             <item
+                android:id="@+id/play_menu_show_errors_clue"
+                android:title="@string/show_errors_clue"
+                android:checkable="true"
+            />
+            <item
                 android:id="@+id/play_menu_show_errors_grid"
                 android:title="@string/show_errors_full_grid"
                 android:checkable="true"

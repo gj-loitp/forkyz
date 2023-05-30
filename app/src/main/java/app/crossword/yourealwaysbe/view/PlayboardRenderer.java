@@ -254,7 +254,7 @@ public class PlayboardRenderer {
         for (int i = 0; i < boxes.length; i++) {
             Position pos = zone.getPosition(i);
 
-            if (changes != null && !changes.contains(pos))
+            if (!isRenderPos(pos, changes))
                 continue;
 
             int x = (i % width) * boxSize;
@@ -1189,15 +1189,50 @@ public class PlayboardRenderer {
     }
 
     private boolean highlightError(Box box, boolean hasCursor) {
-        boolean showErrors = board != null && (
-            this.board.isShowErrorsGrid()
-            || (this.board.isShowErrorsCursor() && hasCursor)
-        );
+        if (board == null)
+            return false;
 
-        return showErrors
-            && !box.isBlank()
-            && box.hasSolution()
-            && !Objects.equals(box.getSolution(), box.getResponse());
+        if (box.isBlank() || !box.hasSolution())
+            return false;
+
+        boolean correct = Objects.equals(box.getSolution(), box.getResponse());
+        boolean highlight = false;
+
+        if (board.isShowErrorsGrid())
+            highlight |= !correct;
+
+        if (board.isShowErrorsCursor() && hasCursor)
+            highlight |= !correct;
+
+        if (board.isShowErrorsClue())
+            highlight |= isPartOfCurrentClueWithErrors(box);
+
+        return highlight;
+    }
+
+    private boolean isPartOfCurrentClueWithErrors(Box box) {
+        if (board == null)
+            return false;
+
+        ClueID cid = board.getClueID();
+
+        boolean isPart = box.getIsPartOfClues().contains(cid)
+            && board.isFilledClueID(cid)
+            && !board.isCorrectClueID(cid);
+
+        return isPart;
+    }
+
+    private boolean isPartOfCurrentClue(Position pos) {
+        if (board == null)
+            return false;
+
+        Box box = board.getPuzzle().checkedGetBox(pos);
+        ClueID cid = board.getClueID();
+        if (box == null || cid == null)
+            return false;
+
+        return box.getIsPartOfClues().contains(cid);
     }
 
     private static void drawText(
@@ -1360,7 +1395,7 @@ public class PlayboardRenderer {
 
         for (int i = 0; i < pinnedZone.size(); i++) {
             Position pos = pinnedZone.getPosition(i);
-            if (changes != null && !changes.contains(pos))
+            if (!isRenderPos(pos, changes))
                 continue;
 
             int x = (pinnedCol + i) * boxSize;
@@ -1477,16 +1512,16 @@ public class PlayboardRenderer {
         Word currentWord = this.board.getCurrentWord();
 
         // just have one object for some efficiency
-        Position tempPos = new Position(0, 0);
+        Position pos = new Position(0, 0);
+
+        boolean showErrorsClue = board.isShowErrorsClue();
 
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                if (changes != null) {
-                    tempPos.setRow(row);
-                    tempPos.setCol(col);
-                    if (!changes.contains(tempPos))
-                        continue;
-                }
+                pos.setRow(row);
+                pos.setCol(col);
+                if (!isRenderPos(pos, changes))
+                    continue;
 
                 int x = col * boxSize;
                 int y = row * boxSize;
@@ -1530,6 +1565,26 @@ public class PlayboardRenderer {
      */
     private PaintProfile getProfile() {
         return profile;
+    }
+
+    /**
+     * True if the position needs rendering
+     *
+     * Either because it is directly listed as a change, or a change implies
+     * this one may have changed (e.g. because of show errors clue, the
+     * completion of the clue can cause a change).
+     */
+    private boolean isRenderPos(Position pos, Collection<Position> changes) {
+        if (board == null)
+            return false;
+
+        if (changes == null || changes.contains(pos))
+            return true;
+
+        if (board.isShowErrorsClue() && isPartOfCurrentClue(pos))
+            return true;
+
+        return false;
     }
 
     private static class PaintProfile {
