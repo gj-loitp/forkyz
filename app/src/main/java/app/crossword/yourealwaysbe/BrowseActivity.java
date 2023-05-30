@@ -64,6 +64,7 @@ import app.crossword.yourealwaysbe.view.recycler.SeparatedRecyclerViewAdapter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -172,7 +173,7 @@ public class BrowseActivity extends ForkyzActivity {
     private Set<PuzMetaFile> selected = new HashSet<>();
     private MenuItem viewCrosswordsArchiveMenuItem;
     private View pleaseWaitView;
-    private Uri pendingImport;
+    private Collection<Uri> pendingImports = null;
 
     ActivityResultLauncher<String> getImportURI =
         utils.registerForUriContentsResult(
@@ -495,6 +496,10 @@ public class BrowseActivity extends ForkyzActivity {
             setPendingImport(IntentCompat.getParcelableExtra(
                 intent, Intent.EXTRA_STREAM, Uri.class
             ));
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+            setPendingImports(IntentCompat.getParcelableArrayListExtra(
+                intent, Intent.EXTRA_STREAM, Uri.class
+            ));
         }
     }
 
@@ -529,10 +534,10 @@ public class BrowseActivity extends ForkyzActivity {
             model.getPuzzleFiles().getValue() == null
             || BackgroundDownloadManager.checkBackgroundDownloadPendingFlag()
         ) {
-            if (hasPendingImport()) {
-                Uri importUri = getPendingImport();
-                clearPendingImport();
-                onImportURIAndFinish(importUri);
+            if (hasPendingImports()) {
+                Collection<Uri> importUri = getPendingImports();
+                clearPendingImports();
+                onImportURIsAndFinish(importUri);
 
                 // won't be triggered by import if archive is shown
                 if (model.getIsViewArchive())
@@ -863,9 +868,9 @@ public class BrowseActivity extends ForkyzActivity {
     /**
      * Import from URI, force reload of puz list if asked
      */
-    private void onImportURIAndFinish(Uri uri) {
+    private void onImportURIsAndFinish(Collection<Uri> uri) {
         if (uri != null) {
-            model.importURI(uri, true, (someFailed, someSucceeded) -> {
+            model.importURIs(uri, true, (someFailed, someSucceeded) -> {
                 ImportedNowFinishDialog dialog = new ImportedNowFinishDialog();
                 Bundle args = new Bundle();
                 args.putBoolean(IMPORT_SUCCESS, !someFailed);
@@ -877,20 +882,24 @@ public class BrowseActivity extends ForkyzActivity {
         }
     }
 
-    private boolean hasPendingImport() {
-        return pendingImport != null;
+    private boolean hasPendingImports() {
+        return pendingImports != null;
     }
 
-    private Uri getPendingImport() {
-        return pendingImport;
+    private Collection<Uri> getPendingImports() {
+        return pendingImports;
     }
 
-    private void clearPendingImport() {
-        pendingImport = null;
+    private void clearPendingImports() {
+        pendingImports = null;
     }
 
     private void setPendingImport(Uri uri) {
-        pendingImport = uri;
+        setPendingImports(Collections.singleton(uri));
+    }
+
+    private void setPendingImports(Collection<Uri> uri) {
+        pendingImports = uri;
     }
 
     private void showDownloadDialog() {

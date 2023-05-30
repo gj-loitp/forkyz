@@ -324,23 +324,12 @@ public class BrowseActivityViewModel extends ViewModel {
     }
 
     /**
-     * Import file from uri to crosswords folder
-     */
-    public void importURI(
-        Uri uri,
-        boolean forceReload,
-        BiConsumer<Boolean, Boolean> callback
-    ) {
-        importURIs(Collections.singletonList(uri), forceReload, callback);
-    }
-
-    /**
      * Import files from uri to crosswords folder
      *
      * callback when finished, arguments are someFailed and someSucceeded
      */
     public void importURIs(
-        List<Uri> uris,
+        Collection<Uri> uris,
         boolean forceReload,
         BiConsumer<Boolean, Boolean> callback
     ) {
