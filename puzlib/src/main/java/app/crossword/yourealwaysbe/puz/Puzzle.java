@@ -41,7 +41,6 @@ public class Puzzle implements Serializable{
     private String shareUrl;
     private String supportUrl;
     private Box[][] boxes;
-    private boolean updatable;
     private int height;
     private int width;
     private long playedTime;
@@ -339,7 +338,6 @@ public class Puzzle implements Serializable{
             }
         }
         setScrambled(false);
-        setUpdatable(false);
     }
 
     public void setCopyright(String copyright) {
@@ -499,14 +497,6 @@ public class Puzzle implements Serializable{
 
     public String getTitle() {
         return title;
-    }
-
-    public void setUpdatable(boolean updatable) {
-        this.updatable = updatable;
-    }
-
-    public boolean isUpdatable() {
-        return updatable;
     }
 
     public void setPosition(Position position) {

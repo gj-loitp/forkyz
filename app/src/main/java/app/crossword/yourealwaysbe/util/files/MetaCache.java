@@ -71,6 +71,7 @@ public class MetaCache {
         @NonNull
         public Uri directoryUri;
 
+        // this field is now defunct, remove on next schema change
         @ColumnInfo
         public boolean isUpdatable;
 
@@ -174,6 +175,7 @@ public class MetaCache {
             this.dbRow = dbRow;
         }
 
+        // updatable field now defunct
         public boolean isUpdatable() { return dbRow.isUpdatable; }
         public String getCaption() { return dbRow.title; }
         public LocalDate getDate() { return dbRow.date; }
@@ -236,7 +238,7 @@ public class MetaCache {
             : fileHandler.getUri(metaHandle);
 
         cm.directoryUri = fileHandler.getUri(puzHandle.getDirHandle());
-        cm.isUpdatable = puz.isUpdatable();
+        cm.isUpdatable = true; // used to be a puzzle field
         cm.date = puz.getDate();
         cm.percentComplete = puz.getPercentComplete();
         cm.percentFilled = puz.getPercentFilled();

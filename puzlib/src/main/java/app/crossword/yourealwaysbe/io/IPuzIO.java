@@ -257,7 +257,6 @@ public class IPuzIO implements PuzzleParser {
     private static final String FIELD_COMPLETION_TIME = "completiontime";
     private static final String FIELD_PCNT_COMPLETE = "percentcomplete";
     private static final String FIELD_PCNT_FILLED = "percentfilled";
-    private static final String FIELD_UPDATABLE = "updatable";
     private static final String FIELD_POSITION = "position";
     private static final String FIELD_POSITION_ROW = "row";
     private static final String FIELD_POSITION_COL = "col";
@@ -1330,9 +1329,6 @@ public class IPuzIO implements PuzzleParser {
 
         if (playData.has(FIELD_COMPLETION_TIME))
             builder.setTime(playData.getLong(FIELD_COMPLETION_TIME));
-
-        if (playData.has(FIELD_UPDATABLE))
-            builder.setUpdatable(playData.getBoolean(FIELD_UPDATABLE));
     }
 
     /**
@@ -2208,8 +2204,7 @@ public class IPuzIO implements PuzzleParser {
 
             writer.keyValueNonNull(1, FIELD_COMPLETION_TIME, puz.getTime())
                 .keyValueNonNull(1, FIELD_PCNT_FILLED, puz.getPercentFilled())
-                .keyValueNonNull(1, FIELD_PCNT_COMPLETE, puz.getPercentComplete())
-                .keyValueNonNull(1, FIELD_UPDATABLE, puz.isUpdatable());
+                .keyValueNonNull(1, FIELD_PCNT_COMPLETE, puz.getPercentComplete());
 
             writer.endObject();
             writer.newLine();

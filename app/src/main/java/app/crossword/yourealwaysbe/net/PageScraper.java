@@ -42,7 +42,6 @@ public class PageScraper extends AbstractDownloader {
     private String supportUrl;
     private boolean shareFileUrl;
     private boolean readReverse;
-    protected boolean updateable = false;
 
     public static class Puz extends PageScraper {
         public Puz(
@@ -172,7 +171,6 @@ public class PageScraper extends AbstractDownloader {
                         if (puz != null) {
                             // I'm not sure what purpose this has
                             // Doesn't seem to be changeable from UI
-                            puz.setUpdatable(false);
                             puz.setSource(getName());
                             puz.setSourceUrl(url);
                             puz.setSupportUrl(getSupportUrl());

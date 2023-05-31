@@ -162,11 +162,6 @@ public class PuzzleBuilder {
         return this;
     }
 
-    public PuzzleBuilder setUpdatable(boolean updateable) {
-        puzzle.setUpdatable(updateable);
-        return this;
-    }
-
     public PuzzleBuilder flagClue(ClueID clueId, boolean flag) {
         puzzle.flagClue(clueId, flag);
         return this;

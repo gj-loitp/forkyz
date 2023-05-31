@@ -53,10 +53,6 @@ public class PuzMetaFile
         return getPuzHandle().isInDirectory(dirHandle);
     }
 
-    public boolean isUpdatable() {
-        return (meta == null) ? false : meta.isUpdatable();
-    }
-
     public String getCaption() {
         String caption = (meta == null) ? "" : meta.getTitle();
         return caption == null ? "" : caption;
@@ -71,15 +67,11 @@ public class PuzMetaFile
     }
 
     public int getComplete() {
-        return (meta == null)
-            ? 0
-            : (meta.isUpdatable() ? (-1) : meta.getPercentComplete());
+        return (meta == null) ? 0 : meta.getPercentComplete();
     }
 
     public int getFilled() {
-        return (meta == null)
-            ? 0
-            : (meta.isUpdatable() ? (-1) : meta.getPercentFilled());
+        return (meta == null) ? 0 : meta.getPercentFilled();
     }
 
     public String getSource() {

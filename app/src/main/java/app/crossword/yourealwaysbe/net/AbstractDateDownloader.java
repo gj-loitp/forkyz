@@ -205,7 +205,6 @@ public class AbstractDateDownloader extends AbstractDownloader {
                     puz.setSourceUrl(sourceUrl);
                     puz.setSupportUrl(getSupportUrl());
                     puz.setShareUrl(getShareUrl(date));
-                    puz.setUpdatable(false);
 
                     return puz;
                 }

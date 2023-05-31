@@ -13,14 +13,13 @@ public class IOVersion2 extends IOVersion1 {
     @Override
     protected void applyMeta(Puzzle puz, PuzzleMeta meta){
         super.applyMeta(puz, meta);
-        puz.setUpdatable(meta.updatable);
         puz.setSourceUrl(meta.sourceUrl);
     }
 
     @Override
     public PuzzleMeta readMeta(DataInputStream dis) throws IOException{
         PuzzleMeta meta = super.readMeta(dis);
-        meta.updatable = dis.read() == 1;
+        dis.read(); // read old updatable byte
         meta.sourceUrl = IO.readNullTerminatedString(dis, getCharset());
         return meta;
     }
@@ -29,7 +28,7 @@ public class IOVersion2 extends IOVersion1 {
     protected void writeMeta(Puzzle puz, DataOutputStream dos)
               throws IOException {
         super.writeMeta(puz, dos);
-        dos.write(puz.isUpdatable() ? 1 : -1);
+        dos.write(1); // old updatable byte
         IO.writeNullTerminatedString(dos, puz.getSourceUrl(), getCharset());
     }
 }

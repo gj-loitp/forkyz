@@ -32,7 +32,6 @@ public class PuzzleMeta implements Serializable {
     public LocalDate date;
     public int percentComplete;
     public int percentFilled;
-    public boolean updatable;
     public String sourceUrl;
     public String supportUrl;
     public Position position;
@@ -59,8 +58,6 @@ public class PuzzleMeta implements Serializable {
                 .append(percentComplete)
                 .append(" percentFilled: ")
                 .append(percentFilled)
-                .append(" updatable: ")
-                .append(updatable)
                 .append(" position: ")
                 .append(position)
                 .append(" across: ")
@@ -85,7 +82,6 @@ public class PuzzleMeta implements Serializable {
 
         if (percentComplete != that.percentComplete) return false;
         if (percentFilled != that.percentFilled) return false;
-        if (updatable != that.updatable) return false;
         if (across != that.across) return false;
         if (author != null ? !author.equals(that.author) : that.author != null) return false;
         if (title != null ? !title.equals(that.title) : that.title != null) return false;
@@ -115,7 +111,6 @@ public class PuzzleMeta implements Serializable {
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + percentComplete;
         result = 31 * result + percentFilled;
-        result = 31 * result + (updatable ? 1 : 0);
         result = 31 * result + (sourceUrl != null ? sourceUrl.hashCode() : 0);
         result = 31 * result + (supportUrl != null ? supportUrl.hashCode() : 0);
         result = 31 * result + (position != null ? position.hashCode() : 0);
