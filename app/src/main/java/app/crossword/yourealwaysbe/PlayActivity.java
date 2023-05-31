@@ -637,7 +637,7 @@ public class PlayActivity extends PuzzleActivity
             } else if (id == R.id.play_menu_help) {
                 Intent helpIntent = new Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("file:///android_asset/playscreen.html"),
+                    Uri.parse("playscreen.html"),
                     this,
                     HTMLActivity.class
                 );

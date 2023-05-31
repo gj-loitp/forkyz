@@ -322,8 +322,12 @@ public class BrowseActivity extends ForkyzActivity {
             model.cleanUpPuzzles();
             return true;
         } else if (id == R.id.browse_menu_help) {
-            Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("file:///android_asset/filescreen.html"), this,
-                    HTMLActivity.class);
+            Intent helpIntent = new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("filescreen.html"),
+                this,
+                HTMLActivity.class
+            );
             this.startActivity(helpIntent);
             return true;
         } else if (id == R.id.browse_menu_sort_source) {
@@ -1263,7 +1267,7 @@ public class BrowseActivity extends ForkyzActivity {
                     (dialogInterface, i) -> {
                         Intent intent = new Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("file:///android_asset/release.html"),
+                            Uri.parse("release.html"),
                             activity,
                             HTMLActivity.class
                         );

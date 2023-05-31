@@ -1,46 +1,49 @@
 package app.crossword.yourealwaysbe;
 
-import android.net.Uri;
 import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.appcompat.app.ActionBar;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.WebView;
+import androidx.core.text.HtmlCompat;
 
-import app.crossword.yourealwaysbe.forkyz.R;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
+import app.crossword.yourealwaysbe.forkyz.databinding.HtmlViewBinding;
 import app.crossword.yourealwaysbe.versions.AndroidVersionUtils;
 import app.crossword.yourealwaysbe.view.recycler.ShowHideOnScroll;
 
-
 public class HTMLActivity extends ForkyzActivity {
-    protected AndroidVersionUtils utils = AndroidVersionUtils.Factory.getInstance();
+    private AndroidVersionUtils utils
+        = AndroidVersionUtils.Factory.getInstance();
+    private static final Charset CHARSET = Charset.forName("UTF-8");
+
+    private ExecutorService executorService
+        = Executors.newSingleThreadExecutor();
+    private Handler handler = new Handler(Looper.getMainLooper());
+
+    private HtmlViewBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        binding = HtmlViewBinding.inflate(getLayoutInflater());
+
         utils.holographic(this);
         utils.finishOnHomeButton(this);
-        this.setContentView(R.layout.html_view);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        this.setContentView(binding.getRoot());
 
-        WebView webview = (WebView) this.findViewById(R.id.webkit);
+        String assetName = this.getIntent().getData().toString();
+        startLoadAssetName(assetName);
+        binding.backButton.setOnClickListener((v) -> { finish(); });
 
-        Uri u = this.getIntent()
-                    .getData();
-        webview.loadUrl(u.toString());
-        FloatingActionButton download = (FloatingActionButton) this.findViewById(R.id.button_floating_action);
-        if(download != null) {
-            download.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
-            setWebViewOnTouchListener(webview, download);
-        }
+        setScrollListener();
     }
 
     @Override
@@ -59,9 +62,31 @@ public class HTMLActivity extends ForkyzActivity {
 
     // suppress because ShowHideOnScroll does not consume/handle clicks
     @SuppressWarnings("ClickableViewAccessibility")
-    private void setWebViewOnTouchListener(
-        WebView webview, FloatingActionButton download
-    ) {
-        webview.setOnTouchListener(new ShowHideOnScroll(download));
+    private void setScrollListener() {
+        binding.scrollView.setOnTouchListener(
+            new ShowHideOnScroll(binding.backButton)
+        );
+    }
+
+    private void startLoadAssetName(String assetName) {
+        executorService.execute(() -> {
+            try (
+                BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                        getAssets().open(assetName)
+                    )
+                )
+            ) {
+                String htmlData
+                    = reader.lines().collect(Collectors.joining("\n"));
+                handler.post(() -> {
+                    binding.content.setText(HtmlCompat.fromHtml(htmlData, 0));
+                });
+            } catch (IOException e) {
+                handler.post(() -> {
+                    finish();
+                });
+            }
+        });
     }
 }

@@ -18,21 +18,13 @@ def version_number(filename: str) -> int:
 
 with open(release_file, "w") as release_file:
     release_file.write("""
-        <html>
-        <style>
-        * { font-family: Roboto, sans-serif; color:black; }
-        body { background: #eeeeee; height: 100%; }
-        ul { padding-left: 2em; }
-        </style>
-        <body>
-            <h1>Forkyz</h1>
+        <h1>Forkyz</h1>
 
-            <p>
-                This is an unofficial fork of the <a
-                href="https://github.com/kebernet/shortyz">Shortyz</a>
-                crossword app. It implements a number of new features and
-                removes some non-open libraries / trackers.
-            </p>
+        <p>
+            This is an unofficial fork of the Shortyz
+            crossword app. It implements a number of new features and
+            removes some non-open libraries / trackers.
+        </p>
     """)
 
     changelogs = glob.glob("fastlane/metadata/android/en-US/changelogs/*")
@@ -40,20 +32,14 @@ with open(release_file, "w") as release_file:
 
     for file in changelogs:
         release_file.write(f"<h2>Version {version_number(file)}</h2>\n")
-        release_file.write("<ul>\n")
+        release_file.write("\n")
         with open(file) as changelog:
             for line in changelog:
                 if line.startswith("-"):
                     line = line[1:]
                 line = line.strip()
                 if len(line) > 0:
-                    release_file.write(f"<li>{line}</li>\n")
-        release_file.write("</ul>\n")
-
-    release_file.write("""
-        </body>
-        </html>
-    \n""")
+                    release_file.write(f"• {line}<br>\n")
 
 with open(changes_md, "w") as changes_md:
     changes_md.write("# Forkyz Changelog\n\n")

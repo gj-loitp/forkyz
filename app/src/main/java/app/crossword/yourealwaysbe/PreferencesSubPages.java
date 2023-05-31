@@ -52,8 +52,12 @@ public class PreferencesSubPages {
             findPreference("aboutScrapes")
                     .setOnPreferenceClickListener(new OnPreferenceClickListener() {
                     public boolean onPreferenceClick(Preference arg0) {
-                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("file:///android_asset/scrapes.html"),
-                                getActivity(), HTMLActivity.class);
+                        Intent i = new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("scrapes.html"),
+                            getActivity(),
+                            HTMLActivity.class
+                        );
                         getActivity().startActivity(i);
                         return true;
                     }
@@ -162,9 +166,7 @@ public class PreferencesSubPages {
                     public boolean onPreferenceClick(Preference arg0) {
                         Intent i = new Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse(
-                                "file:///android_asset/voice_commands.html"
-                            ),
+                            Uri.parse("voice_commands.html"),
                             getActivity(),
                             HTMLActivity.class
                         );

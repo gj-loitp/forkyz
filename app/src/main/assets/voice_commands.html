@@ -1,225 +1,47 @@
-<html>
-<style>
-    * { font-family: Roboto, sans-serif; color:black; }
-    body { background: #eeeeee; height: 100%;}
-</style>
-<body>
-
 <h2>Voice Commands</h2>
 
 <!-- keep this up to date with strings.xml -->
 
 <p>If voice input is enabled, you can use the following voice commands.</p>
 
-<p>Main board screen:</p>
-<ul>
-    <li>
-        <dl>
-        <dt>Solution <i>word</i> / Put <i>word</i></dt>
-        <dd>Enter <i>word</i> into the grid. E.g. "put potato".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Letter <i>l</i></dt>
-        <dd>Enter a single letter <i>l</i> into the grid. E.g. "letter b".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Delete</dt>
-        <dd>Delete at the cursor.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Clear</dt>
-        <dd>Clear the current selected word.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Number <i>n</i></dt>
-        <dd>Jump to clue number <i>n</i>. E.g. "number 27".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Toggle</dt>
-        <dd>Change selected clue direction.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Next/previous/jump</dt>
-        <dd>Go to the next/previous/random clue.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Left/right/up/down</dt>
-        <dd>Same as arrow keys.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Clues</dt>
-        <dd>Go to the clue list screen.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Notes</dt>
-        <dd>Go to the current clue's notes page.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Back</dt>
-        <dd>Same as back button.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Announce</dt>
-        <dd>Announce the current clue and board contents. Will use accessibility service if running, else the available text-to-speech service.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Help</dt>
-        <dd>Ask ChatGPT for help with current clue. Requires a network connection and Chat GPT to be configured in interaction settings.</dd>
-        </dl>
-    </li>
-</ul>
+<h4>Main board screen</h4>
 
-<p>Clue list screen:</p>
-<ul>
-    <li>
-        <dl>
-        <dt>Solution <i>word</i> / Put <i>word</i></dt>
-        <dd>Enter <i>word</i> into the grid. E.g. "put potato".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Letter <i>l</i></dt>
-        <dd>Enter a single letter <i>l</i> into the grid. E.g. "letter b".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Delete</dt>
-        <dd>Delete at the cursor.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Clear</dt>
-        <dd>Clear the current selected word.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Number <i>n</i></dt>
-        <dd>Jump to clue number <i>n</i>. E.g. "number 27".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Next/previous</dt>
-        <dd>Go to the next/previous clue list.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Left/right/up/down</dt>
-        <dd>Same as arrow keys.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Notes</dt>
-        <dd>Go to the current clue's notes page.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Back</dt>
-        <dd>Same as back button.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Announce</dt>
-        <dd>Announce the current clue and board contents. Will use accessibility service if running, else the available text-to-speech service.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Help</dt>
-        <dd>Ask ChatGPT for help with current clue. Requires a network connection and Chat GPT to be configured in interaction settings.</dd>
-        </dl>
-    </li>
-</ul>
+• <b>Solution <i>word</i> / Put <i>word</i></b> - Enter <i>word</i> into the grid. E.g. "put potato".<br>
+• <b>Letter <i>l</i></b> - Enter a single letter <i>l</i> into the grid. E.g. "letter b".<br>
+• <b>Delete</b> - Delete at the cursor.<br>
+• <b>Clear</b> - Clear the current selected word.<br>
+• <b>Number <i>n</i></b> - Jump to clue number <i>n</i>. E.g. "number 27".<br>
+• <b>Toggle</b> - Change selected clue direction.<br>
+• <b>Next/previous/jump</b> - Go to the next/previous/random clue.<br>
+• <b>Left/right/up/down</b> - Same as arrow keys.<br>
+• <b>Clues</b> - Go to the clue list screen.<br>
+• <b>Notes</b> - Go to the current clue's notes page.<br>
+• <b>Back</b> - Same as back button.<br>
+• <b>Announce</b> - Announce the current clue and board contents. Will use accessibility service if running, else the available text-to-speech service.<br>
+• <b>Help</b> - Ask ChatGPT for help with current clue. Requires a network connection and Chat GPT to be configured in interaction settings.<br>
 
-<p>Notes screen:</p>
-<ul>
-    <li>
-        <dl>
-        <dt>Solution <i>word</i> / Put <i>word</i></dt>
-        <dd>Enter <i>word</i> into the grid. E.g. "put potato".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Letter <i>l</i></dt>
-        <dd>Enter a single letter <i>l</i> into the grid. E.g. "letter b".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Delete</dt>
-        <dd>Delete at the cursor.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Clear</dt>
-        <dd>Clear the current selected word.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Scratch <i>word</i></dt>
-        <dd>Enter <i>word</i> into scratch. E.g. "scratch potato".</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Scratch clear</dt>
-        <dd>Clear the scratch box.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Back</dt>
-        <dd>Same as back button.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Announce</dt>
-        <dd>Announce the current clue and board contents. Will use accessibility service if running, else the available text-to-speech service.</dd>
-        </dl>
-    </li>
-    <li>
-        <dl>
-        <dt>Help</dt>
-        <dd>Ask ChatGPT for help with current clue. Requires a network connection and Chat GPT to be configured in interaction settings.</dd>
-        </dl>
-    </li>
-</ul>
+<h4>Clue list screen</h4>
 
-</body>
-</html>
+• <b>Solution <i>word</i> / Put <i>word</i></b> - Enter <i>word</i> into the grid. E.g. "put potato".<br>
+• <b>Letter <i>l</i></b> - Enter a single letter <i>l</i> into the grid. E.g. "letter b".<br>
+• <b>Delete</b> - Delete at the cursor.<br>
+• <b>Clear</b> - Clear the current selected word.<br>
+• <b>Number <i>n</i></b> - Jump to clue number <i>n</i>. E.g. "number 27".<br>
+• <b>Next/previous</b> - Go to the next/previous clue list.<br>
+• <b>Left/right/up/down</b> - Same as arrow keys.<br>
+• <b>Notes</b> - Go to the current clue's notes page.<br>
+• <b>Back</b> - Same as back button.<br>
+• <b>Announce</b> - Announce the current clue and board contents. Will use accessibility service if running, else the available text-to-speech service.<br>
+• <b>Help</b> - Ask ChatGPT for help with current clue. Requires a network connection and Chat GPT to be configured in interaction settings.<br>
+
+<h4>Notes screen</h4>
+
+• <b>Solution <i>word</i> / Put <i>word</i></b> - Enter <i>word</i> into the grid. E.g. "put potato".<br>
+• <b>Letter <i>l</i></b> - Enter a single letter <i>l</i> into the grid. E.g. "letter b".<br>
+• <b>Delete</b> - Delete at the cursor.<br>
+• <b>Clear</b> - Clear the current selected word.<br>
+• <b>Scratch <i>word</i></b> - Enter <i>word</i> into scratch. E.g. "scratch potato".<br>
+• <b>Scratch clear</b> - Clear the scratch box.<br>
+• <b>Back</b> - Same as back button.<br>
+• <b>Announce</b> - Announce the current clue and board contents. Will use accessibility service if running, else the available text-to-speech service.<br>
+• <b>Help</b> - Ask ChatGPT for help with current clue. Requires a network connection and Chat GPT to be configured in interaction settings.<br>
