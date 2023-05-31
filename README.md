@@ -8,6 +8,8 @@ follow a standard across/down set-up) and other customisations.
      alt="Get it on F-Droid"
      height="80">](https://f-droid.org/packages/app.crossword.yourealwaysbe.forkyz/)
 
+[Forkyz Scanner][forkyz-scanner] is a companion app for scanning crosswords from the camera, images, or PDFs.
+
 ## Features
 
 Play crosswords! Full board view, clue list view, make notes about clues, anagram helper.
@@ -76,9 +78,10 @@ Support for block, bar, and acrostic puzzles. Puzzles don't have to be across/do
 
 ## Obtaining Puzzles
 
-Puzzles can be obtained in two ways:
+Puzzles can be obtained in three ways:
 
-* import files, or
+* import files,
+* scanning with the [Forkyz Scanner][forkyz-scanner] companion app, or
 * use the built-in downloaders.
 
 Files for import can be downloaded from a [number of websites][online-sources], or anywhere else you find them. I generally prefer this method over the downloaders since you get involved with the community.
@@ -127,5 +130,6 @@ Licensed under the GNU General Public License, Version 3
 ipuz is a trademark of Puzzazz, used with permission
 
 [changelogs]: https://yourealwaysbe.github.io/forkyz/changes.html
+[forkyz-scanner]: https://gitlab.com/Hague/forkyzscanner
 [gnome-crosswords]: https://gitlab.gnome.org/jrb/crosswords
 [online-sources]: https://yourealwaysbe.github.io/forkyz/
