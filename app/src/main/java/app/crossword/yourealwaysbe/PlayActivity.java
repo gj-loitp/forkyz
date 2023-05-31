@@ -389,15 +389,6 @@ public class PlayActivity extends PuzzleActivity
         Playboard board = getBoard();
         Puzzle puz = getPuzzle();
 
-        if (puz == null || puz.isUpdatable()) {
-            menu.findItem(R.id.play_menu_reveal).setEnabled(false);
-        } else {
-            DisplayMetrics metrics = getResources().getDisplayMetrics();
-            if (ForkyzApplication.isTabletish(metrics)) {
-                menu.findItem(R.id.play_menu_reveal).setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-            }
-        }
-
         if (puz == null || puz.getSupportUrl() == null) {
             MenuItem support = menu.findItem(R.id.play_menu_support_source);
             support.setVisible(false);
@@ -406,9 +397,15 @@ public class PlayActivity extends PuzzleActivity
 
         menu.findItem(R.id.play_menu_scratch_mode).setChecked(isScratchMode());
 
-        menu.findItem(R.id.play_menu_show_errors).setEnabled(
-            !(puz == null || puz.isUpdatable())
-        );
+        boolean canSolve
+            = puz != null && puz.hasSolution();
+
+        MenuItem showErrors = menu.findItem(R.id.play_menu_show_errors);
+        MenuItem reveal = menu.findItem(R.id.play_menu_reveal);
+        showErrors.setEnabled(canSolve);
+        showErrors.setVisible(canSolve);
+        reveal.setEnabled(canSolve);
+        reveal.setVisible(canSolve);
 
         boolean showErrorsGrid
             = this.prefs.getBoolean(PREF_SHOW_ERRORS_GRID, false);
@@ -422,8 +419,7 @@ public class PlayActivity extends PuzzleActivity
             ? R.string.showing_errors
             : R.string.show_errors;
 
-        menu.findItem(R.id.play_menu_show_errors)
-            .setTitle(showErrorsTitle);
+        showErrors.setTitle(showErrorsTitle);
 
         menu.findItem(R.id.play_menu_show_errors_grid)
             .setChecked(showErrorsGrid);
