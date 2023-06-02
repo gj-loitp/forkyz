@@ -858,7 +858,7 @@ public class BrowseActivity extends ForkyzActivity {
             model.importURIs(uris, false, (someFailed, someSucceeded) -> {
                 if (someSucceeded || someFailed) {
                     String msg = getString(
-                        someFailed
+                        someFailed || !someSucceeded
                             ? R.string.import_failure
                             : R.string.import_success
                     );
@@ -877,7 +877,7 @@ public class BrowseActivity extends ForkyzActivity {
             model.importURIs(uri, true, (someFailed, someSucceeded) -> {
                 ImportedNowFinishDialog dialog = new ImportedNowFinishDialog();
                 Bundle args = new Bundle();
-                args.putBoolean(IMPORT_SUCCESS, !someFailed);
+                args.putBoolean(IMPORT_SUCCESS, !someFailed && someSucceeded);
                 dialog.setArguments(args);
                 dialog.show(
                     getSupportFragmentManager(), "ImportedNowFinishDialog"
