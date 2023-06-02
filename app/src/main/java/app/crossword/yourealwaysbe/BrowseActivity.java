@@ -1299,7 +1299,7 @@ public class BrowseActivity extends ForkyzActivity {
             builder.setTitle(R.string.imports_title)
                 .setMessage(message)
                 .setPositiveButton(
-                    android.R.string.ok,
+                    R.string.exit,
                     (di, i) -> { activity.finish(); }
                 );
 
