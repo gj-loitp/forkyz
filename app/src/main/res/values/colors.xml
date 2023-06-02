@@ -15,7 +15,7 @@
     <color name="errorContainer">#FFDAD6</color>
     <color name="onError">#FFFFFF</color>
     <color name="onErrorContainer">#410002</color>
-    <color name="background">#cfcfcf</color>
+    <color name="background">#eaeaea</color>
     <color name="onBackground">#262626</color>
     <color name="onBackgroundSecondary">#565656</color>
     <color name="surface">@color/background</color>
