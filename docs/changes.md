@@ -1,5 +1,19 @@
 # Forkyz Changelog
 
+## Version 42
+
+- New Forkyz Scanner app submitted to FDroid (scans photos, images, PDF).
+- Add show errors for completed clues option.
+- Add edit clue hint feature from clue list view menu.
+- Fix Hamburger Abendblatt download.
+- Hide show errors and reveal options when puzzle has no stored solution.
+- Brighten standard theme grey a little.
+- Simplify help/release notes screens with better theme support.
+- Use Material text inputs in places.
+- Close after external import to avoid launcher weirdness.
+- Open shared files and application/json.
+- Native keyboard improvements should work on more devices.
+
 ## Version 41
 
 - Support background shapes in IPuz spec (both IPuz and JPZ import).
