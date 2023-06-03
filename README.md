@@ -1,3 +1,12 @@
+
+# Forkyz Has Moved! 🚴
+
+Please find us at the new [GitLab repo][forkyz-gitlab].
+
+📅 Moved on 3 June 2023.
+
+---
+
 # Forkyz Crosswords
 
 Forkyz is an unofficial fork of [Shortyz](https://github.com/kebernet/shortyz/)
@@ -133,3 +142,5 @@ ipuz is a trademark of Puzzazz, used with permission
 [forkyz-scanner]: https://gitlab.com/Hague/forkyzscanner
 [gnome-crosswords]: https://gitlab.gnome.org/jrb/crosswords
 [online-sources]: https://yourealwaysbe.github.io/forkyz/
+[forkyz-gitlab]: https://gitlab.com/Hague/forkyz
+

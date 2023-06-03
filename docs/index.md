@@ -1,4 +1,14 @@
 
+# Forkyz has Moved 🚴
+
+Please find the latest online sources list on [GitLab][sources-gitlab].
+
+📅 Moved on 3 June 2023.
+
+[sources-gitlab]: https://hague.gitlab.io/forkyz/
+
+---
+
 # Online Sources of Puzzles
 
 Many crossword compilers and fans host web pages where puzzles can be

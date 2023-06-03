@@ -1,3 +1,14 @@
+
+# Forkyz has Moved 🚴
+
+Please find the latest changes list on [GitLab][changes-gitlab].
+
+📅 Moved on 3 June 2023.
+
+[changes-gitlab]: https://hague.gitlab.io/forkyz/changes.html
+
+---
+
 # Forkyz Changelog
 
 ## Version 42
